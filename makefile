@@ -5,7 +5,7 @@ OBJECTS = santa.o setup.o game.o level.o sleigh.o landscape.o \
           gift.o snowflake.o output.o text.o random.o args.o draw.o mask.o \
           sleigh_star.o snowman_star.o config.o score.o sound.o chimney.o
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lm
-CFLAGS = -c `sdl-config --cflags` -Wall -Wextra -Wno-sign-compare
+CFLAGS = -c --std=c++03 `sdl-config --cflags` -Wall -Wextra -Wno-sign-compare
 
 all: santa
 
