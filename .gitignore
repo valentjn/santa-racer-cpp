@@ -1,0 +1,8 @@
+*.o
+*.ogg
+*.tga
+*.wav
+
+/santa
+
+/tmp/
