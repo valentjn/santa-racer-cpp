@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "globals.hpp"
 #include "config.hpp"
@@ -43,19 +44,19 @@ void Santa::Config::set_config_dir(const char *dir) {
 }
 
 bool Santa::Config::load_highscores(void) {
-    const char *highscores_file;
+    std::string highscores_file;
     std::ifstream f;
     int i;
     
     init_highscores();
-    highscores_file = (config_dir + "highscores.txt").c_str();
+    highscores_file = config_dir + "highscores.txt";
     
-    if (!check_file(highscores_file)) {
+    if (!check_file(highscores_file.c_str())) {
         save_highscores();
         
     } else {
         Output::debug("loading highscores\n");
-        f.open(highscores_file, std::ios_base::in);
+        f.open(highscores_file.c_str(), std::ios_base::in);
         
         for (i = 0; i < 10; i++) {
             f >> highscores[i].name;
@@ -69,13 +70,13 @@ bool Santa::Config::load_highscores(void) {
 }
 
 void Santa::Config::save_highscores(void) {
-    const char *highscores_file;
+    std::string highscores_file;
     std::ofstream f;
     int i;
     
     Output::debug("saving highscores\n");
-    highscores_file = (config_dir + "highscores.txt").c_str();
-    f.open(highscores_file, std::ios_base::out);
+    highscores_file = config_dir + "highscores.txt";
+    f.open(highscores_file.c_str(), std::ios_base::out);
     
     for (i = 0; i < 10; i++) {
         if (i > 0) {
