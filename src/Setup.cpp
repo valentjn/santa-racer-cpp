@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "Config.hpp"
 #include "Globals.hpp"

@@ -8,6 +8,8 @@
 
 #include "Globals.hpp"
 
+#include <string>
+
 void SantaRacer::Args::check_args(int argc, char *argv[]) {
   int i;
   std::string arg;

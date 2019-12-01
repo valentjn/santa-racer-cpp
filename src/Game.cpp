@@ -11,6 +11,8 @@
 #include "Random.hpp"
 #include "Sound.hpp"
 
+#include <string>
+
 SantaRacer::Game::Game(void) { m_initialized = false; }
 
 SantaRacer::Game::~Game(void) {

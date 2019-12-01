@@ -13,6 +13,8 @@
 #include "Sleigh.hpp"
 #include "Snowflake.hpp"
 
+#include <string>
+
 namespace SantaRacer {
 
 class Game {

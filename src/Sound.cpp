@@ -8,6 +8,8 @@
 
 #include "Globals.hpp"
 
+#include <string>
+
 void SantaRacer::Sound::play(std::string name) {
   play_panned_volume(name, 0.5, 1.0);
 }
