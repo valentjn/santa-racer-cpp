@@ -55,7 +55,7 @@ Santa::Mask::~Mask(void) {
     int y;
     
     for (y = 0; y < m_height; y++) {
-        delete m_array[y];
+        delete[] m_array[y];
     }
     delete[] m_array;
 }
