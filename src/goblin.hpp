@@ -21,7 +21,7 @@
 #ifndef SANTA_GOBLIN_H
 #define SANTA_GOBLIN_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class Goblin {

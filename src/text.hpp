@@ -21,7 +21,7 @@
 #ifndef SANTA_TEXT_H
 #define SANTA_TEXT_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class Text {

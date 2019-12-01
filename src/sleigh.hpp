@@ -21,7 +21,7 @@
 #ifndef SANTA_SLEIGH_H
 #define SANTA_SLEIGH_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "sleigh_star.hpp"
 #include "mask.hpp"
 #include "level_object.hpp"

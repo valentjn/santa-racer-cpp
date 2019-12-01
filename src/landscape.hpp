@@ -21,7 +21,7 @@
 #ifndef SANTA_LANDSCAPE_H
 #define SANTA_LANDSCAPE_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class Landscape {

@@ -21,7 +21,7 @@
 #ifndef SANTA_GIFT_H
 #define SANTA_GIFT_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class Gift {

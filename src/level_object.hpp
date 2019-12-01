@@ -21,7 +21,7 @@
 #ifndef SANTA_LEVEL_OBJECT_H
 #define SANTA_LEVEL_OBJECT_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "cloud.hpp"
 #include "balloon.hpp"
 #include "angel.hpp"

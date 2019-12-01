@@ -21,7 +21,7 @@
 #ifndef SANTA_SLEIGH_STAR_H
 #define SANTA_SLEIGH_STAR_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class SleighStar {

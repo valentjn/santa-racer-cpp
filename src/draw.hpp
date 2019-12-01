@@ -21,7 +21,7 @@
 #ifndef SANTA_DRAW_H
 #define SANTA_DRAW_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     namespace Draw {

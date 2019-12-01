@@ -21,7 +21,7 @@
 #ifndef SANTA_LEVEL_H
 #define SANTA_LEVEL_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "level_object.hpp"
 #include "mask.hpp"
 

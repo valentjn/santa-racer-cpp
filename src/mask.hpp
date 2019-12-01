@@ -21,7 +21,7 @@
 #ifndef SANTA_MASK_H
 #define SANTA_MASK_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 namespace Santa {
     class Mask {
