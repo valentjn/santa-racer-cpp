@@ -109,7 +109,7 @@ void SantaRacer::Setup::santa_setup(void) {
     setup_flags.highscores = true;
   }
 
-  SDL_WM_SetIcon(images["icon"], NULL);
+  SDL_WM_SetIcon(images["icon"], nullptr);
 
   Random::seed();
   Output::debug("loading game\n");
@@ -128,13 +128,13 @@ bool SantaRacer::Setup::load_images(void) {
   SDL_Surface *surface;
 
   d = opendir("./assets/images/");
-  if (d == NULL) {
+  if (d == nullptr) {
     Output::fatal_error("couldn't find assets/images directory\n");
   }
 
   Output::debug("reading images");
 
-  while ((entry = readdir(d)) != NULL) {
+  while ((entry = readdir(d)) != nullptr) {
     filename = std::string(entry->d_name);
     if (filename.length() > 4 &&
         filename.substr(filename.length() - 4) == ".tga") {
@@ -282,12 +282,12 @@ bool SantaRacer::Setup::load_sounds(void) {
   Mix_Chunk *sound;
 
   d = opendir("./assets/sounds/");
-  if (d == NULL) {
+  if (d == nullptr) {
     Output::fatal_error("couldn't find assets/sounds directory\n");
   }
 
   Output::debug("reading sounds");
-  while ((entry = readdir(d)) != NULL) {
+  while ((entry = readdir(d)) != nullptr) {
     filename = std::string(entry->d_name);
     if (filename.length() > 4 &&
         filename.substr(filename.length() - 4) == ".wav") {

@@ -33,7 +33,7 @@ SantaRacer::Sleigh::Sleigh(void) {
   m_shield_width = m_shield_surface->w / shield_frame_count;
   m_shield_height = m_shield_surface->h;
 
-  m_stars = NULL;
+  m_stars = nullptr;
   reset();
 }
 
@@ -76,7 +76,7 @@ void SantaRacer::Sleigh::reset(void) {
 void SantaRacer::Sleigh::reset_stars(void) {
   int i;
 
-  if (m_stars == NULL) {
+  if (m_stars == nullptr) {
     m_stars = new LevelObject::SleighStar *[star_count];
     for (i = 0; i < star_count; i++) {
       m_stars[i] = new LevelObject::SleighStar();
@@ -324,7 +324,7 @@ SantaRacer::LevelObject::LevelObject *SantaRacer::Sleigh::touched_level_object(v
   bool shield;
 
   if (is_invincible()) {
-    return NULL;
+    return nullptr;
   }
 
   x = get_x();
@@ -364,7 +364,7 @@ SantaRacer::LevelObject::LevelObject *SantaRacer::Sleigh::touched_level_object(v
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 int SantaRacer::Sleigh::get_x(void) {

@@ -86,7 +86,7 @@ void SantaRacer::LevelObject::LevelObject::reset(void) {
 
   m_width = 0;
   m_height = 0;
-  m_mask = NULL;
+  m_mask = nullptr;
   m_hidden = false;
 }
 

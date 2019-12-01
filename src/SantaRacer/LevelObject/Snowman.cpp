@@ -15,13 +15,13 @@
 
 SantaRacer::LevelObject::Snowman::Snowman(void *parent) {
   m_parent = parent;
-  m_stars = NULL;
+  m_stars = nullptr;
 }
 
 SantaRacer::LevelObject::Snowman::~Snowman(void) {
   int i;
 
-  if (m_stars != NULL) {
+  if (m_stars != nullptr) {
     for (i = 0; i < star_count; i++) {
       delete m_stars[i];
     }

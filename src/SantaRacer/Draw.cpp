@@ -29,7 +29,7 @@ void SantaRacer::Draw::copy(SDL_Surface *src_surface, SDL_Surface *dst_surface,
 
   dst_rect.x = dst_x;
   dst_rect.y = dst_y;
-  SDL_BlitSurface(src_surface, NULL, dst_surface, &dst_rect);
+  SDL_BlitSurface(src_surface, nullptr, dst_surface, &dst_rect);
 }
 
 void SantaRacer::Draw::set_alpha(SDL_Surface *surface, Uint8 alpha) {

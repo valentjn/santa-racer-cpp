@@ -70,7 +70,7 @@ void SantaRacer::Game::init(void) {
   m_highscore_bg =
       SDL_CreateRGBSurface(SDL_SWSURFACE, 400, 300, 32, 0, 0, 0, 0);
 
-  if (m_highscore_bg == NULL) {
+  if (m_highscore_bg == nullptr) {
     Output::fatal_error("could not create RGB surface: %s\n", SDL_GetError());
   }
   SDL_SetAlpha(m_highscore_bg, SDL_SRCALPHA, 128);
@@ -88,7 +88,7 @@ void SantaRacer::Game::init(void) {
   m_last_fps_update_time = 0;
   m_frame_counter = 0;
 
-  m_key_state = SDL_GetKeyState(NULL);
+  m_key_state = SDL_GetKeyState(nullptr);
 
   countdown_mode = false;
   countdown_start_time = 0;
@@ -288,7 +288,7 @@ void SantaRacer::Game::logic(void) {
     }
 
     level_object = sleigh->touched_level_object();
-    if (level_object != NULL) {
+    if (level_object != nullptr) {
       type = level_object->get_type();
       x = level_object->get_level_x() - Setup::game->level->get_offset();
 
