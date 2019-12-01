@@ -6,14 +6,13 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
-
 namespace SantaRacer {
+namespace LevelObject {
 
-class Goblin {
+class GoblinSnowball {
  public:
-  Goblin(void *parent);
-  ~Goblin(void);
+  GoblinSnowball(void *parent);
+  ~GoblinSnowball(void);
 
   void reinit(int tile_x, int tile_y);
   void draw(void);
@@ -22,11 +21,16 @@ class Goblin {
   int get_level_x(void);
   int get_y(void);
   int get_frame(void);
-  bool query_snowball_thrown(void);
 
  private:
-  static const int frame_count = 19;
-  static const int frame_speed = frame_count / 1.5;
+  static const int frame_count = 1;
+
+  static const int gravity_acceleration = 80;
+  static const int speed_x = -200;
+  static const int speed_y_start = -250;
+
+  static const int offset_x = 45;
+  static const int offset_y = 40;
 
   void *m_parent;
 
@@ -34,8 +38,7 @@ class Goblin {
   int m_y;
   int m_frame;
   int m_time;
-  bool m_snowball_thrown;
-  bool m_snowball_thrown_query;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

@@ -8,9 +8,9 @@
 
 #include <SDL/SDL.h>
 
-#include "SantaRacer/LevelObject.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 #include "SantaRacer/Mask.hpp"
-#include "SantaRacer/SleighStar.hpp"
+#include "SantaRacer/LevelObject/SleighStar.hpp"
 
 namespace SantaRacer {
 
@@ -36,7 +36,7 @@ class Sleigh {
   bool is_unmovable(void);
 
   bool is_colliding(void);
-  LevelObject *touched_level_object(void);
+  LevelObject::LevelObject *touched_level_object(void);
 
   int get_x(void);
   void set_x(int x);
@@ -108,7 +108,7 @@ class Sleigh {
   bool m_menu_mode;
   float m_rand_offset_x;
   float m_rand_offset_y;
-  SleighStar **m_stars;
+  LevelObject::SleighStar **m_stars;
 
   SDL_Surface *m_sleigh_surface;
   int m_sleigh_width;

@@ -7,10 +7,12 @@
 #pragma once
 
 namespace SantaRacer {
+namespace LevelObject {
 
-class Cloud {
+class Finish {
  public:
-  Cloud(void *parent);
+  Finish(void *parent);
+  ~Finish(void);
 
   void reinit(int tile_x, int tile_y);
   void draw(void);
@@ -20,6 +22,8 @@ class Cloud {
   int get_y(void);
   int get_frame(void);
 
+  bool reached(void);
+
  private:
   void *m_parent;
 
@@ -27,4 +31,5 @@ class Cloud {
   int m_y;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

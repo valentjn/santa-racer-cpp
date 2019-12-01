@@ -261,9 +261,9 @@ void SantaRacer::Game::logic(void) {
   int time_diff;
   int countdown_number;
   int x;
-  LevelObject *level_object;
-  LevelObject::ObjectType type;
-  Balloon::BalloonType balloon_type;
+  LevelObject::LevelObject *level_object;
+  LevelObject::LevelObject::ObjectType type;
+  LevelObject::Balloon::BalloonType balloon_type;
 
   int points;
   std::string snd_name;
@@ -292,42 +292,42 @@ void SantaRacer::Game::logic(void) {
       type = level_object->get_type();
       x = level_object->get_level_x() - Setup::game->level->get_offset();
 
-      if (type == LevelObject::CloudObject) {
+      if (type == LevelObject::LevelObject::CloudObject) {
         Output::debug("touched cloud: %i\n", SDL_GetTicks());
         score->add_damage(collision_damage);
         Sound::play_panned_x("electrified", x);
         sleigh->electrified();
 
-      } else if (type == LevelObject::BalloonObject) {
+      } else if (type == LevelObject::LevelObject::BalloonObject) {
         balloon_type = level_object->get_balloon()->get_type();
 
-        if (balloon_type == Balloon::PointsBalloon) {
+        if (balloon_type == LevelObject::Balloon::PointsBalloon) {
           score->add_points(points_balloon_pts);
           Sound::play_panned_x("success", x);
 
-        } else if (balloon_type == Balloon::CashBalloon) {
+        } else if (balloon_type == LevelObject::Balloon::CashBalloon) {
           score->add_damage(-cash_balloon_pts);
           Sound::play_panned_x("cash", x);
 
-        } else if (balloon_type == Balloon::GiftBalloon) {
+        } else if (balloon_type == LevelObject::Balloon::GiftBalloon) {
           m_bonus_time_start = SDL_GetTicks();
           Sound::play_panned_x("bonus", x);
 
-        } else if (balloon_type == Balloon::ShieldBalloon) {
+        } else if (balloon_type == LevelObject::Balloon::ShieldBalloon) {
           sleigh->shield();
           Sound::play_panned_x("shield", x);
 
-        } else if (balloon_type == Balloon::ChampagneBalloon) {
+        } else if (balloon_type == LevelObject::Balloon::ChampagneBalloon) {
           sleigh->drunken();
           Sound::play_panned_x("drunken", x);
         }
 
         level_object->hide();
 
-      } else if ((type == LevelObject::AngelObject) ||
-                 (type == LevelObject::GoblinObject) ||
-                 (type == LevelObject::GoblinSnowballObject) ||
-                 (type == LevelObject::SnowmanObject)) {
+      } else if ((type == LevelObject::LevelObject::AngelObject) ||
+                 (type == LevelObject::LevelObject::GoblinObject) ||
+                 (type == LevelObject::LevelObject::GoblinSnowballObject) ||
+                 (type == LevelObject::LevelObject::SnowmanObject)) {
         score->add_damage(collision_damage);
         Sound::play_panned_x("hit", x);
         sleigh->hit();
@@ -438,17 +438,17 @@ void SantaRacer::Game::logic(void) {
     level_object = level->get_level_object(i);
 
     if (level_object->exists() &&
-        (level_object->get_type() == LevelObject::GoblinObject) &&
+        (level_object->get_type() == LevelObject::LevelObject::GoblinObject) &&
         level_object->get_goblin()->query_snowball_thrown()) {
       x = level_object->get_level_x() - Setup::game->level->get_offset();
       Sound::play_panned_x("snowball", x);
     } else if (level_object->exists() &&
-               (level_object->get_type() == LevelObject::SnowmanObject) &&
+               (level_object->get_type() == LevelObject::LevelObject::SnowmanObject) &&
                level_object->get_snowman()->query_triggered()) {
       x = level_object->get_level_x() - Setup::game->level->get_offset();
       Sound::play_panned_x("snowman", x);
     } else if (level_object->exists() &&
-               (level_object->get_type() == LevelObject::FinishObject) &&
+               (level_object->get_type() == LevelObject::LevelObject::FinishObject) &&
                level_object->get_finish()->reached() &&
                ((mode == running_game) || (mode == menu_mode))) {
       if (mode == running_game) {

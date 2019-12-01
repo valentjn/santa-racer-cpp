@@ -8,16 +8,17 @@
 
 #include <SDL/SDL.h>
 
-#include "SantaRacer/Angel.hpp"
-#include "SantaRacer/Balloon.hpp"
-#include "SantaRacer/Cloud.hpp"
-#include "SantaRacer/Finish.hpp"
-#include "SantaRacer/Goblin.hpp"
-#include "SantaRacer/GoblinSnowball.hpp"
+#include "SantaRacer/LevelObject/Angel.hpp"
+#include "SantaRacer/LevelObject/Balloon.hpp"
+#include "SantaRacer/LevelObject/Cloud.hpp"
+#include "SantaRacer/LevelObject/Finish.hpp"
+#include "SantaRacer/LevelObject/Goblin.hpp"
+#include "SantaRacer/LevelObject/GoblinSnowball.hpp"
 #include "SantaRacer/Mask.hpp"
-#include "SantaRacer/Snowman.hpp"
+#include "SantaRacer/LevelObject/Snowman.hpp"
 
 namespace SantaRacer {
+namespace LevelObject {
 
 class LevelObject {
  public:
@@ -92,4 +93,5 @@ class LevelObject {
   Finish *m_finish;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

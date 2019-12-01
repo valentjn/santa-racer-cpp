@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include "SantaRacer/Chimney.hpp"
+#include "SantaRacer/LevelObject/Chimney.hpp"
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/Output.hpp"
 #include "SantaRacer/Text.hpp"
@@ -66,7 +66,7 @@ extern int **std_level_map;
 extern int std_level_width;
 extern int **std_level_objects_map;
 
-extern Chimney **chimneys;
+extern LevelObject::Chimney **chimneys;
 extern int chimney_count;
 
 const int screen_width = 640;

@@ -7,27 +7,26 @@
 #pragma once
 
 namespace SantaRacer {
+namespace LevelObject {
 
-class Finish {
+class Chimney {
  public:
-  Finish(void *parent);
-  ~Finish(void);
+  static const int chimney_height = 5;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  Chimney(int map_index, int x, int width, int y);
+  ~Chimney(void);
 
-  int get_level_x(void);
+  int get_map_index(void);
+  int get_x(void);
+  int get_width(void);
   int get_y(void);
-  int get_frame(void);
-
-  bool reached(void);
 
  private:
-  void *m_parent;
-
-  int m_level_x;
+  int m_map_index;
+  int m_x;
+  int m_width;
   int m_y;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

@@ -8,7 +8,7 @@
 
 #include <SDL/SDL.h>
 
-#include "SantaRacer/LevelObject.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 #include "SantaRacer/Mask.hpp"
 
 namespace SantaRacer {
@@ -41,7 +41,7 @@ class Level {
   int get_height(void);
   SantaRacer::Mask *get_mask(void);
   int **get_map(void);
-  LevelObject *get_level_object(int index);
+  LevelObject::LevelObject *get_level_object(int index);
 
   void set_menu_mode(bool menu_mode);
 
@@ -66,7 +66,7 @@ class Level {
 
   int **m_map;
   int **m_level_object_map;
-  LevelObject **m_level_objects;
+  LevelObject::LevelObject **m_level_objects;
 };
 
 }  // namespace SantaRacer

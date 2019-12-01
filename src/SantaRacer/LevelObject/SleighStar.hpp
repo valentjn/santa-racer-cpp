@@ -9,6 +9,7 @@
 #include <SDL/SDL.h>
 
 namespace SantaRacer {
+namespace LevelObject {
 
 class SleighStar {
  public:
@@ -39,4 +40,5 @@ class SleighStar {
   static const int max_y_offset = 10;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

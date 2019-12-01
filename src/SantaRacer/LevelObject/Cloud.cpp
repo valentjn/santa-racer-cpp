@@ -4,17 +4,17 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Cloud.hpp"
+#include "SantaRacer/LevelObject/Cloud.hpp"
 
 #include <SDL/SDL.h>
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
-#include "SantaRacer/LevelObject.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::Cloud::Cloud(void *parent) { m_parent = parent; }
+SantaRacer::LevelObject::Cloud::Cloud(void *parent) { m_parent = parent; }
 
-void SantaRacer::Cloud::reinit(int tile_x, int tile_y) {
+void SantaRacer::LevelObject::Cloud::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -28,7 +28,7 @@ void SantaRacer::Cloud::reinit(int tile_x, int tile_y) {
   object->set_frame_count(1);
 }
 
-void SantaRacer::Cloud::draw(void) {
+void SantaRacer::LevelObject::Cloud::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -39,10 +39,10 @@ void SantaRacer::Cloud::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void SantaRacer::Cloud::move(void) { return; }
+void SantaRacer::LevelObject::Cloud::move(void) { return; }
 
-int SantaRacer::Cloud::get_level_x(void) { return m_level_x; }
+int SantaRacer::LevelObject::Cloud::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::Cloud::get_y(void) { return m_y; }
+int SantaRacer::LevelObject::Cloud::get_y(void) { return m_y; }
 
-int SantaRacer::Cloud::get_frame(void) { return 0; }
+int SantaRacer::LevelObject::Cloud::get_frame(void) { return 0; }

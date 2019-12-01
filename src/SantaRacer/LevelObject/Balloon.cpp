@@ -4,17 +4,17 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Balloon.hpp"
+#include "SantaRacer/LevelObject/Balloon.hpp"
 
 #include <SDL/SDL.h>
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
-#include "SantaRacer/LevelObject.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::Balloon::Balloon(void *parent) { m_parent = parent; }
+SantaRacer::LevelObject::Balloon::Balloon(void *parent) { m_parent = parent; }
 
-void SantaRacer::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
+void SantaRacer::LevelObject::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame_count;
@@ -54,7 +54,7 @@ void SantaRacer::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
   m_frame = 0;
 }
 
-void SantaRacer::Balloon::draw(void) {
+void SantaRacer::LevelObject::Balloon::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -77,11 +77,11 @@ void SantaRacer::Balloon::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::Balloon::move(void) { return; }
+void SantaRacer::LevelObject::Balloon::move(void) { return; }
 
-int SantaRacer::Balloon::get_level_x(void) { return m_level_x; }
+int SantaRacer::LevelObject::Balloon::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::Balloon::get_y(void) {
+int SantaRacer::LevelObject::Balloon::get_y(void) {
   LevelObject *object;
   float time_diff;
   int y;
@@ -93,7 +93,7 @@ int SantaRacer::Balloon::get_y(void) {
   return y;
 }
 
-int SantaRacer::Balloon::get_frame(void) {
+int SantaRacer::LevelObject::Balloon::get_frame(void) {
   float time_diff;
   int frame;
   int frame_count;
@@ -111,6 +111,6 @@ int SantaRacer::Balloon::get_frame(void) {
   return frame;
 }
 
-SantaRacer::Balloon::BalloonType SantaRacer::Balloon::get_type(void) {
+SantaRacer::LevelObject::Balloon::BalloonType SantaRacer::LevelObject::Balloon::get_type(void) {
   return m_ballon_type;
 }

@@ -77,9 +77,9 @@ void SantaRacer::Sleigh::reset_stars(void) {
   int i;
 
   if (m_stars == NULL) {
-    m_stars = new SleighStar *[star_count];
+    m_stars = new LevelObject::SleighStar *[star_count];
     for (i = 0; i < star_count; i++) {
-      m_stars[i] = new SleighStar();
+      m_stars[i] = new LevelObject::SleighStar();
     }
   } else {
     for (i = 0; i < star_count; i++) {
@@ -307,7 +307,7 @@ bool SantaRacer::Sleigh::is_colliding(void) {
   return false;
 }
 
-SantaRacer::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
+SantaRacer::LevelObject::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
   int x;
   int y;
   int sleigh_frame;
@@ -315,7 +315,7 @@ SantaRacer::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
   int i;
   int level_offset;
 
-  LevelObject *object;
+  LevelObject::LevelObject *object;
   Mask *object_mask;
   int object_level_x;
   int object_y;
@@ -348,7 +348,7 @@ SantaRacer::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
       if (m_sleigh_mask->is_colliding(x, y, sleigh_frame, object_mask,
                                       object_level_x - level_offset, object_y,
                                       object_frame)) {
-        if (!shield || (object->get_type() == LevelObject::BalloonObject)) {
+        if (!shield || (object->get_type() == LevelObject::LevelObject::BalloonObject)) {
           return object;
         }
       }
@@ -357,7 +357,7 @@ SantaRacer::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
                                         y, reindeer_frame, object_mask,
                                         object_level_x - level_offset, object_y,
                                         object_frame)) {
-        if (!shield || (object->get_type() == LevelObject::BalloonObject)) {
+        if (!shield || (object->get_type() == LevelObject::LevelObject::BalloonObject)) {
           return object;
         }
       }

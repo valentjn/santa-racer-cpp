@@ -4,17 +4,17 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Goblin.hpp"
+#include "SantaRacer/LevelObject/Goblin.hpp"
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
-#include "SantaRacer/LevelObject.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::Goblin::Goblin(void *parent) { m_parent = parent; }
+SantaRacer::LevelObject::Goblin::Goblin(void *parent) { m_parent = parent; }
 
-SantaRacer::Goblin::~Goblin(void) { return; }
+SantaRacer::LevelObject::Goblin::~Goblin(void) { return; }
 
-void SantaRacer::Goblin::reinit(int tile_x, int tile_y) {
+void SantaRacer::LevelObject::Goblin::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -34,7 +34,7 @@ void SantaRacer::Goblin::reinit(int tile_x, int tile_y) {
   m_snowball_thrown_query = false;
 }
 
-void SantaRacer::Goblin::draw(void) {
+void SantaRacer::LevelObject::Goblin::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -57,7 +57,7 @@ void SantaRacer::Goblin::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::Goblin::move(void) {
+void SantaRacer::LevelObject::Goblin::move(void) {
   int frame;
   int i;
   LevelObject *parent;
@@ -86,11 +86,11 @@ void SantaRacer::Goblin::move(void) {
   }
 }
 
-int SantaRacer::Goblin::get_level_x(void) { return m_level_x; }
+int SantaRacer::LevelObject::Goblin::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::Goblin::get_y(void) { return m_y; }
+int SantaRacer::LevelObject::Goblin::get_y(void) { return m_y; }
 
-int SantaRacer::Goblin::get_frame(void) {
+int SantaRacer::LevelObject::Goblin::get_frame(void) {
   float time_diff;
   int frame;
 
@@ -100,7 +100,7 @@ int SantaRacer::Goblin::get_frame(void) {
   return frame;
 }
 
-bool SantaRacer::Goblin::query_snowball_thrown(void) {
+bool SantaRacer::LevelObject::Goblin::query_snowball_thrown(void) {
   if (m_snowball_thrown_query) {
     m_snowball_thrown_query = false;
     return true;

@@ -9,11 +9,10 @@
 #include <SDL/SDL.h>
 
 namespace SantaRacer {
+namespace LevelObject {
 
 class Snowman;
-}
 
-namespace SantaRacer {
 class SnowmanStar {
  public:
   SnowmanStar(Snowman *snowman);
@@ -51,4 +50,5 @@ class SnowmanStar {
   Snowman *m_snowman;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

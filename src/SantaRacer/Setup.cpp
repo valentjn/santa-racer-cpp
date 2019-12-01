@@ -48,7 +48,7 @@ int **std_level_map;
 int std_level_width;
 int **std_level_objects_map;
 
-Chimney **chimneys;
+LevelObject::Chimney **chimneys;
 int chimney_count;
 
 }  // namespace Setup
@@ -257,7 +257,7 @@ bool SantaRacer::Setup::load_chimneys(void) {
   f.close();
 
   chimney_count = i / 4;
-  chimneys = new Chimney *[chimney_count];
+  chimneys = new LevelObject::Chimney *[chimney_count];
 
   f.open("./assets/data/chimneys.txt", std::ios_base::in);
 
@@ -266,7 +266,7 @@ bool SantaRacer::Setup::load_chimneys(void) {
     f >> x;
     f >> width;
     f >> y;
-    chimneys[i] = new Chimney(map_index, x, width, y);
+    chimneys[i] = new LevelObject::Chimney(map_index, x, width, y);
   }
 
   f.close();

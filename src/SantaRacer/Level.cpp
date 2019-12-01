@@ -25,9 +25,9 @@ SantaRacer::Level::Level(int **map, int **level_object_map, int width, int heigh
   m_map = map;
   m_level_object_map = level_object_map;
 
-  m_level_objects = new LevelObject *[max_level_object_count];
+  m_level_objects = new LevelObject::LevelObject *[max_level_object_count];
   for (i = 0; i < max_level_object_count; i++) {
-    m_level_objects[i] = new LevelObject();
+    m_level_objects[i] = new LevelObject::LevelObject();
   }
 }
 
@@ -62,12 +62,12 @@ void SantaRacer::Level::draw(void) {
 
 void SantaRacer::Level::draw_ballons(void) {
   int i;
-  LevelObject *object;
+  LevelObject::LevelObject *object;
 
   for (i = 0; i < max_level_object_count; i++) {
     object = m_level_objects[i];
     if (object->exists() &&
-        (object->get_type() == LevelObject::BalloonObject)) {
+        (object->get_type() == LevelObject::LevelObject::BalloonObject)) {
       object->draw();
     }
   }
@@ -75,12 +75,12 @@ void SantaRacer::Level::draw_ballons(void) {
 
 void SantaRacer::Level::draw_objects(void) {
   int i;
-  LevelObject *object;
+  LevelObject::LevelObject *object;
 
   for (i = 0; i < max_level_object_count; i++) {
     object = m_level_objects[i];
     if (object->exists() &&
-        (object->get_type() != LevelObject::BalloonObject)) {
+        (object->get_type() != LevelObject::LevelObject::BalloonObject)) {
       object->draw();
     }
   }
@@ -97,7 +97,7 @@ void SantaRacer::Level::move_objects(void) {
   int y;
   int i;
   int index;
-  LevelObject *object;
+  LevelObject::LevelObject *object;
 
   start_x = int(get_offset()) / tile_width;
 
@@ -126,7 +126,7 @@ void SantaRacer::Level::move_objects(void) {
 void SantaRacer::Level::move_object(int tile_x, int tile_y) {
   int i;
   int index;
-  LevelObject *object;
+  LevelObject::LevelObject *object;
   bool object_moved;
 
   object_moved = false;
@@ -179,7 +179,7 @@ void SantaRacer::Level::move_object(int tile_x, int tile_y) {
 
 void SantaRacer::Level::clear_objects(void) {
   int i;
-  LevelObject *object;
+  LevelObject::LevelObject *object;
 
   for (i = 0; i < max_level_object_count; i++) {
     object = m_level_objects[i];
@@ -231,7 +231,7 @@ SantaRacer::Mask *SantaRacer::Level::get_mask(void) { return m_mask; }
 
 int **SantaRacer::Level::get_map(void) { return m_map; }
 
-SantaRacer::LevelObject *SantaRacer::Level::get_level_object(int index) {
+SantaRacer::LevelObject::LevelObject *SantaRacer::Level::get_level_object(int index) {
   return m_level_objects[index];
 }
 

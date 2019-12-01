@@ -7,6 +7,7 @@
 #pragma once
 
 namespace SantaRacer {
+namespace LevelObject {
 
 class Balloon {
  public:
@@ -46,4 +47,5 @@ class Balloon {
   int m_frame;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer

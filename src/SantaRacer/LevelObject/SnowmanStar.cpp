@@ -4,14 +4,14 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/SnowmanStar.hpp"
+#include "SantaRacer/LevelObject/SnowmanStar.hpp"
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
-#include "SantaRacer/Snowman.hpp"
+#include "SantaRacer/LevelObject/Snowman.hpp"
 
-SantaRacer::SnowmanStar::SnowmanStar(Snowman *snowman) {
+SantaRacer::LevelObject::SnowmanStar::SnowmanStar(Snowman *snowman) {
   m_surface = Setup::images["star"];
   m_snowman = snowman;
   reinit(true);
@@ -19,7 +19,7 @@ SantaRacer::SnowmanStar::SnowmanStar(Snowman *snowman) {
   m_height = m_surface->h;
 }
 
-void SantaRacer::SnowmanStar::reinit(bool first_init) {
+void SantaRacer::LevelObject::SnowmanStar::reinit(bool first_init) {
   if (!m_snowman->is_triggered()) {
     return;
   }
@@ -42,7 +42,7 @@ void SantaRacer::SnowmanStar::reinit(bool first_init) {
   m_max_frame = Random::rnd(frame_count, max_frame_count);
 }
 
-void SantaRacer::SnowmanStar::draw(void) {
+void SantaRacer::LevelObject::SnowmanStar::draw(void) {
   int frame;
 
   frame = get_frame();
@@ -54,7 +54,7 @@ void SantaRacer::SnowmanStar::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void SantaRacer::SnowmanStar::move(void) {
+void SantaRacer::LevelObject::SnowmanStar::move(void) {
   if (!m_snowman->is_triggered()) {
     m_time = SDL_GetTicks();
   }
@@ -64,6 +64,6 @@ void SantaRacer::SnowmanStar::move(void) {
   }
 }
 
-int SantaRacer::SnowmanStar::get_frame(void) {
+int SantaRacer::LevelObject::SnowmanStar::get_frame(void) {
   return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
 }

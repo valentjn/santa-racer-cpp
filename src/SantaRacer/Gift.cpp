@@ -10,6 +10,8 @@
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 
+#include "SantaRacer/LevelObject/Chimney.hpp"
+
 SantaRacer::Gift::Gift(void) {
   int i;
 
@@ -164,7 +166,7 @@ void SantaRacer::Gift::move(void) {
   int **level_map;
   int map_index;
 
-  Chimney **chimneys;
+  LevelObject::Chimney **chimneys;
   int chimney_count;
 
   int i;
@@ -199,7 +201,7 @@ void SantaRacer::Gift::move(void) {
 
   chimneys = Setup::chimneys;
   chimney_count = Setup::chimney_count;
-  chimney_int_height = Chimney::chimney_height;
+  chimney_int_height = LevelObject::Chimney::chimney_height;
 
   for (tile_y = 0; tile_y < height; tile_y++) {
     for (tile_x = start_x; tile_x < start_x + tiles_to_draw; tile_x++) {

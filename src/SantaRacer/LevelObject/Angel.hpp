@@ -6,14 +6,13 @@
 
 #pragma once
 
-#include "SantaRacer/SnowmanStar.hpp"
-
 namespace SantaRacer {
+namespace LevelObject {
 
-class Snowman {
+class Angel {
  public:
-  Snowman(void *parent);
-  ~Snowman(void);
+  Angel(void *parent);
+  ~Angel(void);
 
   void reinit(int tile_x, int tile_y);
   void draw(void);
@@ -22,20 +21,10 @@ class Snowman {
   int get_level_x(void);
   int get_y(void);
   int get_frame(void);
-  bool is_triggered(void);
-  bool query_triggered(void);
 
  private:
-  static const int frame_count = 8;
+  static const int frame_count = 13;
   static const int frame_speed = frame_count;
-
-  static const int speed_x = -100;
-  static const int speed_y = -150;
-
-  static const int trigger_offset_min = 200;
-  static const int trigger_offset_max = 400;
-
-  static const int star_count = 20;
 
   void *m_parent;
 
@@ -43,11 +32,7 @@ class Snowman {
   int m_y;
   int m_frame;
   int m_time;
-  int m_trigger_offset;
-  bool m_triggered;
-  bool m_triggered_query;
-
-  SnowmanStar **m_stars;
 };
 
+}  // namespace LevelObject
 }  // namespace SantaRacer
