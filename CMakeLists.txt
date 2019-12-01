@@ -11,7 +11,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(SantaRacer ${SOURCES})
 
 # own compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++03 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17 -Wall -Wextra")
 
 # include header files
 include_directories(src)

@@ -90,11 +90,11 @@ class Game {
 
   static const int bell_time_min = 10000;
   static const int bell_time_max = 20000;
-  static const float bell_volume = 0.5;
+  static constexpr float bell_volume = 0.5;
 
   static const int dog_time_min = 10000;
   static const int dog_time_max = 20000;
-  static const float dog_volume = 0.5;
+  static constexpr float dog_volume = 0.5;
 
   static const int gift_wait_duration = 250;
 
