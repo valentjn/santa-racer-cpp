@@ -23,5 +23,5 @@ How to Compile and Run
 ```bash
 cmake -B build
 cmake --build build -j
-build/santa-racer
+build/SantaRacer
 ```
