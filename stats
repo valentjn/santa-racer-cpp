@@ -1,4 +1,0 @@
-#!/bin/bash
-
-#wc -l src/*.cpp src/*.hpp
-pmccabe -v -n -t src/*.cpp src/*.hpp
