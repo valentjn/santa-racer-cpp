@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_OUTPUT_H
-#define SANTA_OUTPUT_H
+#pragma once
 
 #include <string>
 
@@ -20,5 +19,3 @@ std::string string_vprintf(const char *format, va_list args);
 
 }  // namespace Output
 }  // namespace SantaRacer
-
-#endif

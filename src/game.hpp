@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_GAME_H
-#define SANTA_GAME_H
+#pragma once
 
 #include "gift.hpp"
 #include "landscape.hpp"
@@ -136,5 +135,3 @@ class Game {
 };
 
 }  // namespace SantaRacer
-
-#endif

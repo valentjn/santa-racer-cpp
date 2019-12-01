@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_SETUP_H
-#define SANTA_SETUP_H
+#pragma once
 
 namespace SantaRacer {
 namespace Setup {
@@ -22,5 +21,3 @@ void santa_cleanup(void);
 
 }  // namespace Setup
 }  // namespace SantaRacer
-
-#endif

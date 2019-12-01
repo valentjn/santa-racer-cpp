@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_DRAW_H
-#define SANTA_DRAW_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -20,5 +19,3 @@ void set_alpha(SDL_Surface *surface, Uint8 alpha);
 
 }  // namespace Draw
 }  // namespace SantaRacer
-
-#endif

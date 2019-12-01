@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_MASK_H
-#define SANTA_MASK_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -31,5 +30,3 @@ class Mask {
 };
 
 }  // namespace SantaRacer
-
-#endif

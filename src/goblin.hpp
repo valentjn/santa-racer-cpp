@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_GOBLIN_H
-#define SANTA_GOBLIN_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -40,5 +39,3 @@ class Goblin {
 };
 
 }  // namespace SantaRacer
-
-#endif

@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_SNOWMAN_STAR_H
-#define SANTA_SNOWMAN_STAR_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -53,5 +52,3 @@ class SnowmanStar {
 };
 
 }  // namespace SantaRacer
-
-#endif

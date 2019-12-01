@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_GLOBALS_H
-#define SANTA_GLOBALS_H
+#pragma once
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
@@ -86,5 +85,3 @@ extern std::string config_dir;
 
 }  // namespace Config
 }  // namespace SantaRacer
-
-#endif

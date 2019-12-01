@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_SNOWFLAKE_H
-#define SANTA_SNOWFLAKE_H
+#pragma once
 
 namespace SantaRacer {
 
@@ -41,5 +40,3 @@ class Snowflake {
 };
 
 }  // namespace SantaRacer
-
-#endif

@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_LEVEL_H
-#define SANTA_LEVEL_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -71,5 +70,3 @@ class Level {
 };
 
 }  // namespace SantaRacer
-
-#endif

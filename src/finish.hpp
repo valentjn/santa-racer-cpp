@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_FINISH_H
-#define SANTA_FINISH_H
+#pragma once
 
 namespace SantaRacer {
 
@@ -32,5 +31,3 @@ class Finish {
 };
 
 }  // namespace SantaRacer
-
-#endif

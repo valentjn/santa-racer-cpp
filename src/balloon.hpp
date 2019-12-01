@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_BALLOON_H
-#define SANTA_BALLOON_H
+#pragma once
 
 namespace SantaRacer {
 
@@ -48,5 +47,3 @@ class Balloon {
 };
 
 }  // namespace SantaRacer
-
-#endif

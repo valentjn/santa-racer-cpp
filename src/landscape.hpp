@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_LANDSCAPE_H
-#define SANTA_LANDSCAPE_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -35,5 +34,3 @@ class Landscape {
 };
 
 }  // namespace SantaRacer
-
-#endif

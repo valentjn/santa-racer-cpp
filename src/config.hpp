@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_CONFIG_H
-#define SANTA_CONFIG_H
+#pragma once
 
 namespace SantaRacer {
 namespace Config {
@@ -22,5 +21,3 @@ bool check_file(const char *file);
 
 }  // namespace Config
 }  // namespace SantaRacer
-
-#endif

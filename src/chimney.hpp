@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_CHIMNEY_H
-#define SANTA_CHIMNEY_H
+#pragma once
 
 namespace SantaRacer {
 
@@ -29,5 +28,3 @@ class Chimney {
 };
 
 }  // namespace SantaRacer
-
-#endif

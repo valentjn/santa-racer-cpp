@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_TEXT_H
-#define SANTA_TEXT_H
+#pragma once
 
 #include <SDL/SDL.h>
 
@@ -39,5 +38,3 @@ class Text {
 };
 
 }  // namespace SantaRacer
-
-#endif

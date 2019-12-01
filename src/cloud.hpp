@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_CLOUD_H
-#define SANTA_CLOUD_H
+#pragma once
 
 namespace SantaRacer {
 
@@ -29,5 +28,3 @@ class Cloud {
 };
 
 }  // namespace SantaRacer
-
-#endif

@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_RANDOM_H
-#define SANTA_RANDOM_H
+#pragma once
 
 namespace SantaRacer {
 namespace Random {
@@ -15,5 +14,3 @@ void seed(void);
 
 }  // namespace Random
 }  // namespace SantaRacer
-
-#endif

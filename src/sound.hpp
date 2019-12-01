@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_SOUND_H
-#define SANTA_SOUND_H
+#pragma once
 
 namespace SantaRacer {
 namespace Sound {
@@ -21,5 +20,3 @@ int get_channel(void);
 
 }  // namespace Sound
 }  // namespace SantaRacer
-
-#endif

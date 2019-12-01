@@ -4,8 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#ifndef SANTA_ARGS_H
-#define SANTA_ARGS_H
+#pragma once
 
 namespace SantaRacer {
 namespace Args {
@@ -14,5 +13,3 @@ void check_args(int argc, char *argv[]);
 
 }
 }  // namespace SantaRacer
-
-#endif
