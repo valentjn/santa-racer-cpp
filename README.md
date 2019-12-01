@@ -8,3 +8,10 @@ The source code has been written entirely from scratch, so it does not infringe 
 This repository is pretty useless without the image/sound assets, which may be extracted from the original game by reverse engineering. While this is a somewhat gray area, distributing the assets would definitely be illegal, which is why they are missing here. Sorry!
 
 The best option would be if someone could recreate the assets from scratch.
+
+Requirements
+------------
+
+* SDL 1.2
+* SDL_image 1.2
+* SDL_mixer 1.2
