@@ -5,6 +5,7 @@
  */
 
 #include "SantaRacer/Config.hpp"
+#include "SantaRacer/Globals.hpp"
 
 #include <sys/stat.h>
 
@@ -12,26 +13,21 @@
 #include <iostream>
 #include <string>
 
-#include "SantaRacer/Globals.hpp"
-
 namespace SantaRacer {
 namespace Config {
 
 Highscore *highscores;
 std::string config_dir;
 
-}  // namespace Config
-}  // namespace SantaRacer
+char *get_home_dir(void) { return getenv("HOME"); }
 
-char *SantaRacer::Config::get_home_dir(void) { return getenv("HOME"); }
-
-void SantaRacer::Config::set_config_dir(const char *dir) {
+void set_config_dir(const char *dir) {
   Output::debug("setting config directory %s\n", dir);
   config_dir = dir;
   check_mkdir(dir);
 }
 
-bool SantaRacer::Config::load_highscores(void) {
+bool load_highscores(void) {
   std::string highscores_file;
   std::ifstream f;
   int i;
@@ -57,7 +53,7 @@ bool SantaRacer::Config::load_highscores(void) {
   return true;
 }
 
-void SantaRacer::Config::save_highscores(void) {
+void save_highscores(void) {
   std::string highscores_file;
   std::ofstream f;
   int i;
@@ -76,7 +72,7 @@ void SantaRacer::Config::save_highscores(void) {
   f.close();
 }
 
-void SantaRacer::Config::init_highscores(void) {
+void init_highscores(void) {
   int i;
 
   highscores = new Highscore[10];
@@ -86,9 +82,9 @@ void SantaRacer::Config::init_highscores(void) {
   }
 }
 
-void SantaRacer::Config::free_highscores(void) { delete[] highscores; }
+void free_highscores(void) { delete[] highscores; }
 
-void SantaRacer::Config::check_mkdir(const char *dir) {
+void check_mkdir(const char *dir) {
   if (!check_dir(dir)) {
     Output::debug("creating directory %s\n", dir);
     if (mkdir(dir, 0755) == -1) {
@@ -97,7 +93,7 @@ void SantaRacer::Config::check_mkdir(const char *dir) {
   }
 }
 
-bool SantaRacer::Config::check_dir(const char *dir) {
+bool check_dir(const char *dir) {
   struct stat attributes;
   int result;
 
@@ -109,7 +105,7 @@ bool SantaRacer::Config::check_dir(const char *dir) {
   }
 }
 
-bool SantaRacer::Config::check_file(const char *file) {
+bool check_file(const char *file) {
   struct stat attributes;
   int result;
 
@@ -120,3 +116,6 @@ bool SantaRacer::Config::check_file(const char *file) {
     return bool(attributes.st_mode & S_IFREG);
   }
 }
+
+}  // namespace Config
+}  // namespace SantaRacer

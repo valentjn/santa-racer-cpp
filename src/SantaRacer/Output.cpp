@@ -4,13 +4,12 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Output.hpp"
 
 #include <cstdarg>
 #include <iostream>
 #include <string>
-
-#include "SantaRacer/Globals.hpp"
 
 namespace SantaRacer {
 namespace Output {
@@ -18,10 +17,7 @@ namespace Output {
 void m_fatal_error(std::string message);
 void m_print(std::string message);
 
-}  // namespace Output
-}  // namespace SantaRacer
-
-void SantaRacer::Output::fatal_error(const char *message, ...) {
+void fatal_error(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -31,12 +27,12 @@ void SantaRacer::Output::fatal_error(const char *message, ...) {
   m_fatal_error(result);
 }
 
-void SantaRacer::Output::m_fatal_error(std::string message) {
+void m_fatal_error(std::string message) {
   std::cerr << message << std::flush;
   exit(1);
 }
 
-void SantaRacer::Output::print(const char *message, ...) {
+void print(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -46,7 +42,7 @@ void SantaRacer::Output::print(const char *message, ...) {
   m_print(result);
 }
 
-void SantaRacer::Output::debug(const char *message, ...) {
+void debug(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -60,11 +56,11 @@ void SantaRacer::Output::debug(const char *message, ...) {
   m_print(result);
 }
 
-void SantaRacer::Output::m_print(std::string message) {
+void m_print(std::string message) {
   std::cout << message << std::flush;
 }
 
-std::string SantaRacer::Output::string_printf(const char *format, ...) {
+std::string string_printf(const char *format, ...) {
   std::string result;
   va_list args;
 
@@ -74,9 +70,12 @@ std::string SantaRacer::Output::string_printf(const char *format, ...) {
   return std::string(result);
 }
 
-std::string SantaRacer::Output::string_vprintf(const char *format, va_list args) {
+std::string string_vprintf(const char *format, va_list args) {
   char text[1000];
 
   vsnprintf(text, 1000, format, args);
   return std::string(text);
 }
+
+}  // namespace Output
+}  // namespace SantaRacer

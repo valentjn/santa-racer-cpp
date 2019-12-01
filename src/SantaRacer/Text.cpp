@@ -4,11 +4,12 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Text.hpp"
 
-#include "SantaRacer/Globals.hpp"
+namespace SantaRacer {
 
-SantaRacer::Text::Text(SDL_Surface *surface) {
+Text::Text(SDL_Surface *surface) {
   int i;
   int char_width;
 
@@ -25,7 +26,7 @@ SantaRacer::Text::Text(SDL_Surface *surface) {
   }
 }
 
-void SantaRacer::Text::draw(const char *text, int x, int y, TextAlign align,
+void Text::draw(const char *text, int x, int y, TextAlign align,
                        bool monospace) {
   int width;
   int char_width;
@@ -69,4 +70,6 @@ void SantaRacer::Text::draw(const char *text, int x, int y, TextAlign align,
   }
 }
 
-int SantaRacer::Text::get_line_height(void) { return m_char_height; }
+int Text::get_line_height(void) { return m_char_height; }
+
+}  // namespace SantaRacer

@@ -4,10 +4,9 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/SantaRacer.hpp"
-
 #include "SantaRacer/Args.hpp"
 #include "SantaRacer/Globals.hpp"
+#include "SantaRacer/SantaRacer.hpp"
 #include "SantaRacer/Setup.hpp"
 
 int main(int argc, char *argv[]) {

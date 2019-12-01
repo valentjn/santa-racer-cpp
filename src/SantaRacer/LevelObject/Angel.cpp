@@ -4,19 +4,21 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/LevelObject/Angel.hpp"
-
 #include <SDL/SDL.h>
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
+#include "SantaRacer/LevelObject/Angel.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::LevelObject::Angel::Angel(void *parent) { m_parent = parent; }
+namespace SantaRacer {
+namespace LevelObject {
 
-SantaRacer::LevelObject::Angel::~Angel(void) { return; }
+Angel::Angel(void *parent) { m_parent = parent; }
 
-void SantaRacer::LevelObject::Angel::reinit(int tile_x, int tile_y) {
+Angel::~Angel(void) { return; }
+
+void Angel::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -34,7 +36,7 @@ void SantaRacer::LevelObject::Angel::reinit(int tile_x, int tile_y) {
   m_frame = 0;
 }
 
-void SantaRacer::LevelObject::Angel::draw(void) {
+void Angel::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -57,13 +59,13 @@ void SantaRacer::LevelObject::Angel::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::LevelObject::Angel::move(void) { return; }
+void Angel::move(void) { return; }
 
-int SantaRacer::LevelObject::Angel::get_level_x(void) { return m_level_x; }
+int Angel::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::LevelObject::Angel::get_y(void) { return m_y; }
+int Angel::get_y(void) { return m_y; }
 
-int SantaRacer::LevelObject::Angel::get_frame(void) {
+int Angel::get_frame(void) {
   float time_diff;
   int frame;
 
@@ -72,3 +74,6 @@ int SantaRacer::LevelObject::Angel::get_frame(void) {
 
   return frame;
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

@@ -11,7 +11,10 @@
 #include "SantaRacer/Random.hpp"
 #include "SantaRacer/LevelObject/Snowman.hpp"
 
-SantaRacer::LevelObject::SnowmanStar::SnowmanStar(Snowman *snowman) {
+namespace SantaRacer {
+namespace LevelObject {
+
+SnowmanStar::SnowmanStar(Snowman *snowman) {
   m_surface = Setup::images["star"];
   m_snowman = snowman;
   reinit(true);
@@ -19,7 +22,7 @@ SantaRacer::LevelObject::SnowmanStar::SnowmanStar(Snowman *snowman) {
   m_height = m_surface->h;
 }
 
-void SantaRacer::LevelObject::SnowmanStar::reinit(bool first_init) {
+void SnowmanStar::reinit(bool first_init) {
   if (!m_snowman->is_triggered()) {
     return;
   }
@@ -42,7 +45,7 @@ void SantaRacer::LevelObject::SnowmanStar::reinit(bool first_init) {
   m_max_frame = Random::rnd(frame_count, max_frame_count);
 }
 
-void SantaRacer::LevelObject::SnowmanStar::draw(void) {
+void SnowmanStar::draw(void) {
   int frame;
 
   frame = get_frame();
@@ -54,7 +57,7 @@ void SantaRacer::LevelObject::SnowmanStar::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void SantaRacer::LevelObject::SnowmanStar::move(void) {
+void SnowmanStar::move(void) {
   if (!m_snowman->is_triggered()) {
     m_time = SDL_GetTicks();
   }
@@ -64,6 +67,9 @@ void SantaRacer::LevelObject::SnowmanStar::move(void) {
   }
 }
 
-int SantaRacer::LevelObject::SnowmanStar::get_frame(void) {
+int SnowmanStar::get_frame(void) {
   return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

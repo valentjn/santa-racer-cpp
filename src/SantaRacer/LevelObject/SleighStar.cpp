@@ -10,7 +10,10 @@
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 
-SantaRacer::LevelObject::SleighStar::SleighStar() {
+namespace SantaRacer {
+namespace LevelObject {
+
+SleighStar::SleighStar() {
   m_surface = Setup::images["star"];
   m_surface_drunken = Setup::images["star_drunken"];
   m_width = m_surface->w / frame_count;
@@ -18,7 +21,7 @@ SantaRacer::LevelObject::SleighStar::SleighStar() {
   reinit(true);
 }
 
-void SantaRacer::LevelObject::SleighStar::reinit(bool first_init) {
+void SleighStar::reinit(bool first_init) {
   m_level_x = Setup::game->level->get_offset() + Setup::game->sleigh->get_x() +
               Setup::game->sleigh->get_width() -
               Random::rnd(min_x_offset, max_x_offset);
@@ -37,7 +40,7 @@ void SantaRacer::LevelObject::SleighStar::reinit(bool first_init) {
   m_max_frame = Random::rnd(frame_count, max_frame_count);
 }
 
-void SantaRacer::LevelObject::SleighStar::draw(void) {
+void SleighStar::draw(void) {
   int frame;
   SDL_Surface *cur_surface;
 
@@ -56,12 +59,15 @@ void SantaRacer::LevelObject::SleighStar::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void SantaRacer::LevelObject::SleighStar::move(void) {
+void SleighStar::move(void) {
   if (get_frame() >= m_max_frame) {
     reinit();
   }
 }
 
-int SantaRacer::LevelObject::SleighStar::get_frame(void) {
+int SleighStar::get_frame(void) {
   return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

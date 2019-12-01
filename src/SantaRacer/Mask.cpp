@@ -4,11 +4,12 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Mask.hpp"
 
-#include "SantaRacer/Globals.hpp"
+namespace SantaRacer {
 
-SantaRacer::Mask::Mask(SDL_Surface *surface, int frame_count) {
+Mask::Mask(SDL_Surface *surface, int frame_count) {
   int x;
   int y;
   Uint8 r;
@@ -38,7 +39,7 @@ SantaRacer::Mask::Mask(SDL_Surface *surface, int frame_count) {
   SDL_UnlockSurface(m_surface);
 }
 
-SantaRacer::Mask::~Mask(void) {
+Mask::~Mask(void) {
   int y;
 
   for (y = 0; y < m_height; y++) {
@@ -47,7 +48,7 @@ SantaRacer::Mask::~Mask(void) {
   delete[] m_array;
 }
 
-bool SantaRacer::Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int x2,
+bool Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int x2,
                                int y2, int frame2) {
   bool **array1;
   bool **array2;
@@ -139,8 +140,10 @@ bool SantaRacer::Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int
   return false;
 }
 
-int SantaRacer::Mask::get_width(void) { return m_width; }
+int Mask::get_width(void) { return m_width; }
 
-int SantaRacer::Mask::get_height(void) { return m_height; }
+int Mask::get_height(void) { return m_height; }
 
-bool **SantaRacer::Mask::get_array(void) { return m_array; }
+bool **Mask::get_array(void) { return m_array; }
+
+}  // namespace SantaRacer

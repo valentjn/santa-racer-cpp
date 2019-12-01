@@ -12,11 +12,14 @@
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::LevelObject::Finish::Finish(void *parent) { m_parent = parent; }
+namespace SantaRacer {
+namespace LevelObject {
 
-SantaRacer::LevelObject::Finish::~Finish(void) { return; }
+Finish::Finish(void *parent) { m_parent = parent; }
 
-void SantaRacer::LevelObject::Finish::reinit(int tile_x, int tile_y) {
+Finish::~Finish(void) { return; }
+
+void Finish::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -30,7 +33,7 @@ void SantaRacer::LevelObject::Finish::reinit(int tile_x, int tile_y) {
   object->set_frame_count(1);
 }
 
-void SantaRacer::LevelObject::Finish::draw(void) {
+void Finish::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int width;
@@ -51,15 +54,18 @@ void SantaRacer::LevelObject::Finish::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::LevelObject::Finish::move(void) { return; }
+void Finish::move(void) { return; }
 
-int SantaRacer::LevelObject::Finish::get_level_x(void) { return m_level_x; }
+int Finish::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::LevelObject::Finish::get_y(void) { return m_y; }
+int Finish::get_y(void) { return m_y; }
 
-int SantaRacer::LevelObject::Finish::get_frame(void) { return 0; }
+int Finish::get_frame(void) { return 0; }
 
-bool SantaRacer::LevelObject::Finish::reached(void) {
+bool Finish::reached(void) {
   return (Setup::game->level->get_offset() + Setup::game->sleigh->get_x() >=
           get_level_x());
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

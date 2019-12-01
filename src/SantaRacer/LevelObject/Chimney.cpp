@@ -8,19 +8,25 @@
 
 #include "SantaRacer/Globals.hpp"
 
-SantaRacer::LevelObject::Chimney::Chimney(int map_index, int x, int width, int y) {
+namespace SantaRacer {
+namespace LevelObject {
+
+Chimney::Chimney(int map_index, int x, int width, int y) {
   m_map_index = map_index;
   m_x = x;
   m_width = width;
   m_y = y;
 }
 
-SantaRacer::LevelObject::Chimney::~Chimney(void) {}
+Chimney::~Chimney(void) {}
 
-int SantaRacer::LevelObject::Chimney::get_map_index(void) { return m_map_index; }
+int Chimney::get_map_index(void) { return m_map_index; }
 
-int SantaRacer::LevelObject::Chimney::get_x(void) { return m_x; }
+int Chimney::get_x(void) { return m_x; }
 
-int SantaRacer::LevelObject::Chimney::get_width(void) { return m_width; }
+int Chimney::get_width(void) { return m_width; }
 
-int SantaRacer::LevelObject::Chimney::get_y(void) { return m_y; }
+int Chimney::get_y(void) { return m_y; }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

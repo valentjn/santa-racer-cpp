@@ -4,18 +4,19 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Game.hpp"
-
 #include "SantaRacer/Draw.hpp"
+#include "SantaRacer/Game.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 #include "SantaRacer/Sound.hpp"
 
 #include <string>
 
-SantaRacer::Game::Game(void) { m_initialized = false; }
+namespace SantaRacer {
 
-SantaRacer::Game::~Game(void) {
+Game::Game(void) { m_initialized = false; }
+
+Game::~Game(void) {
   int i;
 
   if (!m_initialized) {
@@ -43,7 +44,7 @@ SantaRacer::Game::~Game(void) {
   m_initialized = false;
 }
 
-void SantaRacer::Game::init(void) {
+void Game::init(void) {
   int i;
 
   m_last_time = 0;
@@ -108,7 +109,7 @@ void SantaRacer::Game::init(void) {
   m_initialized = true;
 }
 
-void SantaRacer::Game::loop(void) {
+void Game::loop(void) {
   while (!m_quit) {
     process_events();
     check_keys();
@@ -118,7 +119,7 @@ void SantaRacer::Game::loop(void) {
   }
 }
 
-void SantaRacer::Game::process_events(void) {
+void Game::process_events(void) {
   SDL_Event event;
   char ch;
 
@@ -157,7 +158,7 @@ void SantaRacer::Game::process_events(void) {
   }
 }
 
-void SantaRacer::Game::check_keys(void) {
+void Game::check_keys(void) {
   SDLMod mod_state;
   int i;
   int result;
@@ -256,7 +257,7 @@ void SantaRacer::Game::check_keys(void) {
   m_escape_pressed = m_key_state[SDLK_ESCAPE];
 }
 
-void SantaRacer::Game::logic(void) {
+void Game::logic(void) {
   int i;
   int time_diff;
   int countdown_number;
@@ -474,7 +475,7 @@ void SantaRacer::Game::logic(void) {
   }
 }
 
-void SantaRacer::Game::draw(void) {
+void Game::draw(void) {
   int i;
   char string[11];
 
@@ -540,7 +541,7 @@ void SantaRacer::Game::draw(void) {
   SDL_Flip(Setup::screen);
 }
 
-void SantaRacer::Game::frame_tick(void) {
+void Game::frame_tick(void) {
   int cur_time;
 
   cur_time = SDL_GetTicks();
@@ -555,7 +556,7 @@ void SantaRacer::Game::frame_tick(void) {
   m_frame_counter++;
 }
 
-void SantaRacer::Game::fps_delay(void) {
+void Game::fps_delay(void) {
   float cur_fps;
   int cur_delay;
   int cur_time;
@@ -579,7 +580,7 @@ void SantaRacer::Game::fps_delay(void) {
   m_last_time = cur_time;
 }
 
-void SantaRacer::Game::start_new_game(void) {
+void Game::start_new_game(void) {
   int i;
 
   mode = running_game;
@@ -616,7 +617,7 @@ void SantaRacer::Game::start_new_game(void) {
   score->reset(total_time_secs);
 }
 
-void SantaRacer::Game::return_to_menu(void) {
+void Game::return_to_menu(void) {
   int i;
 
   mode = menu_mode;
@@ -646,7 +647,7 @@ void SantaRacer::Game::return_to_menu(void) {
   }
 }
 
-void SantaRacer::Game::draw_text(void) {
+void Game::draw_text(void) {
   int time_diff;
   int countdown_number;
   char string[11];
@@ -675,7 +676,7 @@ void SantaRacer::Game::draw_text(void) {
   }
 }
 
-void SantaRacer::Game::draw_highscores(void) {
+void Game::draw_highscores(void) {
   int x;
   int y;
   int line_spacing;
@@ -719,3 +720,5 @@ void SantaRacer::Game::draw_highscores(void) {
     y += line_spacing;
   }
 }
+
+}  // namespace SantaRacer

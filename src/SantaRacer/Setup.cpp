@@ -4,19 +4,17 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Setup.hpp"
-
-#include <dirent.h>
-#include <sys/types.h>
-
-#include <fstream>
-#include <iostream>
-#include <string>
-
 #include "SantaRacer/Config.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
+#include "SantaRacer/Setup.hpp"
 #include "SantaRacer/Sound.hpp"
+
+#include <dirent.h>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sys/types.h>
 
 namespace SantaRacer {
 namespace Setup {
@@ -51,10 +49,7 @@ int **std_level_objects_map;
 LevelObject::Chimney **chimneys;
 int chimney_count;
 
-}  // namespace Setup
-}  // namespace SantaRacer
-
-void SantaRacer::Setup::santa_setup(void) {
+void santa_setup(void) {
   int flags;
   std::string home_dir;
 
@@ -120,7 +115,7 @@ void SantaRacer::Setup::santa_setup(void) {
   Sound::play_music();
 }
 
-bool SantaRacer::Setup::load_images(void) {
+bool load_images(void) {
   DIR *d;
   struct dirent *entry;
   std::string filename;
@@ -157,7 +152,7 @@ bool SantaRacer::Setup::load_images(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_text(void) {
+bool load_text(void) {
   std::ifstream f;
   int i = 0;
 
@@ -180,7 +175,7 @@ bool SantaRacer::Setup::load_text(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_level(void) {
+bool load_level(void) {
   std::ifstream f;
   int x;
   int y;
@@ -215,7 +210,7 @@ bool SantaRacer::Setup::load_level(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_level_objects(void) {
+bool load_level_objects(void) {
   std::ifstream f;
   int x;
   int y;
@@ -237,7 +232,7 @@ bool SantaRacer::Setup::load_level_objects(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_chimneys(void) {
+bool load_chimneys(void) {
   std::ifstream f;
   int i;
   int tmp_int;
@@ -274,7 +269,7 @@ bool SantaRacer::Setup::load_chimneys(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_sounds(void) {
+bool load_sounds(void) {
   DIR *d;
   struct dirent *entry;
   std::string filename;
@@ -309,7 +304,7 @@ bool SantaRacer::Setup::load_sounds(void) {
   return true;
 }
 
-bool SantaRacer::Setup::load_music(void) {
+bool load_music(void) {
   Output::debug("reading music\n");
 
   music = Mix_LoadMUS("./assets/sounds/bgmusic.ogg");
@@ -320,7 +315,7 @@ bool SantaRacer::Setup::load_music(void) {
   return true;
 }
 
-void SantaRacer::Setup::santa_cleanup(void) {
+void santa_cleanup(void) {
   int y;
   int i;
   SurfaceMap::iterator surface_it;
@@ -412,3 +407,6 @@ void SantaRacer::Setup::santa_cleanup(void) {
     setup_flags.sdl = false;
   }
 }
+
+}  // namespace Setup
+}  // namespace SantaRacer

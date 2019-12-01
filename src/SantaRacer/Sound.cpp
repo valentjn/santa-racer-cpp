@@ -4,21 +4,22 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Sound.hpp"
-
 #include "SantaRacer/Globals.hpp"
+#include "SantaRacer/Sound.hpp"
 
 #include <string>
 
-void SantaRacer::Sound::play(std::string name) {
+namespace SantaRacer {
+
+void Sound::play(std::string name) {
   play_panned_volume(name, 0.5, 1.0);
 }
 
-void SantaRacer::Sound::play_volume(std::string name, float volume) {
+void Sound::play_volume(std::string name, float volume) {
   play_panned_volume(name, 0.5, volume);
 }
 
-void SantaRacer::Sound::play_channel(std::string name, int channel) {
+void Sound::play_channel(std::string name, int channel) {
   if (!Setup::debug_mode) {
     if (Mix_PlayChannel(channel, Setup::sounds[name], 0) == -1) {
       Output::fatal_error("couldn't play sound: %s\n", Mix_GetError());
@@ -26,7 +27,7 @@ void SantaRacer::Sound::play_channel(std::string name, int channel) {
   }
 }
 
-void SantaRacer::Sound::play_panned_volume(std::string name, float pan,
+void Sound::play_panned_volume(std::string name, float pan,
                                       float volume) {
   int channel;
   int left;
@@ -53,7 +54,7 @@ void SantaRacer::Sound::play_panned_volume(std::string name, float pan,
   play_channel(name, channel);
 }
 
-void SantaRacer::Sound::play_panned_x(std::string name, int x) {
+void Sound::play_panned_x(std::string name, int x) {
   float pan;
 
   pan = (float)x / Setup::screen_width;
@@ -66,7 +67,7 @@ void SantaRacer::Sound::play_panned_x(std::string name, int x) {
   play_panned_volume(name, pan, 1.0);
 }
 
-void SantaRacer::Sound::play_music(void) {
+void Sound::play_music(void) {
   if (!Setup::debug_mode) {
     if (Mix_PlayMusic(Setup::music, -1) == -1) {
       Output::fatal_error("couldn't play music: %s\n", Mix_GetError());
@@ -74,7 +75,7 @@ void SantaRacer::Sound::play_music(void) {
   }
 }
 
-int SantaRacer::Sound::get_channel(void) {
+int Sound::get_channel(void) {
   int channel;
 
   channel = 0;
@@ -84,3 +85,5 @@ int SantaRacer::Sound::get_channel(void) {
 
   return channel;
 }
+
+}  // namespace SantaRacer

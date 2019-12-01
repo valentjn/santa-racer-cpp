@@ -10,11 +10,14 @@
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::LevelObject::Goblin::Goblin(void *parent) { m_parent = parent; }
+namespace SantaRacer {
+namespace LevelObject {
 
-SantaRacer::LevelObject::Goblin::~Goblin(void) { return; }
+Goblin::Goblin(void *parent) { m_parent = parent; }
 
-void SantaRacer::LevelObject::Goblin::reinit(int tile_x, int tile_y) {
+Goblin::~Goblin(void) { return; }
+
+void Goblin::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -34,7 +37,7 @@ void SantaRacer::LevelObject::Goblin::reinit(int tile_x, int tile_y) {
   m_snowball_thrown_query = false;
 }
 
-void SantaRacer::LevelObject::Goblin::draw(void) {
+void Goblin::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -57,7 +60,7 @@ void SantaRacer::LevelObject::Goblin::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::LevelObject::Goblin::move(void) {
+void Goblin::move(void) {
   int frame;
   int i;
   LevelObject *parent;
@@ -86,11 +89,11 @@ void SantaRacer::LevelObject::Goblin::move(void) {
   }
 }
 
-int SantaRacer::LevelObject::Goblin::get_level_x(void) { return m_level_x; }
+int Goblin::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::LevelObject::Goblin::get_y(void) { return m_y; }
+int Goblin::get_y(void) { return m_y; }
 
-int SantaRacer::LevelObject::Goblin::get_frame(void) {
+int Goblin::get_frame(void) {
   float time_diff;
   int frame;
 
@@ -100,7 +103,7 @@ int SantaRacer::LevelObject::Goblin::get_frame(void) {
   return frame;
 }
 
-bool SantaRacer::LevelObject::Goblin::query_snowball_thrown(void) {
+bool Goblin::query_snowball_thrown(void) {
   if (m_snowball_thrown_query) {
     m_snowball_thrown_query = false;
     return true;
@@ -108,3 +111,6 @@ bool SantaRacer::LevelObject::Goblin::query_snowball_thrown(void) {
     return false;
   }
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

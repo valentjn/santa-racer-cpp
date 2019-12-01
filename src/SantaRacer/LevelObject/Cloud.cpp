@@ -12,9 +12,12 @@
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
-SantaRacer::LevelObject::Cloud::Cloud(void *parent) { m_parent = parent; }
+namespace SantaRacer {
+namespace LevelObject {
 
-void SantaRacer::LevelObject::Cloud::reinit(int tile_x, int tile_y) {
+Cloud::Cloud(void *parent) { m_parent = parent; }
+
+void Cloud::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -28,7 +31,7 @@ void SantaRacer::LevelObject::Cloud::reinit(int tile_x, int tile_y) {
   object->set_frame_count(1);
 }
 
-void SantaRacer::LevelObject::Cloud::draw(void) {
+void Cloud::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -39,10 +42,13 @@ void SantaRacer::LevelObject::Cloud::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void SantaRacer::LevelObject::Cloud::move(void) { return; }
+void Cloud::move(void) { return; }
 
-int SantaRacer::LevelObject::Cloud::get_level_x(void) { return m_level_x; }
+int Cloud::get_level_x(void) { return m_level_x; }
 
-int SantaRacer::LevelObject::Cloud::get_y(void) { return m_y; }
+int Cloud::get_y(void) { return m_y; }
 
-int SantaRacer::LevelObject::Cloud::get_frame(void) { return 0; }
+int Cloud::get_frame(void) { return 0; }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

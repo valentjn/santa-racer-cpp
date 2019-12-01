@@ -13,12 +13,15 @@
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 #include "SantaRacer/Random.hpp"
 
-SantaRacer::LevelObject::Snowman::Snowman(void *parent) {
+namespace SantaRacer {
+namespace LevelObject {
+
+Snowman::Snowman(void *parent) {
   m_parent = parent;
   m_stars = nullptr;
 }
 
-SantaRacer::LevelObject::Snowman::~Snowman(void) {
+Snowman::~Snowman(void) {
   int i;
 
   if (m_stars != nullptr) {
@@ -29,7 +32,7 @@ SantaRacer::LevelObject::Snowman::~Snowman(void) {
   }
 }
 
-void SantaRacer::LevelObject::Snowman::reinit(int tile_x, int tile_y) {
+void Snowman::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
   int i;
@@ -57,7 +60,7 @@ void SantaRacer::LevelObject::Snowman::reinit(int tile_x, int tile_y) {
   }
 }
 
-void SantaRacer::LevelObject::Snowman::draw(void) {
+void Snowman::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -86,7 +89,7 @@ void SantaRacer::LevelObject::Snowman::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void SantaRacer::LevelObject::Snowman::move(void) {
+void Snowman::move(void) {
   int i;
 
   if (Setup::game->sleigh->get_x() + Setup::game->level->get_offset() >=
@@ -103,7 +106,7 @@ void SantaRacer::LevelObject::Snowman::move(void) {
   }
 }
 
-int SantaRacer::LevelObject::Snowman::get_level_x(void) {
+int Snowman::get_level_x(void) {
   if (m_triggered) {
     return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
   } else {
@@ -111,7 +114,7 @@ int SantaRacer::LevelObject::Snowman::get_level_x(void) {
   }
 }
 
-int SantaRacer::LevelObject::Snowman::get_y(void) {
+int Snowman::get_y(void) {
   if (m_triggered) {
     return m_y + int((SDL_GetTicks() - m_time) / 1000.0 * speed_y);
   } else {
@@ -119,7 +122,7 @@ int SantaRacer::LevelObject::Snowman::get_y(void) {
   }
 }
 
-int SantaRacer::LevelObject::Snowman::get_frame(void) {
+int Snowman::get_frame(void) {
   float time_diff;
   int frame;
 
@@ -137,9 +140,9 @@ int SantaRacer::LevelObject::Snowman::get_frame(void) {
   }
 }
 
-bool SantaRacer::LevelObject::Snowman::is_triggered(void) { return m_triggered; }
+bool Snowman::is_triggered(void) { return m_triggered; }
 
-bool SantaRacer::LevelObject::Snowman::query_triggered(void) {
+bool Snowman::query_triggered(void) {
   if (m_triggered_query) {
     m_triggered_query = false;
     return true;
@@ -147,3 +150,6 @@ bool SantaRacer::LevelObject::Snowman::query_triggered(void) {
     return false;
   }
 }
+
+}  // namespace LevelObject
+}  // namespace SantaRacer

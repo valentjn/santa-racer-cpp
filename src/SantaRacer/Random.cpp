@@ -4,13 +4,18 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 
-#include "SantaRacer/Globals.hpp"
+namespace SantaRacer {
+namespace Random {
 
 // both min and max inclusive
-int SantaRacer::Random::rnd(int min, int max) {
+int rnd(int min, int max) {
   return int(rand() / (float(RAND_MAX) + 1) * (max - min + 1)) + min;
 }
 
-void SantaRacer::Random::seed(void) { srand(time(nullptr)); }
+void seed(void) { srand(time(nullptr)); }
+
+}  // namespace Random
+}  // namespace SantaRacer

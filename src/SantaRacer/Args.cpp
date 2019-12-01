@@ -5,12 +5,13 @@
  */
 
 #include "SantaRacer/Args.hpp"
-
 #include "SantaRacer/Globals.hpp"
 
 #include <string>
 
-void SantaRacer::Args::check_args(int argc, char *argv[]) {
+namespace SantaRacer {
+
+void Args::check_args(int argc, char *argv[]) {
   int i;
   std::string arg;
 
@@ -74,3 +75,5 @@ void SantaRacer::Args::check_args(int argc, char *argv[]) {
     }
   }
 }
+
+}  // namespace SantaRacer
