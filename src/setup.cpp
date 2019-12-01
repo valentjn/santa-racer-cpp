@@ -137,9 +137,9 @@ bool Santa::Setup::load_images(void) {
     std::string basename;
     SDL_Surface *surface;
     
-    d = opendir("./gfx/");
+    d = opendir("./assets/images/");
     if (d == NULL) {
-        Output::fatal_error("couldn't find gfx directory\n");
+        Output::fatal_error("couldn't find assets/images directory\n");
     }
     
     Output::debug("reading images");
@@ -150,7 +150,7 @@ bool Santa::Setup::load_images(void) {
             filename.substr(filename.length() - 4) == ".tga") {
             Output::debug(" %s", filename.c_str());
             
-            surface = IMG_Load(("./gfx/" + filename).c_str());
+            surface = IMG_Load(("./assets/images/" + filename).c_str());
             if (!surface) {
                 Output::fatal_error("couldn't load image: %s\n",
                                     IMG_GetError());
@@ -174,7 +174,7 @@ bool Santa::Setup::load_text(void) {
     
     Output::debug("reading char_widths.txt\n");
     
-    f.open("./data/char_widths.txt", std::ios_base::in);
+    f.open("./assets/data/char_widths.txt", std::ios_base::in);
     while (f >> text_char_widths[i]) {
         i++;
     }
@@ -199,7 +199,7 @@ bool Santa::Setup::load_level(void) {
     
     Output::debug("reading level.txt\n");
     
-    f.open("./data/level.txt", std::ios_base::in);
+    f.open("./assets/data/level.txt", std::ios_base::in);
     i = 0;
     while (f >> tmp_int) {
         i++;
@@ -209,7 +209,7 @@ bool Santa::Setup::load_level(void) {
     std_level_width = i / std_level_height;
     std_level_map = new int*[std_level_height];
     
-    f.open("./data/level.txt", std::ios_base::in);
+    f.open("./assets/data/level.txt", std::ios_base::in);
     
     for (y = 0; y < std_level_height; y++) {
         std_level_map[y] = new int[std_level_width];
@@ -233,7 +233,7 @@ bool Santa::Setup::load_level_objects(void) {
     Output::debug("reading level_objects.txt\n");
     std_level_objects_map = new int*[std_level_height];
     
-    f.open("./data/level_objects.txt", std::ios_base::in);
+    f.open("./assets/data/level_objects.txt", std::ios_base::in);
     
     for (y = 0; y < std_level_height; y++) {
         std_level_objects_map[y] = new int[std_level_width];
@@ -259,7 +259,7 @@ bool Santa::Setup::load_chimneys(void) {
     
     Output::debug("reading chimneys.txt\n");
     
-    f.open("./data/chimneys.txt", std::ios_base::in);
+    f.open("./assets/data/chimneys.txt", std::ios_base::in);
     i = 0;
     while (f >> tmp_int) {
         i++;
@@ -269,7 +269,7 @@ bool Santa::Setup::load_chimneys(void) {
     chimney_count = i / 4;
     chimneys = new Chimney*[chimney_count];
     
-    f.open("./data/chimneys.txt", std::ios_base::in);
+    f.open("./assets/data/chimneys.txt", std::ios_base::in);
     
     for (i = 0; i < chimney_count; i++) {
         f >> map_index;
@@ -291,9 +291,9 @@ bool Santa::Setup::load_sounds(void) {
     std::string basename;
     Mix_Chunk *sound;
     
-    d = opendir("./snd/");
+    d = opendir("./assets/sounds/");
     if (d == NULL) {
-        Output::fatal_error("couldn't find snd directory\n");
+        Output::fatal_error("couldn't find assets/sounds directory\n");
     }
     
     Output::debug("reading sounds");
@@ -303,7 +303,7 @@ bool Santa::Setup::load_sounds(void) {
             filename.substr(filename.length() - 4) == ".wav") {
             Output::debug(" %s", filename.c_str());
             
-            sound = Mix_LoadWAV(("./snd/" + filename).c_str());
+            sound = Mix_LoadWAV(("./assets/sounds/" + filename).c_str());
             if (!sound) {
                 Output::fatal_error("couldn't load sound: %s\n",
                                     Mix_GetError());
@@ -323,7 +323,7 @@ bool Santa::Setup::load_sounds(void) {
 bool Santa::Setup::load_music(void) {
     Output::debug("reading music\n");
     
-    music = Mix_LoadMUS("./snd/bgmusic.ogg");
+    music = Mix_LoadMUS("./assets/sounds/bgmusic.ogg");
     if (!music) {
         Output::fatal_error("couldn't load music: %s\n", Mix_GetError());
     }
