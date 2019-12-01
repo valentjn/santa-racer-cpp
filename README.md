@@ -12,6 +12,16 @@ The best option would be if someone could recreate the assets from scratch.
 Requirements
 ------------
 
+* CMake 3.13+
 * SDL 1.2
 * SDL_image 1.2
 * SDL_mixer 1.2
+
+How to Compile and Run
+----------------------
+
+```bash
+cmake -B build
+cmake --build build -j
+build/santa-racer
+```
