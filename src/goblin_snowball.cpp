@@ -24,11 +24,11 @@
 #include "globals.hpp"
 #include "level_object.hpp"
 
-Santa::GoblinSnowball::GoblinSnowball(void *parent) { m_parent = parent; }
+SantaRacer::GoblinSnowball::GoblinSnowball(void *parent) { m_parent = parent; }
 
-Santa::GoblinSnowball::~GoblinSnowball(void) { return; }
+SantaRacer::GoblinSnowball::~GoblinSnowball(void) { return; }
 
-void Santa::GoblinSnowball::reinit(int tile_x, int tile_y) {
+void SantaRacer::GoblinSnowball::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -45,7 +45,7 @@ void Santa::GoblinSnowball::reinit(int tile_x, int tile_y) {
   m_frame = 0;
 }
 
-void Santa::GoblinSnowball::draw(void) {
+void SantaRacer::GoblinSnowball::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -62,13 +62,13 @@ void Santa::GoblinSnowball::draw(void) {
              y);
 }
 
-void Santa::GoblinSnowball::move(void) { return; }
+void SantaRacer::GoblinSnowball::move(void) { return; }
 
-int Santa::GoblinSnowball::get_level_x(void) {
+int SantaRacer::GoblinSnowball::get_level_x(void) {
   return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
 }
 
-int Santa::GoblinSnowball::get_y(void) {
+int SantaRacer::GoblinSnowball::get_y(void) {
   float time_diff;
 
   time_diff = (SDL_GetTicks() - m_time) / 1000.0;
@@ -77,4 +77,4 @@ int Santa::GoblinSnowball::get_y(void) {
          0.5 * gravity_acceleration * time_diff * time_diff;
 }
 
-int Santa::GoblinSnowball::get_frame(void) { return 0; }
+int SantaRacer::GoblinSnowball::get_frame(void) { return 0; }

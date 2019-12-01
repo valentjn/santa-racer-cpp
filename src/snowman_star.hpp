@@ -23,12 +23,12 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Snowman;
 }
 
-namespace Santa {
+namespace SantaRacer {
 class SnowmanStar {
  public:
   SnowmanStar(Snowman *snowman);
@@ -66,6 +66,6 @@ class SnowmanStar {
   Snowman *m_snowman;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

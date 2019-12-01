@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Gift {
  public:
@@ -102,6 +102,6 @@ class Gift {
   int m_big_star_time;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

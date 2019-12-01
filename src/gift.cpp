@@ -24,7 +24,7 @@
 #include "globals.hpp"
 #include "random.hpp"
 
-Santa::Gift::Gift(void) {
+SantaRacer::Gift::Gift(void) {
   int i;
 
   m_surfaces[0] = Setup::images["gift1"];
@@ -47,7 +47,7 @@ Santa::Gift::Gift(void) {
   reset();
 }
 
-void Santa::Gift::reinit(void) {
+void SantaRacer::Gift::reinit(void) {
   m_exists = true;
 
   m_level_x = Setup::game->sleigh->get_x() + Setup::game->level->get_offset();
@@ -65,7 +65,7 @@ void Santa::Gift::reinit(void) {
   m_double_points = false;
 }
 
-void Santa::Gift::reset(void) {
+void SantaRacer::Gift::reset(void) {
   m_exists = false;
   m_level_x = 0;
   m_y = 0;
@@ -81,7 +81,7 @@ void Santa::Gift::reset(void) {
   m_double_points = false;
 }
 
-void Santa::Gift::draw(void) {
+void SantaRacer::Gift::draw(void) {
   int x;
   int y;
 
@@ -111,7 +111,7 @@ void Santa::Gift::draw(void) {
              get_level_x() - Setup::game->level->get_offset(), get_y());
 }
 
-void Santa::Gift::draw_big_star(int x, int y) {
+void SantaRacer::Gift::draw_big_star(int x, int y) {
   int big_star_frame;
 
   big_star_frame = get_big_star_frame();
@@ -138,7 +138,7 @@ void Santa::Gift::draw_big_star(int x, int y) {
   }
 }
 
-void Santa::Gift::draw_points(int x, int y) {
+void SantaRacer::Gift::draw_points(int x, int y) {
   int points_surface_index;
 
   if (m_points == gift_points_easy) {
@@ -154,7 +154,7 @@ void Santa::Gift::draw_points(int x, int y) {
              y + points_y_offset + m_big_star_height / 2);
 }
 
-void Santa::Gift::move(void) {
+void SantaRacer::Gift::move(void) {
   int level_x;
   int y;
 
@@ -254,9 +254,9 @@ void Santa::Gift::move(void) {
   }
 }
 
-void Santa::Gift::hit_ground(void) { m_hit_ground = true; }
+void SantaRacer::Gift::hit_ground(void) { m_hit_ground = true; }
 
-void Santa::Gift::hit_chimney(int points) {
+void SantaRacer::Gift::hit_chimney(int points) {
   m_points = points;
   m_big_star_time = SDL_GetTicks();
 
@@ -267,9 +267,9 @@ void Santa::Gift::hit_chimney(int points) {
   m_hit_chimney = true;
 }
 
-void Santa::Gift::double_points(void) { m_double_points = true; }
+void SantaRacer::Gift::double_points(void) { m_double_points = true; }
 
-int Santa::Gift::get_level_x(void) {
+int SantaRacer::Gift::get_level_x(void) {
   if (m_success) {
     return m_level_x;
   }
@@ -277,7 +277,7 @@ int Santa::Gift::get_level_x(void) {
   return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * m_speed_x);
 }
 
-int Santa::Gift::get_y(void) {
+int SantaRacer::Gift::get_y(void) {
   float time_diff;
 
   if (m_success) {
@@ -290,19 +290,19 @@ int Santa::Gift::get_y(void) {
          0.5 * gravity_acceleration * time_diff * time_diff;
 }
 
-int Santa::Gift::get_frame(void) {
+int SantaRacer::Gift::get_frame(void) {
   return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) %
          frame_count;
 }
 
-int Santa::Gift::get_big_star_frame(void) {
+int SantaRacer::Gift::get_big_star_frame(void) {
   return int((SDL_GetTicks() - m_big_star_time) / 1000.0 *
              big_star_vframe_speed);
 }
 
-bool Santa::Gift::exists(void) { return m_exists; }
+bool SantaRacer::Gift::exists(void) { return m_exists; }
 
-bool Santa::Gift::query_hit_ground(void) {
+bool SantaRacer::Gift::query_hit_ground(void) {
   if (m_hit_ground) {
     reset();
     return true;
@@ -311,7 +311,7 @@ bool Santa::Gift::query_hit_ground(void) {
   }
 }
 
-bool Santa::Gift::query_hit_chimney(void) {
+bool SantaRacer::Gift::query_hit_chimney(void) {
   bool hit_chimney;
 
   hit_chimney = m_hit_chimney;
@@ -320,4 +320,4 @@ bool Santa::Gift::query_hit_chimney(void) {
   return hit_chimney;
 }
 
-int Santa::Gift::get_points(void) { return m_points; }
+int SantaRacer::Gift::get_points(void) { return m_points; }

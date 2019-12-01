@@ -24,7 +24,7 @@
 #include "globals.hpp"
 #include "random.hpp"
 
-Santa::SleighStar::SleighStar() {
+SantaRacer::SleighStar::SleighStar() {
   m_surface = Setup::images["star"];
   m_surface_drunken = Setup::images["star_drunken"];
   m_width = m_surface->w / frame_count;
@@ -32,7 +32,7 @@ Santa::SleighStar::SleighStar() {
   reinit(true);
 }
 
-void Santa::SleighStar::reinit(bool first_init) {
+void SantaRacer::SleighStar::reinit(bool first_init) {
   m_level_x = Setup::game->level->get_offset() + Setup::game->sleigh->get_x() +
               Setup::game->sleigh->get_width() -
               Random::rnd(min_x_offset, max_x_offset);
@@ -51,7 +51,7 @@ void Santa::SleighStar::reinit(bool first_init) {
   m_max_frame = Random::rnd(frame_count, max_frame_count);
 }
 
-void Santa::SleighStar::draw(void) {
+void SantaRacer::SleighStar::draw(void) {
   int frame;
   SDL_Surface *cur_surface;
 
@@ -70,12 +70,12 @@ void Santa::SleighStar::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void Santa::SleighStar::move(void) {
+void SantaRacer::SleighStar::move(void) {
   if (get_frame() >= m_max_frame) {
     reinit();
   }
 }
 
-int Santa::SleighStar::get_frame(void) {
+int SantaRacer::SleighStar::get_frame(void) {
   return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
 }

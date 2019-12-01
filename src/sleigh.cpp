@@ -24,7 +24,7 @@
 #include "globals.hpp"
 #include "random.hpp"
 
-Santa::Sleigh::Sleigh(void) {
+SantaRacer::Sleigh::Sleigh(void) {
   m_sleigh_surface = Setup::images["sleigh"];
   m_sleigh_width = m_sleigh_surface->w / frame_count;
   m_sleigh_height = m_sleigh_surface->h;
@@ -51,7 +51,7 @@ Santa::Sleigh::Sleigh(void) {
   reset();
 }
 
-Santa::Sleigh::~Sleigh(void) {
+SantaRacer::Sleigh::~Sleigh(void) {
   int i;
 
   for (i = 0; i < star_count; i++) {
@@ -62,7 +62,7 @@ Santa::Sleigh::~Sleigh(void) {
   delete m_sleigh_mask;
 }
 
-void Santa::Sleigh::reset(void) {
+void SantaRacer::Sleigh::reset(void) {
   m_x = 0;
   m_y = 0;
   m_speed_x = 0;
@@ -87,7 +87,7 @@ void Santa::Sleigh::reset(void) {
   set_alpha(255);
 }
 
-void Santa::Sleigh::reset_stars(void) {
+void SantaRacer::Sleigh::reset_stars(void) {
   int i;
 
   if (m_stars == NULL) {
@@ -102,7 +102,7 @@ void Santa::Sleigh::reset_stars(void) {
   }
 }
 
-void Santa::Sleigh::draw(void) {
+void SantaRacer::Sleigh::draw(void) {
   int frame;
   int shield_frame;
   int reindeer_frame_number;
@@ -174,7 +174,7 @@ void Santa::Sleigh::draw(void) {
   }
 }
 
-void Santa::Sleigh::stars_move(void) {
+void SantaRacer::Sleigh::stars_move(void) {
   int i;
 
   for (i = 0; i < star_count; i++) {
@@ -182,31 +182,31 @@ void Santa::Sleigh::stars_move(void) {
   }
 }
 
-void Santa::Sleigh::electrified(void) {
+void SantaRacer::Sleigh::electrified(void) {
   m_electrified_end = SDL_GetTicks() + electrified_duration;
   m_invincible_end = SDL_GetTicks() + invincible_duration;
 }
 
-void Santa::Sleigh::hit(void) {
+void SantaRacer::Sleigh::hit(void) {
   m_invincible_end = SDL_GetTicks() + invincible_duration;
 }
 
-void Santa::Sleigh::collided(void) {
+void SantaRacer::Sleigh::collided(void) {
   m_invincible_end = SDL_GetTicks() + collision_invincible_duration;
   m_unmovable_end = SDL_GetTicks() + collision_unmovable_duration;
   m_speed_x = 0;
   m_speed_y = -max_move_speed;
 }
 
-void Santa::Sleigh::drunken(void) {
+void SantaRacer::Sleigh::drunken(void) {
   m_drunken_end = SDL_GetTicks() + drunken_duration;
 }
 
-void Santa::Sleigh::shield(void) {
+void SantaRacer::Sleigh::shield(void) {
   m_shield_end = SDL_GetTicks() + shield_duration;
 }
 
-bool Santa::Sleigh::is_invincible(void) {
+bool SantaRacer::Sleigh::is_invincible(void) {
   if (m_invincible_end == 0) {
     return false;
   } else if (m_invincible_end > SDL_GetTicks()) {
@@ -216,7 +216,7 @@ bool Santa::Sleigh::is_invincible(void) {
   return false;
 }
 
-bool Santa::Sleigh::is_electrified(void) {
+bool SantaRacer::Sleigh::is_electrified(void) {
   if (m_electrified_end == 0) {
     return false;
   } else if (m_electrified_end > SDL_GetTicks()) {
@@ -226,7 +226,7 @@ bool Santa::Sleigh::is_electrified(void) {
   return false;
 }
 
-bool Santa::Sleigh::is_drunken(void) {
+bool SantaRacer::Sleigh::is_drunken(void) {
   if (m_drunken_end == 0) {
     return false;
   } else if (m_drunken_end > SDL_GetTicks()) {
@@ -236,7 +236,7 @@ bool Santa::Sleigh::is_drunken(void) {
   return false;
 }
 
-bool Santa::Sleigh::has_shield(void) {
+bool SantaRacer::Sleigh::has_shield(void) {
   if (m_shield_end == 0) {
     return false;
   } else if (m_shield_end > SDL_GetTicks()) {
@@ -246,7 +246,7 @@ bool Santa::Sleigh::has_shield(void) {
   return false;
 }
 
-bool Santa::Sleigh::is_unmovable(void) {
+bool SantaRacer::Sleigh::is_unmovable(void) {
   if (m_unmovable_end == 0) {
     return false;
   } else if (m_unmovable_end > SDL_GetTicks()) {
@@ -256,7 +256,7 @@ bool Santa::Sleigh::is_unmovable(void) {
   return false;
 }
 
-bool Santa::Sleigh::is_colliding(void) {
+bool SantaRacer::Sleigh::is_colliding(void) {
   int x;
   int y;
   int start_x;
@@ -321,7 +321,7 @@ bool Santa::Sleigh::is_colliding(void) {
   return false;
 }
 
-Santa::LevelObject *Santa::Sleigh::touched_level_object(void) {
+SantaRacer::LevelObject *SantaRacer::Sleigh::touched_level_object(void) {
   int x;
   int y;
   int sleigh_frame;
@@ -381,7 +381,7 @@ Santa::LevelObject *Santa::Sleigh::touched_level_object(void) {
   return NULL;
 }
 
-int Santa::Sleigh::get_x(void) {
+int SantaRacer::Sleigh::get_x(void) {
   int x;
 
   if (m_menu_mode) {
@@ -411,7 +411,7 @@ int Santa::Sleigh::get_x(void) {
   }
 }
 
-int Santa::Sleigh::get_y(void) {
+int SantaRacer::Sleigh::get_y(void) {
   int y;
 
   if (m_menu_mode) {
@@ -442,15 +442,15 @@ int Santa::Sleigh::get_y(void) {
   }
 }
 
-int Santa::Sleigh::get_speed_x(void) { return m_speed_x; }
+int SantaRacer::Sleigh::get_speed_x(void) { return m_speed_x; }
 
-int Santa::Sleigh::get_speed_y(void) { return m_speed_y; }
+int SantaRacer::Sleigh::get_speed_y(void) { return m_speed_y; }
 
-int Santa::Sleigh::get_width(void) { return m_width; }
+int SantaRacer::Sleigh::get_width(void) { return m_width; }
 
-int Santa::Sleigh::get_height(void) { return m_height; }
+int SantaRacer::Sleigh::get_height(void) { return m_height; }
 
-int Santa::Sleigh::get_frame(void) {
+int SantaRacer::Sleigh::get_frame(void) {
   if (m_pause) {
     return m_frame;
   }
@@ -459,19 +459,19 @@ int Santa::Sleigh::get_frame(void) {
          frame_count;
 }
 
-void Santa::Sleigh::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }
+void SantaRacer::Sleigh::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }
 
-void Santa::Sleigh::set_x(int x) {
+void SantaRacer::Sleigh::set_x(int x) {
   m_x = x;
   m_speed_x = 0;
 }
 
-void Santa::Sleigh::set_y(int y) {
+void SantaRacer::Sleigh::set_y(int y) {
   m_y = y;
   m_speed_y = 0;
 }
 
-void Santa::Sleigh::set_speed_x(int direction) {
+void SantaRacer::Sleigh::set_speed_x(int direction) {
   if (is_unmovable()) {
     return;
   }
@@ -496,7 +496,7 @@ void Santa::Sleigh::set_speed_x(int direction) {
   m_time_x = SDL_GetTicks();
 }
 
-void Santa::Sleigh::set_speed_y(int direction) {
+void SantaRacer::Sleigh::set_speed_y(int direction) {
   if (is_unmovable()) {
     return;
   }
@@ -521,9 +521,9 @@ void Santa::Sleigh::set_speed_y(int direction) {
   m_time_y = SDL_GetTicks();
 }
 
-bool Santa::Sleigh::get_pause(void) { return m_pause; }
+bool SantaRacer::Sleigh::get_pause(void) { return m_pause; }
 
-void Santa::Sleigh::set_pause(bool pause) {
+void SantaRacer::Sleigh::set_pause(bool pause) {
   if ((pause && !m_pause) || (!pause && m_pause)) {
     m_frame = get_frame();
     m_time = SDL_GetTicks();
@@ -532,7 +532,7 @@ void Santa::Sleigh::set_pause(bool pause) {
   m_pause = pause;
 }
 
-void Santa::Sleigh::set_alpha(Uint8 alpha) {
+void SantaRacer::Sleigh::set_alpha(Uint8 alpha) {
   Draw::set_alpha(m_sleigh_surface, alpha);
   Draw::set_alpha(m_reindeer_surface, alpha);
 }

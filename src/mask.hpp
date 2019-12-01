@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Mask {
  public:
@@ -44,6 +44,6 @@ class Mask {
   bool **m_array;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

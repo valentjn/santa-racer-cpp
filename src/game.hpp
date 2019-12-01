@@ -28,7 +28,7 @@
 #include "sleigh.hpp"
 #include "snowflake.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 class Game {
  public:
@@ -149,6 +149,6 @@ class Game {
   int m_highscore_caret_blink_time;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

@@ -21,7 +21,7 @@
 #ifndef SANTA_CHIMNEY_H
 #define SANTA_CHIMNEY_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Chimney {
  public:
@@ -42,6 +42,6 @@ class Chimney {
   int m_y;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

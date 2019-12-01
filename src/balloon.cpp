@@ -26,9 +26,9 @@
 #include "globals.hpp"
 #include "level_object.hpp"
 
-Santa::Balloon::Balloon(void *parent) { m_parent = parent; }
+SantaRacer::Balloon::Balloon(void *parent) { m_parent = parent; }
 
-void Santa::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
+void SantaRacer::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame_count;
@@ -68,7 +68,7 @@ void Santa::Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
   m_frame = 0;
 }
 
-void Santa::Balloon::draw(void) {
+void SantaRacer::Balloon::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -91,11 +91,11 @@ void Santa::Balloon::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void Santa::Balloon::move(void) { return; }
+void SantaRacer::Balloon::move(void) { return; }
 
-int Santa::Balloon::get_level_x(void) { return m_level_x; }
+int SantaRacer::Balloon::get_level_x(void) { return m_level_x; }
 
-int Santa::Balloon::get_y(void) {
+int SantaRacer::Balloon::get_y(void) {
   LevelObject *object;
   float time_diff;
   int y;
@@ -107,7 +107,7 @@ int Santa::Balloon::get_y(void) {
   return y;
 }
 
-int Santa::Balloon::get_frame(void) {
+int SantaRacer::Balloon::get_frame(void) {
   float time_diff;
   int frame;
   int frame_count;
@@ -125,6 +125,6 @@ int Santa::Balloon::get_frame(void) {
   return frame;
 }
 
-Santa::Balloon::BalloonType Santa::Balloon::get_type(void) {
+SantaRacer::Balloon::BalloonType SantaRacer::Balloon::get_type(void) {
   return m_ballon_type;
 }

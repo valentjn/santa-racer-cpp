@@ -22,19 +22,19 @@
 
 #include "globals.hpp"
 
-Santa::Chimney::Chimney(int map_index, int x, int width, int y) {
+SantaRacer::Chimney::Chimney(int map_index, int x, int width, int y) {
   m_map_index = map_index;
   m_x = x;
   m_width = width;
   m_y = y;
 }
 
-Santa::Chimney::~Chimney(void) {}
+SantaRacer::Chimney::~Chimney(void) {}
 
-int Santa::Chimney::get_map_index(void) { return m_map_index; }
+int SantaRacer::Chimney::get_map_index(void) { return m_map_index; }
 
-int Santa::Chimney::get_x(void) { return m_x; }
+int SantaRacer::Chimney::get_x(void) { return m_x; }
 
-int Santa::Chimney::get_width(void) { return m_width; }
+int SantaRacer::Chimney::get_width(void) { return m_width; }
 
-int Santa::Chimney::get_y(void) { return m_y; }
+int SantaRacer::Chimney::get_y(void) { return m_y; }

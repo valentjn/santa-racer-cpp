@@ -22,7 +22,7 @@
 
 #include "globals.hpp"
 
-void Santa::Args::check_args(int argc, char *argv[]) {
+void SantaRacer::Args::check_args(int argc, char *argv[]) {
   int i;
   std::string arg;
 

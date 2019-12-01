@@ -21,7 +21,7 @@
 #ifndef SANTA_SETUP_H
 #define SANTA_SETUP_H
 
-namespace Santa {
+namespace SantaRacer {
 namespace Setup {
 
 void santa_setup(void);
@@ -35,6 +35,6 @@ bool load_music(void);
 void santa_cleanup(void);
 
 }  // namespace Setup
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

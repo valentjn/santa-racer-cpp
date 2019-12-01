@@ -26,9 +26,9 @@
 #include "globals.hpp"
 #include "level_object.hpp"
 
-Santa::Cloud::Cloud(void *parent) { m_parent = parent; }
+SantaRacer::Cloud::Cloud(void *parent) { m_parent = parent; }
 
-void Santa::Cloud::reinit(int tile_x, int tile_y) {
+void SantaRacer::Cloud::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -42,7 +42,7 @@ void Santa::Cloud::reinit(int tile_x, int tile_y) {
   object->set_frame_count(1);
 }
 
-void Santa::Cloud::draw(void) {
+void SantaRacer::Cloud::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -53,10 +53,10 @@ void Santa::Cloud::draw(void) {
              m_level_x - Setup::game->level->get_offset(), m_y);
 }
 
-void Santa::Cloud::move(void) { return; }
+void SantaRacer::Cloud::move(void) { return; }
 
-int Santa::Cloud::get_level_x(void) { return m_level_x; }
+int SantaRacer::Cloud::get_level_x(void) { return m_level_x; }
 
-int Santa::Cloud::get_y(void) { return m_y; }
+int SantaRacer::Cloud::get_y(void) { return m_y; }
 
-int Santa::Cloud::get_frame(void) { return 0; }
+int SantaRacer::Cloud::get_frame(void) { return 0; }

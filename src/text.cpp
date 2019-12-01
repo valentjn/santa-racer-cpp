@@ -22,7 +22,7 @@
 
 #include "globals.hpp"
 
-Santa::Text::Text(SDL_Surface *surface) {
+SantaRacer::Text::Text(SDL_Surface *surface) {
   int i;
   int char_width;
 
@@ -39,7 +39,7 @@ Santa::Text::Text(SDL_Surface *surface) {
   }
 }
 
-void Santa::Text::draw(const char *text, int x, int y, TextAlign align,
+void SantaRacer::Text::draw(const char *text, int x, int y, TextAlign align,
                        bool monospace) {
   int width;
   int char_width;
@@ -83,4 +83,4 @@ void Santa::Text::draw(const char *text, int x, int y, TextAlign align,
   }
 }
 
-int Santa::Text::get_line_height(void) { return m_char_height; }
+int SantaRacer::Text::get_line_height(void) { return m_char_height; }

@@ -21,7 +21,7 @@
 #ifndef SANTA_ANGEL_H
 #define SANTA_ANGEL_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Angel {
  public:
@@ -48,6 +48,6 @@ class Angel {
   int m_time;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

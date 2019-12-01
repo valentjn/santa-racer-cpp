@@ -23,8 +23,8 @@
 #include "globals.hpp"
 
 // both min and max inclusive
-int Santa::Random::rnd(int min, int max) {
+int SantaRacer::Random::rnd(int min, int max) {
   return int(rand() / (float(RAND_MAX) + 1) * (max - min + 1)) + min;
 }
 
-void Santa::Random::seed(void) { srand(time(NULL)); }
+void SantaRacer::Random::seed(void) { srand(time(NULL)); }

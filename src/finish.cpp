@@ -26,11 +26,11 @@
 #include "globals.hpp"
 #include "level_object.hpp"
 
-Santa::Finish::Finish(void *parent) { m_parent = parent; }
+SantaRacer::Finish::Finish(void *parent) { m_parent = parent; }
 
-Santa::Finish::~Finish(void) { return; }
+SantaRacer::Finish::~Finish(void) { return; }
 
-void Santa::Finish::reinit(int tile_x, int tile_y) {
+void SantaRacer::Finish::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -44,7 +44,7 @@ void Santa::Finish::reinit(int tile_x, int tile_y) {
   object->set_frame_count(1);
 }
 
-void Santa::Finish::draw(void) {
+void SantaRacer::Finish::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int width;
@@ -65,15 +65,15 @@ void Santa::Finish::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void Santa::Finish::move(void) { return; }
+void SantaRacer::Finish::move(void) { return; }
 
-int Santa::Finish::get_level_x(void) { return m_level_x; }
+int SantaRacer::Finish::get_level_x(void) { return m_level_x; }
 
-int Santa::Finish::get_y(void) { return m_y; }
+int SantaRacer::Finish::get_y(void) { return m_y; }
 
-int Santa::Finish::get_frame(void) { return 0; }
+int SantaRacer::Finish::get_frame(void) { return 0; }
 
-bool Santa::Finish::reached(void) {
+bool SantaRacer::Finish::reached(void) {
   return (Setup::game->level->get_offset() + Setup::game->sleigh->get_x() >=
           get_level_x());
 }

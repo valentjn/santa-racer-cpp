@@ -26,7 +26,7 @@
 #include "level_object.hpp"
 #include "mask.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 class Level {
  public:
@@ -54,7 +54,7 @@ class Level {
   int get_tile_height(void);
   int get_width(void);
   int get_height(void);
-  Santa::Mask *get_mask(void);
+  SantaRacer::Mask *get_mask(void);
   int **get_map(void);
   LevelObject *get_level_object(int index);
 
@@ -84,6 +84,6 @@ class Level {
   LevelObject **m_level_objects;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

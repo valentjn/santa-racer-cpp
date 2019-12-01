@@ -21,7 +21,7 @@
 #ifndef SANTA_BALLOON_H
 #define SANTA_BALLOON_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Balloon {
  public:
@@ -61,6 +61,6 @@ class Balloon {
   int m_frame;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

@@ -28,24 +28,24 @@
 
 #include "globals.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 namespace Config {
 
 Highscore *highscores;
 std::string config_dir;
 
 }  // namespace Config
-}  // namespace Santa
+}  // namespace SantaRacer
 
-char *Santa::Config::get_home_dir(void) { return getenv("HOME"); }
+char *SantaRacer::Config::get_home_dir(void) { return getenv("HOME"); }
 
-void Santa::Config::set_config_dir(const char *dir) {
+void SantaRacer::Config::set_config_dir(const char *dir) {
   Output::debug("setting config directory %s\n", dir);
   config_dir = dir;
   check_mkdir(dir);
 }
 
-bool Santa::Config::load_highscores(void) {
+bool SantaRacer::Config::load_highscores(void) {
   std::string highscores_file;
   std::ifstream f;
   int i;
@@ -71,7 +71,7 @@ bool Santa::Config::load_highscores(void) {
   return true;
 }
 
-void Santa::Config::save_highscores(void) {
+void SantaRacer::Config::save_highscores(void) {
   std::string highscores_file;
   std::ofstream f;
   int i;
@@ -90,7 +90,7 @@ void Santa::Config::save_highscores(void) {
   f.close();
 }
 
-void Santa::Config::init_highscores(void) {
+void SantaRacer::Config::init_highscores(void) {
   int i;
 
   highscores = new Highscore[10];
@@ -100,9 +100,9 @@ void Santa::Config::init_highscores(void) {
   }
 }
 
-void Santa::Config::free_highscores(void) { delete[] highscores; }
+void SantaRacer::Config::free_highscores(void) { delete[] highscores; }
 
-void Santa::Config::check_mkdir(const char *dir) {
+void SantaRacer::Config::check_mkdir(const char *dir) {
   if (!check_dir(dir)) {
     Output::debug("creating directory %s\n", dir);
     if (mkdir(dir, 0755) == -1) {
@@ -111,7 +111,7 @@ void Santa::Config::check_mkdir(const char *dir) {
   }
 }
 
-bool Santa::Config::check_dir(const char *dir) {
+bool SantaRacer::Config::check_dir(const char *dir) {
   struct stat attributes;
   int result;
 
@@ -123,7 +123,7 @@ bool Santa::Config::check_dir(const char *dir) {
   }
 }
 
-bool Santa::Config::check_file(const char *file) {
+bool SantaRacer::Config::check_file(const char *file) {
   struct stat attributes;
   int result;
 

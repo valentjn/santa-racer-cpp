@@ -26,11 +26,11 @@
 #include "globals.hpp"
 #include "level_object.hpp"
 
-Santa::Angel::Angel(void *parent) { m_parent = parent; }
+SantaRacer::Angel::Angel(void *parent) { m_parent = parent; }
 
-Santa::Angel::~Angel(void) { return; }
+SantaRacer::Angel::~Angel(void) { return; }
 
-void Santa::Angel::reinit(int tile_x, int tile_y) {
+void SantaRacer::Angel::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
@@ -48,7 +48,7 @@ void Santa::Angel::reinit(int tile_x, int tile_y) {
   m_frame = 0;
 }
 
-void Santa::Angel::draw(void) {
+void SantaRacer::Angel::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -71,13 +71,13 @@ void Santa::Angel::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void Santa::Angel::move(void) { return; }
+void SantaRacer::Angel::move(void) { return; }
 
-int Santa::Angel::get_level_x(void) { return m_level_x; }
+int SantaRacer::Angel::get_level_x(void) { return m_level_x; }
 
-int Santa::Angel::get_y(void) { return m_y; }
+int SantaRacer::Angel::get_y(void) { return m_y; }
 
-int Santa::Angel::get_frame(void) {
+int SantaRacer::Angel::get_frame(void) {
   float time_diff;
   int frame;
 

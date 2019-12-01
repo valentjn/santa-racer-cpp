@@ -25,9 +25,9 @@
 #include "setup.hpp"
 
 int main(int argc, char *argv[]) {
-  Santa::Args::check_args(argc, argv);
-  Santa::Setup::santa_setup();
-  Santa::Setup::game->loop();
-  Santa::Setup::santa_cleanup();
+  SantaRacer::Args::check_args(argc, argv);
+  SantaRacer::Setup::santa_setup();
+  SantaRacer::Setup::game->loop();
+  SantaRacer::Setup::santa_cleanup();
   return 0;
 }

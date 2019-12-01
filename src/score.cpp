@@ -23,7 +23,7 @@
 #include "draw.hpp"
 #include "globals.hpp"
 
-Santa::Score::Score(void) {
+SantaRacer::Score::Score(void) {
   m_surface_points = Setup::images["score_gift"];
   m_surface_damage = Setup::images["score_damage"];
   m_surface_time = Setup::images["score_time"];
@@ -35,13 +35,13 @@ Santa::Score::Score(void) {
   m_total_time_secs = 0;
 }
 
-void Santa::Score::reset(int total_time_secs) {
+void SantaRacer::Score::reset(int total_time_secs) {
   m_points = 0;
   m_damage = 0;
   reset_clock(total_time_secs);
 }
 
-void Santa::Score::draw(void) {
+void SantaRacer::Score::draw(void) {
   char points[11];
   char damage[11];
   char time[11];
@@ -72,17 +72,17 @@ void Santa::Score::draw(void) {
   Setup::text->draw(time, 560, m_height / 2, Text::CenterLeft, true);
 }
 
-int Santa::Score::get_points(void) { return m_points; }
+int SantaRacer::Score::get_points(void) { return m_points; }
 
-void Santa::Score::set_points(int points) { m_points = points; }
+void SantaRacer::Score::set_points(int points) { m_points = points; }
 
-void Santa::Score::add_points(int points) { m_points += points; }
+void SantaRacer::Score::add_points(int points) { m_points += points; }
 
-int Santa::Score::get_damage(void) { return m_damage; }
+int SantaRacer::Score::get_damage(void) { return m_damage; }
 
-void Santa::Score::set_damage(int damage) { m_damage = damage; }
+void SantaRacer::Score::set_damage(int damage) { m_damage = damage; }
 
-void Santa::Score::add_damage(int damage) {
+void SantaRacer::Score::add_damage(int damage) {
   m_damage += damage;
 
   if (m_damage < 0) {
@@ -90,7 +90,7 @@ void Santa::Score::add_damage(int damage) {
   }
 }
 
-int Santa::Score::get_remaining_secs(void) {
+int SantaRacer::Score::get_remaining_secs(void) {
   if (m_time_start == 0) {
     return m_total_time_secs;
   } else {
@@ -98,16 +98,16 @@ int Santa::Score::get_remaining_secs(void) {
   }
 }
 
-void Santa::Score::add_to_remaining_secs(int secs) {
+void SantaRacer::Score::add_to_remaining_secs(int secs) {
   m_time_start += secs * 1000;
 }
 
-void Santa::Score::reset_clock(int total_time_secs) {
+void SantaRacer::Score::reset_clock(int total_time_secs) {
   m_time_start = SDL_GetTicks();
   m_total_time_secs = total_time_secs;
 }
 
-int Santa::Score::get_score(void) {
+int SantaRacer::Score::get_score(void) {
   return score_points_per_point * get_points() +
          score_points_per_damage * get_damage() +
          score_points_per_remaining_sec * get_remaining_secs();

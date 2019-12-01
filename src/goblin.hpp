@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Goblin {
  public:
@@ -53,6 +53,6 @@ class Goblin {
   bool m_snowball_thrown_query;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

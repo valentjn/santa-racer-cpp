@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Score {
  public:
@@ -63,6 +63,6 @@ class Score {
   SDL_Surface *m_surface_time;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

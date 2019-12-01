@@ -23,7 +23,7 @@
 
 #include "snowman_star.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 class Snowman {
  public:
@@ -65,6 +65,6 @@ class Snowman {
   SnowmanStar **m_stars;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

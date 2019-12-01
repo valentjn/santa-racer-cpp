@@ -26,16 +26,16 @@
 
 #include "globals.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 namespace Output {
 
 void m_fatal_error(std::string message);
 void m_print(std::string message);
 
 }  // namespace Output
-}  // namespace Santa
+}  // namespace SantaRacer
 
-void Santa::Output::fatal_error(const char *message, ...) {
+void SantaRacer::Output::fatal_error(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -45,12 +45,12 @@ void Santa::Output::fatal_error(const char *message, ...) {
   m_fatal_error(result);
 }
 
-void Santa::Output::m_fatal_error(std::string message) {
+void SantaRacer::Output::m_fatal_error(std::string message) {
   std::cerr << message << std::flush;
   exit(1);
 }
 
-void Santa::Output::print(const char *message, ...) {
+void SantaRacer::Output::print(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -60,7 +60,7 @@ void Santa::Output::print(const char *message, ...) {
   m_print(result);
 }
 
-void Santa::Output::debug(const char *message, ...) {
+void SantaRacer::Output::debug(const char *message, ...) {
   std::string result;
   va_list args;
 
@@ -74,11 +74,11 @@ void Santa::Output::debug(const char *message, ...) {
   m_print(result);
 }
 
-void Santa::Output::m_print(std::string message) {
+void SantaRacer::Output::m_print(std::string message) {
   std::cout << message << std::flush;
 }
 
-std::string Santa::Output::string_printf(const char *format, ...) {
+std::string SantaRacer::Output::string_printf(const char *format, ...) {
   std::string result;
   va_list args;
 
@@ -88,7 +88,7 @@ std::string Santa::Output::string_printf(const char *format, ...) {
   return std::string(result);
 }
 
-std::string Santa::Output::string_vprintf(const char *format, va_list args) {
+std::string SantaRacer::Output::string_vprintf(const char *format, va_list args) {
   char text[1000];
 
   vsnprintf(text, 1000, format, args);

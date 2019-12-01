@@ -21,7 +21,7 @@
 #ifndef SANTA_CLOUD_H
 #define SANTA_CLOUD_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Cloud {
  public:
@@ -42,6 +42,6 @@ class Cloud {
   int m_y;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

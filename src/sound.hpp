@@ -21,7 +21,7 @@
 #ifndef SANTA_SOUND_H
 #define SANTA_SOUND_H
 
-namespace Santa {
+namespace SantaRacer {
 namespace Sound {
 
 void play(std::string name);
@@ -34,6 +34,6 @@ void play_music(void);
 int get_channel(void);
 
 }  // namespace Sound
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

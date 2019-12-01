@@ -23,7 +23,7 @@
 
 #include <string>
 
-namespace Santa {
+namespace SantaRacer {
 namespace Output {
 
 void fatal_error(const char *message, ...);
@@ -33,6 +33,6 @@ std::string string_printf(const char *format, ...);
 std::string string_vprintf(const char *format, va_list args);
 
 }  // namespace Output
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

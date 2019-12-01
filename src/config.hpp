@@ -21,7 +21,7 @@
 #ifndef SANTA_CONFIG_H
 #define SANTA_CONFIG_H
 
-namespace Santa {
+namespace SantaRacer {
 namespace Config {
 
 char *get_home_dir(void);
@@ -35,6 +35,6 @@ bool check_dir(const char *dir);
 bool check_file(const char *file);
 
 }  // namespace Config
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

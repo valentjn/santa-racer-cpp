@@ -36,7 +36,7 @@
 #include "output.hpp"
 #include "text.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 struct highscore_entry {
   std::string name;
@@ -99,6 +99,6 @@ extern Highscore *highscores;
 extern std::string config_dir;
 
 }  // namespace Config
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

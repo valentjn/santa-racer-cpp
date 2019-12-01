@@ -23,7 +23,7 @@
 #include "draw.hpp"
 #include "globals.hpp"
 
-Santa::Level::Level(int **map, int **level_object_map, int width, int height) {
+SantaRacer::Level::Level(int **map, int **level_object_map, int width, int height) {
   int i;
 
   m_surface = Setup::images["level"];
@@ -45,7 +45,7 @@ Santa::Level::Level(int **map, int **level_object_map, int width, int height) {
   }
 }
 
-Santa::Level::~Level(void) {
+SantaRacer::Level::~Level(void) {
   int i;
 
   for (i = 0; i < max_level_object_count; i++) {
@@ -54,7 +54,7 @@ Santa::Level::~Level(void) {
   delete[] m_level_objects;
 }
 
-void Santa::Level::draw(void) {
+void SantaRacer::Level::draw(void) {
   int start_x;
   int x;
   int y;
@@ -74,7 +74,7 @@ void Santa::Level::draw(void) {
   }
 }
 
-void Santa::Level::draw_ballons(void) {
+void SantaRacer::Level::draw_ballons(void) {
   int i;
   LevelObject *object;
 
@@ -87,7 +87,7 @@ void Santa::Level::draw_ballons(void) {
   }
 }
 
-void Santa::Level::draw_objects(void) {
+void SantaRacer::Level::draw_objects(void) {
   int i;
   LevelObject *object;
 
@@ -100,12 +100,12 @@ void Santa::Level::draw_objects(void) {
   }
 }
 
-void Santa::Level::move(void) {
+void SantaRacer::Level::move(void) {
   m_offset = get_offset();
   m_time = SDL_GetTicks();
 }
 
-void Santa::Level::move_objects(void) {
+void SantaRacer::Level::move_objects(void) {
   int start_x;
   int x;
   int y;
@@ -137,7 +137,7 @@ void Santa::Level::move_objects(void) {
   }
 }
 
-void Santa::Level::move_object(int tile_x, int tile_y) {
+void SantaRacer::Level::move_object(int tile_x, int tile_y) {
   int i;
   int index;
   LevelObject *object;
@@ -191,7 +191,7 @@ void Santa::Level::move_object(int tile_x, int tile_y) {
   }
 }
 
-void Santa::Level::clear_objects(void) {
+void SantaRacer::Level::clear_objects(void) {
   int i;
   LevelObject *object;
 
@@ -203,7 +203,7 @@ void Santa::Level::clear_objects(void) {
   }
 }
 
-float Santa::Level::get_offset(void) {
+float SantaRacer::Level::get_offset(void) {
   if (m_pause) {
     return m_offset;
   }
@@ -211,12 +211,12 @@ float Santa::Level::get_offset(void) {
   return m_offset + (SDL_GetTicks() - m_time) / 1000.0 * get_speed();
 }
 
-void Santa::Level::set_offset(float offset) {
+void SantaRacer::Level::set_offset(float offset) {
   m_offset = offset;
   m_time = SDL_GetTicks();
 }
 
-float Santa::Level::get_speed(void) {
+float SantaRacer::Level::get_speed(void) {
   if (m_pause) {
     return 0.0;
   }
@@ -231,29 +231,29 @@ float Santa::Level::get_speed(void) {
   }
 }
 
-int Santa::Level::get_tiles_to_draw(void) { return m_tiles_to_draw; }
+int SantaRacer::Level::get_tiles_to_draw(void) { return m_tiles_to_draw; }
 
-int Santa::Level::get_tile_width(void) { return tile_width; }
+int SantaRacer::Level::get_tile_width(void) { return tile_width; }
 
-int Santa::Level::get_tile_height(void) { return tile_height; }
+int SantaRacer::Level::get_tile_height(void) { return tile_height; }
 
-int Santa::Level::get_width(void) { return m_width; }
+int SantaRacer::Level::get_width(void) { return m_width; }
 
-int Santa::Level::get_height(void) { return m_height; }
+int SantaRacer::Level::get_height(void) { return m_height; }
 
-Santa::Mask *Santa::Level::get_mask(void) { return m_mask; }
+SantaRacer::Mask *SantaRacer::Level::get_mask(void) { return m_mask; }
 
-int **Santa::Level::get_map(void) { return m_map; }
+int **SantaRacer::Level::get_map(void) { return m_map; }
 
-Santa::LevelObject *Santa::Level::get_level_object(int index) {
+SantaRacer::LevelObject *SantaRacer::Level::get_level_object(int index) {
   return m_level_objects[index];
 }
 
-void Santa::Level::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }
+void SantaRacer::Level::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }
 
-bool Santa::Level::get_pause(void) { return m_pause; }
+bool SantaRacer::Level::get_pause(void) { return m_pause; }
 
-void Santa::Level::set_pause(bool pause) {
+void SantaRacer::Level::set_pause(bool pause) {
   if ((pause && !m_pause) || (!pause && m_pause)) {
     m_offset = get_offset();
     m_time = SDL_GetTicks();

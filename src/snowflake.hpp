@@ -21,7 +21,7 @@
 #ifndef SANTA_SNOWFLAKE_H
 #define SANTA_SNOWFLAKE_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Snowflake {
  public:
@@ -54,6 +54,6 @@ class Snowflake {
   static const int left_margin = -50;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

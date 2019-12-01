@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 namespace Draw {
 
 void blit(SDL_Surface *src_surface, int src_x, int src_y, int src_w, int src_h,
@@ -33,6 +33,6 @@ void copy(SDL_Surface *src_surface, SDL_Surface *dst_surface, int dst_x,
 void set_alpha(SDL_Surface *surface, Uint8 alpha);
 
 }  // namespace Draw
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

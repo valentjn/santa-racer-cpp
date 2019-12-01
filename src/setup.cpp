@@ -31,7 +31,7 @@
 #include "random.hpp"
 #include "sound.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 namespace Setup {
 
 struct setup_flags {
@@ -65,9 +65,9 @@ Chimney **chimneys;
 int chimney_count;
 
 }  // namespace Setup
-}  // namespace Santa
+}  // namespace SantaRacer
 
-void Santa::Setup::santa_setup(void) {
+void SantaRacer::Setup::santa_setup(void) {
   int flags;
   std::string home_dir;
 
@@ -133,7 +133,7 @@ void Santa::Setup::santa_setup(void) {
   Sound::play_music();
 }
 
-bool Santa::Setup::load_images(void) {
+bool SantaRacer::Setup::load_images(void) {
   DIR *d;
   struct dirent *entry;
   std::string filename;
@@ -170,7 +170,7 @@ bool Santa::Setup::load_images(void) {
   return true;
 }
 
-bool Santa::Setup::load_text(void) {
+bool SantaRacer::Setup::load_text(void) {
   std::ifstream f;
   int i = 0;
 
@@ -193,7 +193,7 @@ bool Santa::Setup::load_text(void) {
   return true;
 }
 
-bool Santa::Setup::load_level(void) {
+bool SantaRacer::Setup::load_level(void) {
   std::ifstream f;
   int x;
   int y;
@@ -228,7 +228,7 @@ bool Santa::Setup::load_level(void) {
   return true;
 }
 
-bool Santa::Setup::load_level_objects(void) {
+bool SantaRacer::Setup::load_level_objects(void) {
   std::ifstream f;
   int x;
   int y;
@@ -250,7 +250,7 @@ bool Santa::Setup::load_level_objects(void) {
   return true;
 }
 
-bool Santa::Setup::load_chimneys(void) {
+bool SantaRacer::Setup::load_chimneys(void) {
   std::ifstream f;
   int i;
   int tmp_int;
@@ -287,7 +287,7 @@ bool Santa::Setup::load_chimneys(void) {
   return true;
 }
 
-bool Santa::Setup::load_sounds(void) {
+bool SantaRacer::Setup::load_sounds(void) {
   DIR *d;
   struct dirent *entry;
   std::string filename;
@@ -322,7 +322,7 @@ bool Santa::Setup::load_sounds(void) {
   return true;
 }
 
-bool Santa::Setup::load_music(void) {
+bool SantaRacer::Setup::load_music(void) {
   Output::debug("reading music\n");
 
   music = Mix_LoadMUS("./assets/sounds/bgmusic.ogg");
@@ -333,7 +333,7 @@ bool Santa::Setup::load_music(void) {
   return true;
 }
 
-void Santa::Setup::santa_cleanup(void) {
+void SantaRacer::Setup::santa_cleanup(void) {
   int y;
   int i;
   SurfaceMap::iterator surface_it;

@@ -23,9 +23,9 @@
 #include "globals.hpp"
 #include "random.hpp"
 
-Santa::Snowflake::Snowflake(void) { reinit(true); }
+SantaRacer::Snowflake::Snowflake(void) { reinit(true); }
 
-void Santa::Snowflake::reinit(bool first_init) {
+void SantaRacer::Snowflake::reinit(bool first_init) {
   m_level_x = Random::rnd(left_margin, 2 * Setup::screen_width) +
               Setup::game->level->get_offset();
   m_z = Random::rnd(0, 255);
@@ -43,7 +43,7 @@ void Santa::Snowflake::reinit(bool first_init) {
   }
 }
 
-void Santa::Snowflake::draw(void) {
+void SantaRacer::Snowflake::draw(void) {
   int x;
   int y;
   Uint32 *bufp;
@@ -60,7 +60,7 @@ void Santa::Snowflake::draw(void) {
   *bufp = m_color;
 }
 
-void Santa::Snowflake::move(void) {
+void SantaRacer::Snowflake::move(void) {
   int level_x;
   int y;
 
@@ -78,7 +78,7 @@ void Santa::Snowflake::move(void) {
   }
 }
 
-void Santa::Snowflake::change_speed(void) {
+void SantaRacer::Snowflake::change_speed(void) {
   m_speed_x += Random::rnd(-10, 10);
   if (m_speed_x < min_speed_x) {
     m_speed_x = min_speed_x;
@@ -97,10 +97,10 @@ void Santa::Snowflake::change_speed(void) {
                                                      max_speed_change_time);
 }
 
-float Santa::Snowflake::get_level_x(void) {
+float SantaRacer::Snowflake::get_level_x(void) {
   return m_level_x + m_speed_x * ((SDL_GetTicks() - m_time) / 1000.0);
 }
 
-float Santa::Snowflake::get_y(void) {
+float SantaRacer::Snowflake::get_y(void) {
   return m_y + m_speed_y * (SDL_GetTicks() - m_time) / 1000.0;
 }

@@ -27,12 +27,12 @@
 #include "level_object.hpp"
 #include "random.hpp"
 
-Santa::Snowman::Snowman(void *parent) {
+SantaRacer::Snowman::Snowman(void *parent) {
   m_parent = parent;
   m_stars = NULL;
 }
 
-Santa::Snowman::~Snowman(void) {
+SantaRacer::Snowman::~Snowman(void) {
   int i;
 
   if (m_stars != NULL) {
@@ -43,7 +43,7 @@ Santa::Snowman::~Snowman(void) {
   }
 }
 
-void Santa::Snowman::reinit(int tile_x, int tile_y) {
+void SantaRacer::Snowman::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
   int i;
@@ -71,7 +71,7 @@ void Santa::Snowman::reinit(int tile_x, int tile_y) {
   }
 }
 
-void Santa::Snowman::draw(void) {
+void SantaRacer::Snowman::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
   int frame;
@@ -100,7 +100,7 @@ void Santa::Snowman::draw(void) {
              level_x - Setup::game->level->get_offset(), y);
 }
 
-void Santa::Snowman::move(void) {
+void SantaRacer::Snowman::move(void) {
   int i;
 
   if (Setup::game->sleigh->get_x() + Setup::game->level->get_offset() >=
@@ -117,7 +117,7 @@ void Santa::Snowman::move(void) {
   }
 }
 
-int Santa::Snowman::get_level_x(void) {
+int SantaRacer::Snowman::get_level_x(void) {
   if (m_triggered) {
     return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
   } else {
@@ -125,7 +125,7 @@ int Santa::Snowman::get_level_x(void) {
   }
 }
 
-int Santa::Snowman::get_y(void) {
+int SantaRacer::Snowman::get_y(void) {
   if (m_triggered) {
     return m_y + int((SDL_GetTicks() - m_time) / 1000.0 * speed_y);
   } else {
@@ -133,7 +133,7 @@ int Santa::Snowman::get_y(void) {
   }
 }
 
-int Santa::Snowman::get_frame(void) {
+int SantaRacer::Snowman::get_frame(void) {
   float time_diff;
   int frame;
 
@@ -151,9 +151,9 @@ int Santa::Snowman::get_frame(void) {
   }
 }
 
-bool Santa::Snowman::is_triggered(void) { return m_triggered; }
+bool SantaRacer::Snowman::is_triggered(void) { return m_triggered; }
 
-bool Santa::Snowman::query_triggered(void) {
+bool SantaRacer::Snowman::query_triggered(void) {
   if (m_triggered_query) {
     m_triggered_query = false;
     return true;

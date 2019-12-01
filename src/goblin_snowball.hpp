@@ -21,7 +21,7 @@
 #ifndef SANTA_GOBLIN_SNOWBALL_H
 #define SANTA_GOBLIN_SNOWBALL_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class GoblinSnowball {
  public:
@@ -54,6 +54,6 @@ class GoblinSnowball {
   int m_time;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

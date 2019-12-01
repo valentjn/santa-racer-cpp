@@ -22,7 +22,7 @@
 
 #include "globals.hpp"
 
-Santa::Mask::Mask(SDL_Surface *surface, int frame_count) {
+SantaRacer::Mask::Mask(SDL_Surface *surface, int frame_count) {
   int x;
   int y;
   Uint8 r;
@@ -52,7 +52,7 @@ Santa::Mask::Mask(SDL_Surface *surface, int frame_count) {
   SDL_UnlockSurface(m_surface);
 }
 
-Santa::Mask::~Mask(void) {
+SantaRacer::Mask::~Mask(void) {
   int y;
 
   for (y = 0; y < m_height; y++) {
@@ -61,7 +61,7 @@ Santa::Mask::~Mask(void) {
   delete[] m_array;
 }
 
-bool Santa::Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int x2,
+bool SantaRacer::Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int x2,
                                int y2, int frame2) {
   bool **array1;
   bool **array2;
@@ -153,8 +153,8 @@ bool Santa::Mask::is_colliding(int x1, int y1, int frame1, Mask *mask2, int x2,
   return false;
 }
 
-int Santa::Mask::get_width(void) { return m_width; }
+int SantaRacer::Mask::get_width(void) { return m_width; }
 
-int Santa::Mask::get_height(void) { return m_height; }
+int SantaRacer::Mask::get_height(void) { return m_height; }
 
-bool **Santa::Mask::get_array(void) { return m_array; }
+bool **SantaRacer::Mask::get_array(void) { return m_array; }

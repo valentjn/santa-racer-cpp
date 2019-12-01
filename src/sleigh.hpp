@@ -27,7 +27,7 @@
 #include "mask.hpp"
 #include "sleigh_star.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 class Sleigh {
  public:
@@ -156,6 +156,6 @@ class Sleigh {
   bool m_pause;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

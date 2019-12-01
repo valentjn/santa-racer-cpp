@@ -25,19 +25,19 @@
 #include "draw.hpp"
 #include "globals.hpp"
 
-Santa::Landscape::Landscape(void) {
+SantaRacer::Landscape::Landscape(void) {
   m_surface = Setup::images["landscape"];
   reset();
 }
 
-void Santa::Landscape::reset(void) {
+void SantaRacer::Landscape::reset(void) {
   m_offset = 0.0;
   m_time = SDL_GetTicks();
   m_speed = 5.0;
   m_pause = false;
 }
 
-void Santa::Landscape::draw(void) {
+void SantaRacer::Landscape::draw(void) {
   int offset;
 
   offset = get_offset();
@@ -48,12 +48,12 @@ void Santa::Landscape::draw(void) {
              m_surface->w - offset, 0);
 }
 
-void Santa::Landscape::move(void) {
+void SantaRacer::Landscape::move(void) {
   m_offset = get_offset();
   m_time = SDL_GetTicks();
 }
 
-float Santa::Landscape::get_offset(void) {
+float SantaRacer::Landscape::get_offset(void) {
   if (m_pause) {
     return m_offset;
   }
@@ -62,7 +62,7 @@ float Santa::Landscape::get_offset(void) {
               m_surface->w);
 }
 
-float Santa::Landscape::get_speed(void) {
+float SantaRacer::Landscape::get_speed(void) {
   if (m_pause) {
     return 0.0;
   }
@@ -70,9 +70,9 @@ float Santa::Landscape::get_speed(void) {
   return Setup::game->level->get_speed() / 10.0;
 }
 
-bool Santa::Landscape::get_pause(void) { return m_pause; }
+bool SantaRacer::Landscape::get_pause(void) { return m_pause; }
 
-void Santa::Landscape::set_pause(bool pause) {
+void SantaRacer::Landscape::set_pause(bool pause) {
   if ((pause && !m_pause) || (!pause && m_pause)) {
     m_offset = get_offset();
     m_time = SDL_GetTicks();

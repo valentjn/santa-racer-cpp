@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Text {
  public:
@@ -52,6 +52,6 @@ class Text {
   int m_max_char_width;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

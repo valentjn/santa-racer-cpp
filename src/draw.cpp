@@ -22,7 +22,7 @@
 
 #include "globals.hpp"
 
-void Santa::Draw::blit(SDL_Surface *src_surface, int src_x, int src_y,
+void SantaRacer::Draw::blit(SDL_Surface *src_surface, int src_x, int src_y,
                        int src_w, int src_h, SDL_Surface *dst_surface,
                        int dst_x, int dst_y) {
   SDL_Rect src_rect;
@@ -37,7 +37,7 @@ void Santa::Draw::blit(SDL_Surface *src_surface, int src_x, int src_y,
   SDL_BlitSurface(src_surface, &src_rect, dst_surface, &dst_rect);
 }
 
-void Santa::Draw::copy(SDL_Surface *src_surface, SDL_Surface *dst_surface,
+void SantaRacer::Draw::copy(SDL_Surface *src_surface, SDL_Surface *dst_surface,
                        int dst_x, int dst_y) {
   SDL_Rect dst_rect;
 
@@ -46,7 +46,7 @@ void Santa::Draw::copy(SDL_Surface *src_surface, SDL_Surface *dst_surface,
   SDL_BlitSurface(src_surface, NULL, dst_surface, &dst_rect);
 }
 
-void Santa::Draw::set_alpha(SDL_Surface *surface, Uint8 alpha) {
+void SantaRacer::Draw::set_alpha(SDL_Surface *surface, Uint8 alpha) {
   int x;
   int y;
   Uint8 r;

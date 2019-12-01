@@ -21,12 +21,12 @@
 #ifndef SANTA_ARGS_H
 #define SANTA_ARGS_H
 
-namespace Santa {
+namespace SantaRacer {
 namespace Args {
 
 void check_args(int argc, char *argv[]);
 
 }
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

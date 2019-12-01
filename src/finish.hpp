@@ -21,7 +21,7 @@
 #ifndef SANTA_FINISH_H
 #define SANTA_FINISH_H
 
-namespace Santa {
+namespace SantaRacer {
 
 class Finish {
  public:
@@ -45,6 +45,6 @@ class Finish {
   int m_y;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

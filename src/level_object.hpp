@@ -32,7 +32,7 @@
 #include "mask.hpp"
 #include "snowman.hpp"
 
-namespace Santa {
+namespace SantaRacer {
 
 class LevelObject {
  public:
@@ -107,6 +107,6 @@ class LevelObject {
   Finish *m_finish;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

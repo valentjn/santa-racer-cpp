@@ -23,7 +23,7 @@
 
 #include <SDL/SDL.h>
 
-namespace Santa {
+namespace SantaRacer {
 
 class Landscape {
  public:
@@ -48,6 +48,6 @@ class Landscape {
   bool m_pause;
 };
 
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

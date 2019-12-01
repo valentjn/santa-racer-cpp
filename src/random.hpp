@@ -21,13 +21,13 @@
 #ifndef SANTA_RANDOM_H
 #define SANTA_RANDOM_H
 
-namespace Santa {
+namespace SantaRacer {
 namespace Random {
 
 int rnd(int min, int max);
 void seed(void);
 
 }  // namespace Random
-}  // namespace Santa
+}  // namespace SantaRacer
 
 #endif

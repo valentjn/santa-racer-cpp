@@ -22,7 +22,7 @@
 
 #include "globals.hpp"
 
-Santa::LevelObject::LevelObject(void) {
+SantaRacer::LevelObject::LevelObject(void) {
   m_cloud = new Cloud(this);
   m_balloon = new Balloon(this);
   m_angel = new Angel(this);
@@ -34,7 +34,7 @@ Santa::LevelObject::LevelObject(void) {
   reset();
 }
 
-Santa::LevelObject::~LevelObject(void) {
+SantaRacer::LevelObject::~LevelObject(void) {
   delete m_cloud;
   delete m_balloon;
   delete m_angel;
@@ -45,7 +45,7 @@ Santa::LevelObject::~LevelObject(void) {
   delete m_mask;
 }
 
-void Santa::LevelObject::reinit(int tile_x, int tile_y, int gfx_index) {
+void SantaRacer::LevelObject::reinit(int tile_x, int tile_y, int gfx_index) {
   m_exists = true;
   m_tile_x = tile_x;
   m_tile_y = tile_y;
@@ -89,7 +89,7 @@ void Santa::LevelObject::reinit(int tile_x, int tile_y, int gfx_index) {
   m_hidden = false;
 }
 
-void Santa::LevelObject::reset(void) {
+void SantaRacer::LevelObject::reset(void) {
   // Output::debug("LevelObject::reset, tile_x %i, tile_y %i\n", m_tile_x,
   // m_tile_y);
   m_exists = false;
@@ -104,7 +104,7 @@ void Santa::LevelObject::reset(void) {
   m_hidden = false;
 }
 
-void Santa::LevelObject::draw(void) {
+void SantaRacer::LevelObject::draw(void) {
   if (m_hidden) {
     return;
   }
@@ -126,7 +126,7 @@ void Santa::LevelObject::draw(void) {
   }
 }
 
-void Santa::LevelObject::move(void) {
+void SantaRacer::LevelObject::move(void) {
   if (m_hidden) {
     return;
   }
@@ -148,27 +148,27 @@ void Santa::LevelObject::move(void) {
   }
 }
 
-void Santa::LevelObject::hide(void) { m_hidden = true; }
+void SantaRacer::LevelObject::hide(void) { m_hidden = true; }
 
-Santa::LevelObject::ObjectType Santa::LevelObject::get_type(void) {
+SantaRacer::LevelObject::ObjectType SantaRacer::LevelObject::get_type(void) {
   return m_type;
 }
 
-int Santa::LevelObject::get_tile_x(void) { return m_tile_x; }
+int SantaRacer::LevelObject::get_tile_x(void) { return m_tile_x; }
 
-int Santa::LevelObject::get_tile_y(void) { return m_tile_y; }
+int SantaRacer::LevelObject::get_tile_y(void) { return m_tile_y; }
 
-int Santa::LevelObject::get_width(void) { return m_width; }
+int SantaRacer::LevelObject::get_width(void) { return m_width; }
 
-int Santa::LevelObject::get_height(void) { return m_height; }
+int SantaRacer::LevelObject::get_height(void) { return m_height; }
 
-Santa::Mask *Santa::LevelObject::get_mask(void) { return m_mask; }
+SantaRacer::Mask *SantaRacer::LevelObject::get_mask(void) { return m_mask; }
 
-bool Santa::LevelObject::exists(void) { return m_exists; }
+bool SantaRacer::LevelObject::exists(void) { return m_exists; }
 
-bool Santa::LevelObject::is_hidden(void) { return m_hidden; }
+bool SantaRacer::LevelObject::is_hidden(void) { return m_hidden; }
 
-int Santa::LevelObject::get_level_x(void) {
+int SantaRacer::LevelObject::get_level_x(void) {
   if (m_type == CloudObject) {
     return m_cloud->get_level_x();
   } else if (m_type == BalloonObject) {
@@ -188,7 +188,7 @@ int Santa::LevelObject::get_level_x(void) {
   }
 }
 
-int Santa::LevelObject::get_y(void) {
+int SantaRacer::LevelObject::get_y(void) {
   if (m_type == CloudObject) {
     return m_cloud->get_y();
   } else if (m_type == BalloonObject) {
@@ -208,7 +208,7 @@ int Santa::LevelObject::get_y(void) {
   }
 }
 
-int Santa::LevelObject::get_frame(void) {
+int SantaRacer::LevelObject::get_frame(void) {
   if (m_type == CloudObject) {
     return m_cloud->get_frame();
   } else if (m_type == BalloonObject) {
@@ -228,30 +228,30 @@ int Santa::LevelObject::get_frame(void) {
   }
 }
 
-Santa::Cloud *Santa::LevelObject::get_cloud(void) { return m_cloud; }
+SantaRacer::Cloud *SantaRacer::LevelObject::get_cloud(void) { return m_cloud; }
 
-Santa::Balloon *Santa::LevelObject::get_balloon(void) { return m_balloon; }
+SantaRacer::Balloon *SantaRacer::LevelObject::get_balloon(void) { return m_balloon; }
 
-Santa::Angel *Santa::LevelObject::get_angel(void) { return m_angel; }
+SantaRacer::Angel *SantaRacer::LevelObject::get_angel(void) { return m_angel; }
 
-Santa::Goblin *Santa::LevelObject::get_goblin(void) { return m_goblin; }
+SantaRacer::Goblin *SantaRacer::LevelObject::get_goblin(void) { return m_goblin; }
 
-Santa::GoblinSnowball *Santa::LevelObject::get_goblin_snowball(void) {
+SantaRacer::GoblinSnowball *SantaRacer::LevelObject::get_goblin_snowball(void) {
   return m_goblin_snowball;
 }
 
-Santa::Snowman *Santa::LevelObject::get_snowman(void) { return m_snowman; }
+SantaRacer::Snowman *SantaRacer::LevelObject::get_snowman(void) { return m_snowman; }
 
-Santa::Finish *Santa::LevelObject::get_finish(void) { return m_finish; }
+SantaRacer::Finish *SantaRacer::LevelObject::get_finish(void) { return m_finish; }
 
-SDL_Surface *Santa::LevelObject::get_surface(void) { return m_surface; }
+SDL_Surface *SantaRacer::LevelObject::get_surface(void) { return m_surface; }
 
-void Santa::LevelObject::set_surface(SDL_Surface *surface) {
+void SantaRacer::LevelObject::set_surface(SDL_Surface *surface) {
   m_surface = surface;
 }
 
-int Santa::LevelObject::get_frame_count(void) { return m_frame_count; }
+int SantaRacer::LevelObject::get_frame_count(void) { return m_frame_count; }
 
-void Santa::LevelObject::set_frame_count(int frame_count) {
+void SantaRacer::LevelObject::set_frame_count(int frame_count) {
   m_frame_count = frame_count;
 }
