@@ -6,14 +6,14 @@
 
 #pragma once
 
+#include <string>
+
 #include "SantaRacer/Gift.hpp"
 #include "SantaRacer/Landscape.hpp"
 #include "SantaRacer/Level.hpp"
 #include "SantaRacer/Score.hpp"
 #include "SantaRacer/Sleigh.hpp"
 #include "SantaRacer/Snowflake.hpp"
-
-#include <string>
 
 namespace SantaRacer {
 

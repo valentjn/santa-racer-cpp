@@ -11,7 +11,7 @@ namespace LevelObject {
 
 class Finish {
  public:
-  Finish(void *parent);
+  explicit Finish(void *parent);
   ~Finish(void);
 
   void reinit(int tile_x, int tile_y);

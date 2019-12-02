@@ -4,13 +4,13 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <string>
+
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 #include "SantaRacer/Sound.hpp"
-
-#include <string>
 
 namespace SantaRacer {
 

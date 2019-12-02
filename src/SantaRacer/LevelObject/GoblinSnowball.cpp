@@ -21,7 +21,7 @@ void GoblinSnowball::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = Setup::images["snowball"];
 
   m_level_x = tile_x * Setup::game->level->tile_width + offset_x;
@@ -41,20 +41,19 @@ void GoblinSnowball::draw(void) {
   int level_x;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
 
   level_x = get_level_x();
   y = get_y();
 
-  Draw::copy(surface, Setup::screen, level_x - Setup::game->level->get_offset(),
-             y);
+  Draw::copy(surface, Setup::screen, level_x - Setup::game->level->get_offset(), y);
 }
 
 void GoblinSnowball::move(void) { return; }
 
 int GoblinSnowball::get_level_x(void) {
-  return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
+  return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
 }
 
 int GoblinSnowball::get_y(void) {

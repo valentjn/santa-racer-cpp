@@ -22,7 +22,7 @@ void Angel::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = Setup::images["angel"];
 
   m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width -
@@ -46,7 +46,7 @@ void Angel::draw(void) {
   int level_x;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
   width = object->get_width();
   height = object->get_height();
@@ -70,7 +70,7 @@ int Angel::get_frame(void) {
   int frame;
 
   time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-  frame = int(time_diff * frame_speed + m_frame) % frame_count;
+  frame = static_cast<int>(time_diff * frame_speed + m_frame) % frame_count;
 
   return frame;
 }

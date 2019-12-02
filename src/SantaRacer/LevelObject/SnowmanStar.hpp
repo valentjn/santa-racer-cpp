@@ -15,7 +15,7 @@ class Snowman;
 
 class SnowmanStar {
  public:
-  SnowmanStar(Snowman *snowman);
+  explicit SnowmanStar(Snowman *snowman);
   void reinit(bool first_init = false);
   void draw(void);
   void move(void);

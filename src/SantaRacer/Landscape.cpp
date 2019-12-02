@@ -4,11 +4,11 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <math.h>
+
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Landscape.hpp"
-
-#include <math.h>
 
 namespace SantaRacer {
 

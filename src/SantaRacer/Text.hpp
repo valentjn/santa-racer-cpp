@@ -24,7 +24,7 @@ class Text {
     BottomRight = 8
   };
 
-  Text(SDL_Surface *surface);
+  explicit Text(SDL_Surface *surface);
   void draw(const char *text, int x, int y, TextAlign align = TopLeft,
             bool monospace = false);
   int get_line_height(void);

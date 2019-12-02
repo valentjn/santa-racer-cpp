@@ -30,7 +30,7 @@ Mask::Mask(SDL_Surface *surface, int frame_count) {
   for (y = 0; y < m_height; y++) {
     m_array[y] = new bool[m_complete_width];
     for (x = 0; x < m_complete_width; x++) {
-      pixel = (Uint32 *)m_surface->pixels + y * m_surface->pitch / 4 + x;
+      pixel = static_cast<Uint32*>(m_surface->pixels) + y * m_surface->pitch / 4 + x;
       SDL_GetRGBA(*pixel, m_surface->format, &r, &g, &b, &a);
       m_array[y][x] = (a == 0xff);
     }

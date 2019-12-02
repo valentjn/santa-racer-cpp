@@ -19,7 +19,7 @@ class Balloon {
     ShieldBalloon
   };
 
-  Balloon(void *parent);
+  explicit Balloon(void *parent);
 
   void reinit(int tile_x, int tile_y, int gfx_index);
   void draw(void);

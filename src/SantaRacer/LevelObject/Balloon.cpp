@@ -22,7 +22,7 @@ void Balloon::reinit(int tile_x, int tile_y, int gfx_index) {
   SDL_Surface *surface;
   int frame_count;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
 
   frame_count = balloon_frame_count;
   m_frame_speed = balloon_frame_speed;
@@ -67,7 +67,7 @@ void Balloon::draw(void) {
   int level_x;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
   width = object->get_width();
   height = object->get_height();
@@ -89,7 +89,7 @@ int Balloon::get_y(void) {
   float time_diff;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   time_diff = (SDL_GetTicks() - m_time) / 1000.0;
   y = m_y - speed * time_diff;
 
@@ -102,10 +102,10 @@ int Balloon::get_frame(void) {
   int frame_count;
   LevelObject *object;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   frame_count = object->get_frame_count();
   time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-  frame = int(time_diff * m_frame_speed + m_frame) % (frame_count * 2 - 2);
+  frame = static_cast<int>(time_diff * m_frame_speed + m_frame) % (frame_count * 2 - 2);
 
   if (frame >= frame_count) {
     frame = 2 * frame_count - frame - 2;

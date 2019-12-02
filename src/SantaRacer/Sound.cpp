@@ -4,10 +4,10 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <string>
+
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Sound.hpp"
-
-#include <string>
 
 namespace SantaRacer {
 
@@ -49,7 +49,7 @@ void Sound::play_panned_volume(std::string name, float pan,
     Output::fatal_error("couldn't set panning: %s\n", Mix_GetError());
   }
 
-  Mix_Volume(channel, (int)(volume * MIX_MAX_VOLUME));
+  Mix_Volume(channel, static_cast<int>(volume * MIX_MAX_VOLUME));
 
   play_channel(name, channel);
 }
@@ -57,7 +57,7 @@ void Sound::play_panned_volume(std::string name, float pan,
 void Sound::play_panned_x(std::string name, int x) {
   float pan;
 
-  pan = (float)x / Setup::screen_width;
+  pan = static_cast<float>(x) / Setup::screen_width;
   if (pan < 0) {
     pan = 0;
   } else if (pan > 1) {

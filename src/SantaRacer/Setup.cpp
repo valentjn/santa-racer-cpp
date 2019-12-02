@@ -4,17 +4,18 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <fstream>
+#include <iostream>
+#include <string>
+
+#include <dirent.h>
+#include <sys/types.h>
+
 #include "SantaRacer/Config.hpp"
 #include "SantaRacer/Globals.hpp"
 #include "SantaRacer/Random.hpp"
 #include "SantaRacer/Setup.hpp"
 #include "SantaRacer/Sound.hpp"
-
-#include <dirent.h>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sys/types.h>
 
 namespace SantaRacer {
 namespace Setup {

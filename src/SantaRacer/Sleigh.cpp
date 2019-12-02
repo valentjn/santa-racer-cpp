@@ -153,7 +153,7 @@ void Sleigh::draw(void) {
 
   if (has_shield()) {
     shield_frame =
-        int((m_shield_end - SDL_GetTicks()) / 1000.0 * shield_frame_speed) %
+        static_cast<int>((m_shield_end - SDL_GetTicks()) / 1000.0 * shield_frame_speed) %
         shield_frame_count;
     Draw::blit(m_shield_surface, shield_frame * m_shield_width, 0,
                m_shield_width, m_shield_height, Setup::screen,
@@ -372,8 +372,7 @@ int Sleigh::get_x(void) {
   int x;
 
   if (m_menu_mode) {
-    return (sin(float(SDL_GetTicks() - m_time) / menu_x_period_length * 2 *
-                    M_PI +
+    return (sin(static_cast<float>(SDL_GetTicks() - m_time) / menu_x_period_length * 2 * M_PI +
                 m_rand_offset_x) +
             1) *
                ((menu_max_x - menu_min_x) / 2.0) +
@@ -382,7 +381,7 @@ int Sleigh::get_x(void) {
     if (m_speed_x == 0) {
       return m_x;
     } else {
-      x = m_x + int((SDL_GetTicks() - m_time_x) / 1000.0 * m_speed_x);
+      x = m_x + static_cast<int>((SDL_GetTicks() - m_time_x) / 1000.0 * m_speed_x);
       if (x < 0) {
         m_x = 0;
         m_speed_x = 0;
@@ -402,8 +401,7 @@ int Sleigh::get_y(void) {
   int y;
 
   if (m_menu_mode) {
-    return (sin(float(SDL_GetTicks() - m_time) / menu_y_period_length * 2 *
-                    M_PI +
+    return (sin(static_cast<float>(SDL_GetTicks() - m_time) / menu_y_period_length * 2 * M_PI +
                 m_rand_offset_y) +
             1) *
                ((menu_max_y - menu_min_y) / 2.0) +
@@ -413,7 +411,7 @@ int Sleigh::get_y(void) {
       return m_y;
 
     } else {
-      y = m_y + int((SDL_GetTicks() - m_time_y) / 1000.0 * m_speed_y);
+      y = m_y + static_cast<int>((SDL_GetTicks() - m_time_y) / 1000.0 * m_speed_y);
       if (y < 0) {
         m_y = 0;
         m_speed_y = 0;
@@ -442,8 +440,7 @@ int Sleigh::get_frame(void) {
     return m_frame;
   }
 
-  return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) %
-         frame_count;
+  return static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) % frame_count;
 }
 
 void Sleigh::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }

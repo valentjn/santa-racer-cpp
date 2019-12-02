@@ -13,7 +13,7 @@ namespace LevelObject {
 
 class Goblin {
  public:
-  Goblin(void *parent);
+  explicit Goblin(void *parent);
   ~Goblin(void);
 
   void reinit(int tile_x, int tile_y);

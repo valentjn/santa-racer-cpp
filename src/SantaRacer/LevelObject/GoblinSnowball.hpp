@@ -11,7 +11,7 @@ namespace LevelObject {
 
 class GoblinSnowball {
  public:
-  GoblinSnowball(void *parent);
+  explicit GoblinSnowball(void *parent);
   ~GoblinSnowball(void);
 
   void reinit(int tile_x, int tile_y);

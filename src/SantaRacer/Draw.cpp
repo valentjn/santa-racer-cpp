@@ -53,7 +53,7 @@ void set_alpha(SDL_Surface *surface, Uint8 alpha) {
 
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
-      pixel = (Uint32 *)surface->pixels + y * surface->pitch / 4 + x;
+      pixel = static_cast<Uint32*>(surface->pixels) + y * surface->pitch / 4 + x;
       SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &a);
       if (a != 0) {
         color = SDL_MapRGBA(surface->format, r, g, b, alpha);

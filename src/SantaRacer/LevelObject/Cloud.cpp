@@ -4,12 +4,11 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/LevelObject/Cloud.hpp"
-
 #include <SDL/SDL.h>
 
 #include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Globals.hpp"
+#include "SantaRacer/LevelObject/Cloud.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
@@ -21,7 +20,7 @@ void Cloud::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
 
   surface = Setup::images["cloud"];
   m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width - surface->w / 2;
@@ -35,7 +34,7 @@ void Cloud::draw(void) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
 
   Draw::copy(surface, Setup::screen,

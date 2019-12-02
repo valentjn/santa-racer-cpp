@@ -13,7 +13,7 @@ namespace LevelObject {
 
 class Snowman {
  public:
-  Snowman(void *parent);
+  explicit Snowman(void *parent);
   ~Snowman(void);
 
   void reinit(int tile_x, int tile_y);

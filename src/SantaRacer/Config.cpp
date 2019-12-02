@@ -4,14 +4,14 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Config.hpp"
-#include "SantaRacer/Globals.hpp"
-
 #include <sys/stat.h>
 
 #include <fstream>
 #include <iostream>
 #include <string>
+
+#include "SantaRacer/Config.hpp"
+#include "SantaRacer/Globals.hpp"
 
 namespace SantaRacer {
 namespace Config {
@@ -101,7 +101,7 @@ bool check_dir(const char *dir) {
   if (result == -1) {
     return false;
   } else {
-    return bool(attributes.st_mode & S_IFDIR);
+    return static_cast<bool>(attributes.st_mode & S_IFDIR);
   }
 }
 
@@ -113,7 +113,7 @@ bool check_file(const char *file) {
   if (result == -1) {
     return false;
   } else {
-    return bool(attributes.st_mode & S_IFREG);
+    return static_cast<bool>(attributes.st_mode & S_IFREG);
   }
 }
 

@@ -11,7 +11,7 @@ namespace LevelObject {
 
 class Angel {
  public:
-  Angel(void *parent);
+  explicit Angel(void *parent);
   ~Angel(void);
 
   void reinit(int tile_x, int tile_y);

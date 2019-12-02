@@ -42,7 +42,7 @@ void Snowflake::draw(void) {
     return;
   }
 
-  bufp = (Uint32 *)Setup::screen->pixels + y * Setup::screen->pitch / 4 + x / 2;
+  bufp = reinterpret_cast<Uint32*>(Setup::screen->pixels) + y * Setup::screen->pitch / 4 + x / 2;
   // FIXME ??
   *bufp = m_color;
 }

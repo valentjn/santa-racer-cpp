@@ -47,7 +47,7 @@ void Level::draw(void) {
   int y;
   int index;
 
-  start_x = int(get_offset()) / tile_width;
+  start_x = static_cast<int>(get_offset()) / tile_width;
 
   for (y = 0; y < m_height; y++) {
     for (x = start_x; x < start_x + m_tiles_to_draw; x++) {
@@ -100,7 +100,7 @@ void Level::move_objects(void) {
   int index;
   LevelObject::LevelObject *object;
 
-  start_x = int(get_offset()) / tile_width;
+  start_x = static_cast<int>(get_offset()) / tile_width;
 
   for (y = 0; y < m_height; y++) {
     for (x = start_x; x < start_x + m_tiles_to_draw + 1; x++) {
@@ -212,7 +212,7 @@ float Level::get_speed(void) {
     return menu_speed;
   } else {
     return Setup::game->sleigh->get_x() /
-               float(Setup::screen_width - Setup::game->sleigh->get_width()) *
+               static_cast<float>(Setup::screen_width - Setup::game->sleigh->get_width()) *
                (max_speed - min_speed) +
            min_speed;
   }

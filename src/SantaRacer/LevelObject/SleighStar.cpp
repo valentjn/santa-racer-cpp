@@ -66,7 +66,7 @@ void SleighStar::move(void) {
 }
 
 int SleighStar::get_frame(void) {
-  return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
+  return static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame);
 }
 
 }  // namespace LevelObject

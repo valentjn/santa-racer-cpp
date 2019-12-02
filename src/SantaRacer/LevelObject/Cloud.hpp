@@ -11,7 +11,7 @@ namespace LevelObject {
 
 class Cloud {
  public:
-  Cloud(void *parent);
+  explicit Cloud(void *parent);
 
   void reinit(int tile_x, int tile_y);
   void draw(void);

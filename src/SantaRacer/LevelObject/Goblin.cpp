@@ -21,7 +21,7 @@ void Goblin::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = Setup::images["goblin"];
 
   m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width -
@@ -47,7 +47,7 @@ void Goblin::draw(void) {
   int level_x;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
   width = object->get_width();
   height = object->get_height();
@@ -67,7 +67,7 @@ void Goblin::move(void) {
   LevelObject *object;
 
   frame = get_frame();
-  parent = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
 
   // Output::debug("frame %i\n", frame);
 
@@ -98,7 +98,7 @@ int Goblin::get_frame(void) {
   int frame;
 
   time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-  frame = int(time_diff * frame_speed + m_frame) % frame_count;
+  frame = static_cast<int>(time_diff * frame_speed + m_frame) % frame_count;
 
   return frame;
 }

@@ -23,7 +23,7 @@ void Finish::reinit(int tile_x, int tile_y) {
   LevelObject *object;
   SDL_Surface *surface;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = Setup::images["finish"];
 
   m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width - surface->w / 2;
@@ -42,7 +42,7 @@ void Finish::draw(void) {
   int level_x;
   int y;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
   width = object->get_width();
   height = object->get_height();

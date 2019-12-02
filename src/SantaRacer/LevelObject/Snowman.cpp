@@ -37,7 +37,7 @@ void Snowman::reinit(int tile_x, int tile_y) {
   SDL_Surface *surface;
   int i;
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = Setup::images["snowman"];
 
   m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width -
@@ -76,7 +76,7 @@ void Snowman::draw(void) {
     m_stars[i]->draw();
   }
 
-  object = (LevelObject *)m_parent;
+  object = reinterpret_cast<LevelObject*>(m_parent);
   surface = object->get_surface();
   width = object->get_width();
   height = object->get_height();
@@ -108,7 +108,7 @@ void Snowman::move(void) {
 
 int Snowman::get_level_x(void) {
   if (m_triggered) {
-    return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
+    return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
   } else {
     return m_level_x;
   }
@@ -116,7 +116,7 @@ int Snowman::get_level_x(void) {
 
 int Snowman::get_y(void) {
   if (m_triggered) {
-    return m_y + int((SDL_GetTicks() - m_time) / 1000.0 * speed_y);
+    return m_y + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_y);
   } else {
     return m_y;
   }
@@ -128,7 +128,7 @@ int Snowman::get_frame(void) {
 
   if (m_triggered) {
     time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-    frame = int(time_diff * frame_speed + m_frame);
+    frame = static_cast<int>(time_diff * frame_speed + m_frame);
 
     if (frame >= frame_count) {
       return frame_count - 1;

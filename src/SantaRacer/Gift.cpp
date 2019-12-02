@@ -191,8 +191,7 @@ void Gift::move(void) {
     return;
   }
 
-  start_x =
-      int(Setup::game->level->get_offset()) / Setup::game->level->tile_width;
+  start_x = static_cast<int>(Setup::game->level->get_offset()) / Setup::game->level->tile_width;
   tiles_to_draw = Setup::game->level->get_tiles_to_draw();
   height = Setup::game->level->get_height();
   level_map = Setup::game->level->get_map();
@@ -262,7 +261,7 @@ int Gift::get_level_x(void) {
     return m_level_x;
   }
 
-  return m_level_x + int((SDL_GetTicks() - m_time) / 1000.0 * m_speed_x);
+  return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * m_speed_x);
 }
 
 int Gift::get_y(void) {
@@ -279,13 +278,11 @@ int Gift::get_y(void) {
 }
 
 int Gift::get_frame(void) {
-  return int((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) %
-         frame_count;
+  return static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) % frame_count;
 }
 
 int Gift::get_big_star_frame(void) {
-  return int((SDL_GetTicks() - m_big_star_time) / 1000.0 *
-             big_star_vframe_speed);
+  return static_cast<int>((SDL_GetTicks() - m_big_star_time) / 1000.0 * big_star_vframe_speed);
 }
 
 bool Gift::exists(void) { return m_exists; }

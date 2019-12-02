@@ -4,10 +4,10 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <string>
+
 #include "SantaRacer/Args.hpp"
 #include "SantaRacer/Globals.hpp"
-
-#include <string>
 
 namespace SantaRacer {
 

@@ -4,12 +4,12 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Globals.hpp"
-#include "SantaRacer/Output.hpp"
-
 #include <cstdarg>
 #include <iostream>
 #include <string>
+
+#include "SantaRacer/Globals.hpp"
+#include "SantaRacer/Output.hpp"
 
 namespace SantaRacer {
 namespace Output {
