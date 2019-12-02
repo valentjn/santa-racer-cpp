@@ -68,8 +68,9 @@ set(SOURCES
     )
 add_executable(SantaRacer ${SOURCES})
 
-# own compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17 -Wall -Wextra")
+# own compiler settings
+set_property(TARGET SantaRacer PROPERTY CXX_STANDARD 17)
+target_compile_options(SantaRacer PRIVATE -Wall -Wextra)
 
 # include header files
 include_directories(src)
