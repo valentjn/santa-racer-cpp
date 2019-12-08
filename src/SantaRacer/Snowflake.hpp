@@ -8,35 +8,37 @@
 
 namespace SantaRacer {
 
+class Game;
+
 class Snowflake {
  public:
-  Snowflake(void);
-  void reinit(bool first_init = false);
-  void draw(void);
-  void move(void);
-  void change_speed(void);
-  float get_level_x(void);
-  float get_y(void);
+  Snowflake(Game* game);
 
- private:
-  int m_z;
-  int m_speed_x;
-  int m_speed_y;
-  int m_speed_change_time;
-  int m_time;
+  void initialize(bool putOnTop = false);
+  void draw() const;
+  void move();
+  void changeSpeed();
+  double getLevelX() const;
+  double getY() const;
 
-  float m_level_x;
-  float m_y;
+ protected:
+  Game* game;
+  double levelX;
+  double y;
+  size_t z;
+  Uint32 color;
+  int speedX;
+  int speedY;
+  size_t speedChangeTime;
+  size_t time;
 
-  unsigned int m_color;
-
-  static const int min_speed_x = -40;
-  static const int max_speed_x = 40;
-  static const int min_speed_y = 40;
-  static const int max_speed_y = 160;
-  static const int min_speed_change_time = 25;
-  static const int max_speed_change_time = 250;
-  static const int left_margin = -50;
+  const int minSpeedX = -40;
+  const int maxSpeedX = 40;
+  const int minSpeedY = 40;
+  const int maxSpeedY = 160;
+  const int minSpeedChangeTime = 25;
+  const int maxSpeedChangeTime = 250;
+  const int leftMargin = -50;
 };
 
 }  // namespace SantaRacer

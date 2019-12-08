@@ -10,42 +10,44 @@
 
 namespace SantaRacer {
 
+class Game;
+
 class Score {
  public:
-  Score(void);
+  Score(Game *game);
 
-  void reset(int total_time_secs);
-  void draw(void);
+  void initialize(int totalTime);
+  void draw() const;
 
-  int get_points(void);
-  void set_points(int points);
-  void add_points(int points);
+  int getGiftPoints() const;
+  void setGiftPoints(int giftPoints);
+  void addGiftPoints(int giftPoints);
 
-  int get_damage(void);
-  void set_damage(int damage);
-  void add_damage(int damage);
+  int getDamagePoints() const;
+  void setDamagePoints(int damagePoints);
+  void addDamagePoints(int damagePoints);
 
-  int get_remaining_secs(void);
-  void add_to_remaining_secs(int secs);
-  void reset_clock(int total_time_secs);
+  int getRemainingTime() const;
+  void addToRemainingTime(int time);
+  void resetClock(int totalTime);
 
-  int get_score(void);
+  int getScore() const;
 
- private:
-  static const int score_points_per_point = 1;
-  static const int score_points_per_damage = -2;
-  static const int score_points_per_remaining_sec = 10;
+ protected:
+  const int scorePointsPerGiftPoint = 1;
+  const int scorePointsPerDamagePoint = -2;
+  const int scorePointsPerRemainingTime = 10;
 
-  int m_height;
+  Game *game;
 
-  int m_points;
-  int m_damage;
-  int m_time_start;
-  int m_total_time_secs;
+  const Asset::Image& scoreGiftImage;
+  const Asset::Image& scoreDamageImage;
+  const Asset::Image& scoreTimeImage;
 
-  SDL_Surface *m_surface_points;
-  SDL_Surface *m_surface_damage;
-  SDL_Surface *m_surface_time;
+  int giftPoints;
+  int damagePoints;
+  int timeStart;
+  int totalTime;
 };
 
 }  // namespace SantaRacer

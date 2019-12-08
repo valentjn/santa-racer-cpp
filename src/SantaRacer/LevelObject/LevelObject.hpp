@@ -6,91 +6,41 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <memory>
 
-#include "SantaRacer/LevelObject/Angel.hpp"
-#include "SantaRacer/LevelObject/Balloon.hpp"
-#include "SantaRacer/LevelObject/Cloud.hpp"
-#include "SantaRacer/LevelObject/Finish.hpp"
-#include "SantaRacer/LevelObject/Goblin.hpp"
-#include "SantaRacer/LevelObject/GoblinSnowball.hpp"
-#include "SantaRacer/Mask.hpp"
-#include "SantaRacer/LevelObject/Snowman.hpp"
+#include "SantaRacer/Asset/Image.hpp"
 
 namespace SantaRacer {
+
+class Game;
+
 namespace LevelObject {
 
 class LevelObject {
  public:
-  enum ObjectType {
-    EmptyObject,
-    SnowmanObject,
-    GoblinObject,
-    GoblinSnowballObject,
-    AngelObject,
-    BalloonObject,
-    CloudObject,
-    FinishObject
-  };
+  LevelObject(Game* game, size_t tileX, size_t tileY, Asset::Image& image);
+  virtual ~LevelObject();
 
-  LevelObject(void);
-  ~LevelObject(void);
+  static std::unique_ptr<LevelObject> create(Game* game, size_t tileX, size_t tileY,
+      size_t mapValue);
 
-  void reinit(int tile_x, int tile_y, int gfx_index);
-  void reset(void);
-  void draw(void);
-  void move(void);
-  void hide(void);
+  virtual void draw() const;
+  virtual void move();
 
-  ObjectType get_type(void);
-  int get_tile_x(void);
-  int get_tile_y(void);
-  int get_width(void);
-  int get_height(void);
-  Mask *get_mask(void);
-  bool exists(void);
-  bool is_hidden(void);
+  size_t getTileX() const;
+  size_t getTileY() const;
+  virtual int getLevelX() const = 0;
+  virtual int getY() const = 0;
+  virtual size_t getFrame() const = 0;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
+  Asset::Image& getImage();
 
-  Cloud *get_cloud(void);
-  Balloon *get_balloon(void);
-  Angel *get_angel(void);
-  Goblin *get_goblin(void);
-  GoblinSnowball *get_goblin_snowball(void);
-  Snowman *get_snowman(void);
-  Finish *get_finish(void);
+ protected:
+  Game *game;
+  Asset::Image& image;
 
-  SDL_Surface *get_surface(void);
-  void set_surface(SDL_Surface *surface);
-
-  int get_frame_count(void);
-  void set_frame_count(int frame_count);
-
- private:
-  bool m_exists;
-  ObjectType m_type;
-
-  int m_width;
-  int m_height;
-  int m_frame_count;
-
-  int m_tile_x;
-  int m_tile_y;
-
-  SDL_Surface *m_surface;
-  Mask *m_mask;
-  bool m_hidden;
-
-  Cloud *m_cloud;
-  Balloon *m_balloon;
-  Angel *m_angel;
-  Goblin *m_goblin;
-  GoblinSnowball *m_goblin_snowball;
-  Snowman *m_snowman;
-  Finish *m_finish;
+  int tileX;
+  int tileY;
 };
 
 }  // namespace LevelObject

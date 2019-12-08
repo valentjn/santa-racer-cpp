@@ -6,45 +6,43 @@
 
 #pragma once
 
+#include <string>
+#include <unordered_map>
+
+#include "SantaRacer/LevelObject/LevelObject.hpp"
+
 namespace SantaRacer {
 namespace LevelObject {
 
-class Balloon {
+class Balloon : public LevelObject {
  public:
-  enum BalloonType {
-    CashBalloon,
-    PointsBalloon,
-    ChampagneBalloon,
-    GiftBalloon,
-    ShieldBalloon
+  enum class Type {
+    Normal,
+    Cash,
+    Champagne,
+    Gift,
+    Shield,
   };
 
-  explicit Balloon(void *parent);
+  Balloon(Game* game, size_t tileX, size_t tileY, Type type);
+  ~Balloon() override;
 
-  void reinit(int tile_x, int tile_y, int gfx_index);
-  void draw(void);
-  void move(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
+  Type getType() const;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
-  BalloonType get_type(void);
+ protected:
+  static const std::unordered_map<Type, std::string> imageNameMap;
 
- private:
-  static const int balloon_frame_count = 8;
-  static const int balloon_frame_speed = balloon_frame_count;
-  static const int cash_frame_count = 7;
-  static const int cash_frame_speed = cash_frame_count;
-  static const int speed = 50;
+  const int frameSpeed = 8;
+  const int speed = 50;
 
-  void *m_parent;
-  BalloonType m_ballon_type;
-  int m_time;
-  int m_frame_speed;
-
-  int m_level_x;
-  int m_y;
-  int m_frame;
+  Type type;
+  int levelX;
+  int y;
+  size_t frame;
+  size_t time;
 };
 
 }  // namespace LevelObject

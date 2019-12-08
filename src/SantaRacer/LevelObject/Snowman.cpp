@@ -4,147 +4,76 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/LevelObject/Snowman.hpp"
+#include <algorithm>
+#include <vector>
 
-#include <SDL/SDL.h>
-
-#include "SantaRacer/Draw.hpp"
-#include "SantaRacer/Globals.hpp"
+#include "SantaRacer/Game.hpp"
+#include "SantaRacer/RNG.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
-#include "SantaRacer/Random.hpp"
+#include "SantaRacer/LevelObject/Snowman.hpp"
 
 namespace SantaRacer {
 namespace LevelObject {
 
-Snowman::Snowman(void *parent) {
-  m_parent = parent;
-  m_stars = nullptr;
-}
-
-Snowman::~Snowman(void) {
-  int i;
-
-  if (m_stars != nullptr) {
-    for (i = 0; i < star_count; i++) {
-      delete m_stars[i];
-    }
-    delete[] m_stars;
+Snowman::Snowman(Game* game, size_t tileX, size_t tileY) :
+    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("snowman")),
+    levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
+      (image.getWidth() / image.getNumberOfFrames()) / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+    frame(0), time(SDL_GetTicks()),
+    triggerOffset(game->getRNG().getInteger(minTriggerOffset, maxTriggerOffset)),
+    triggered(false), triggeredCheck(false) {
+  for (size_t i = 0; i < numberOfSnowmanStars; i++) {
+    snowmanStars.emplace_back(game, this);
   }
 }
 
-void Snowman::reinit(int tile_x, int tile_y) {
-  LevelObject *object;
-  SDL_Surface *surface;
-  int i;
+Snowman::~Snowman() {
+}
 
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = Setup::images["snowman"];
+void Snowman::draw() const {
+  for (const SnowmanStar& snowmanStar : snowmanStars) {
+    snowmanStar.draw();
+  }
 
-  m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width -
-              (surface->w / frame_count) / 2;
-  m_y = (tile_y + 0.5) * Setup::game->level->tile_height - surface->h / 2;
+  LevelObject::draw();
+}
 
-  object->set_surface(surface);
-  object->set_frame_count(frame_count);
+void Snowman::move() {
+  if ((game->getSleigh().getX() + game->getLevel().getOffset() >= levelX - triggerOffset) &&
+      !triggered) {
+    time = SDL_GetTicks();
+    triggered = true;
+    triggeredCheck = true;
+  }
 
-  m_trigger_offset = Random::rnd(trigger_offset_min, trigger_offset_max);
-
-  m_time = SDL_GetTicks();
-  m_frame = 0;
-  m_triggered = false;
-  m_triggered_query = false;
-
-  m_stars = new SnowmanStar *[star_count];
-  for (i = 0; i < star_count; i++) {
-    m_stars[i] = new SnowmanStar(this);
+  for (SnowmanStar& snowmanStar : snowmanStars) {
+    snowmanStar.move();
   }
 }
 
-void Snowman::draw(void) {
-  LevelObject *object;
-  SDL_Surface *surface;
-  int frame;
-  int width;
-  int height;
-
-  int level_x;
-  int y;
-
-  int i;
-
-  for (i = 0; i < star_count; i++) {
-    m_stars[i]->draw();
-  }
-
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = object->get_surface();
-  width = object->get_width();
-  height = object->get_height();
-
-  level_x = get_level_x();
-  y = get_y();
-  frame = get_frame();
-
-  Draw::blit(surface, width * frame, 0, width, height, Setup::screen,
-             level_x - Setup::game->level->get_offset(), y);
+int Snowman::getLevelX() const {
+  return (triggered ? (levelX + static_cast<int>((SDL_GetTicks() - time) / 1000.0 * speedX)) :
+      levelX);
 }
 
-void Snowman::move(void) {
-  int i;
-
-  if (Setup::game->sleigh->get_x() + Setup::game->level->get_offset() >=
-      m_level_x - m_trigger_offset) {
-    if (!m_triggered) {
-      m_time = SDL_GetTicks();
-      m_triggered = true;
-      m_triggered_query = true;
-    }
-  }
-
-  for (i = 0; i < star_count; i++) {
-    m_stars[i]->move();
-  }
+int Snowman::getY() const {
+  return (triggered ? (y + static_cast<int>((SDL_GetTicks() - time) / 1000.0 * speedY)) : y);
 }
 
-int Snowman::get_level_x(void) {
-  if (m_triggered) {
-    return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
-  } else {
-    return m_level_x;
-  }
+size_t Snowman::getFrame() const {
+  return (triggered ?
+      std::min(static_cast<size_t>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame),
+      image.getNumberOfFrames()) : 0);
 }
 
-int Snowman::get_y(void) {
-  if (m_triggered) {
-    return m_y + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_y);
-  } else {
-    return m_y;
-  }
+bool Snowman::isTriggered() {
+  return triggered;
 }
 
-int Snowman::get_frame(void) {
-  float time_diff;
-  int frame;
-
-  if (m_triggered) {
-    time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-    frame = static_cast<int>(time_diff * frame_speed + m_frame);
-
-    if (frame >= frame_count) {
-      return frame_count - 1;
-    } else {
-      return frame;
-    }
-  } else {
-    return 0;
-  }
-}
-
-bool Snowman::is_triggered(void) { return m_triggered; }
-
-bool Snowman::query_triggered(void) {
-  if (m_triggered_query) {
-    m_triggered_query = false;
+bool Snowman::checkTriggered() {
+  if (triggeredCheck) {
+    triggeredCheck = false;
     return true;
   } else {
     return false;

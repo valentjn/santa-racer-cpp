@@ -6,38 +6,32 @@
 
 #pragma once
 
+#include "SantaRacer/LevelObject/LevelObject.hpp"
+
 namespace SantaRacer {
 namespace LevelObject {
 
-class GoblinSnowball {
+class GoblinSnowball : public LevelObject {
  public:
-  explicit GoblinSnowball(void *parent);
-  ~GoblinSnowball(void);
+  GoblinSnowball(Game* game, size_t tileX, size_t tileY);
+  ~GoblinSnowball() override;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
+ protected:
+  const int gravityAcceleration = 80;
+  const int speedX = -200;
+  const int speedYStart = -250;
 
- private:
-  static const int frame_count = 1;
+  const int offsetX = 45;
+  const int offsetY = 40;
 
-  static const int gravity_acceleration = 80;
-  static const int speed_x = -200;
-  static const int speed_y_start = -250;
-
-  static const int offset_x = 45;
-  static const int offset_y = 40;
-
-  void *m_parent;
-
-  int m_level_x;
-  int m_y;
-  int m_frame;
-  int m_time;
+  int levelX;
+  int y;
+  size_t frame;
+  size_t time;
 };
 
 }  // namespace LevelObject

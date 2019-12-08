@@ -4,142 +4,197 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <memory>
 #include <string>
+#include <vector>
 
-#include "SantaRacer/Draw.hpp"
 #include "SantaRacer/Game.hpp"
-#include "SantaRacer/Globals.hpp"
-#include "SantaRacer/Random.hpp"
-#include "SantaRacer/Sound.hpp"
+#include "SantaRacer/Printer.hpp"
+#include "SantaRacer/LevelObject/Angel.hpp"
+#include "SantaRacer/LevelObject/Balloon.hpp"
+#include "SantaRacer/LevelObject/Cloud.hpp"
+#include "SantaRacer/LevelObject/Finish.hpp"
+#include "SantaRacer/LevelObject/Goblin.hpp"
+#include "SantaRacer/LevelObject/GoblinSnowball.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
+#include "SantaRacer/LevelObject/Snowman.hpp"
 
 namespace SantaRacer {
 
-Game::Game(void) { m_initialized = false; }
+Game::Game(Options&& options) : options(std::move(options)),
+      screenWidth(640), screenHeight(480), targetFps(30) {
+  Printer::setVerbose(options.isVerbose());
 
-Game::~Game(void) {
-  int i;
-
-  if (!m_initialized) {
-    return;
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+    Printer::fatalError("unable to initalize SDL: %s\n", SDL_GetError());
   }
 
-  SDL_FreeSurface(m_highscore_bg);
+  SDL_WM_SetCaption("Santa Racer", "Santa Racer");
+  SDL_ShowCursor(SDL_DISABLE);
+  SDL_EnableUNICODE(1);
 
-  for (i = 0; i < max_gift_count; i++) {
-    delete gifts[i];
+  Uint32 flags = SDL_DOUBLEBUF | SDL_RESIZABLE;
+
+  if (options.isFullScreen()) {
+    flags |= SDL_FULLSCREEN;
   }
 
-  delete[] gifts;
+  screenSurface = SDL_SetVideoMode(screenWidth, screenHeight, 16, flags);
 
-  for (i = 0; i < snowflake_count; i++) {
-    delete snowflakes[i];
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+    Printer::fatalError("unable to initialize SDL_Mixer: %s\n", Mix_GetError());
   }
+  Mix_AllocateChannels(numberOfChannels);
 
-  delete[] snowflakes;
-  delete sleigh;
-  delete level;
-  delete landscape;
-  delete score;
+  dataLibrary.loadAssets();
+  imageLibrary.loadAssets();
+  soundLibrary.loadAssets();
+  musicLibrary.loadAssets();
+  loadText();
+  loadChimneys();
 
-  m_initialized = false;
-}
+  SDL_WM_SetIcon(&imageLibrary.getAsset("icon").getSurface(), nullptr);
 
-void Game::init(void) {
-  int i;
-
-  m_last_time = 0;
-
-  landscape = new Landscape();
-  level = new Level(Setup::std_level_map, Setup::std_level_objects_map,
-                    Setup::std_level_width, Setup::std_level_height);
-
-  sleigh = new Sleigh();
-  sleigh->reset_stars();
-  snowflakes = new Snowflake *[snowflake_count];
-
-  for (i = 0; i < snowflake_count; i++) {
-    snowflakes[i] = new Snowflake();
-  }
-
-  gifts = new Gift *[max_gift_count];
-  for (i = 0; i < max_gift_count; i++) {
-    gifts[i] = new Gift();
-  }
-
-  score = new Score();
-
-  m_highscore_bg =
+  SDL_Surface* highscoreBackgroundSurface =
       SDL_CreateRGBSurface(SDL_SWSURFACE, 400, 300, 32, 0, 0, 0, 0);
 
-  if (m_highscore_bg == nullptr) {
-    Output::fatal_error("could not create RGB surface: %s\n", SDL_GetError());
+  if (highscoreBackgroundSurface == nullptr) {
+    Printer::fatalError("could not create RGB surface: %s\n", SDL_GetError());
   }
-  SDL_SetAlpha(m_highscore_bg, SDL_SRCALPHA, 128);
 
-  m_quit = false;
-  m_fire_pressed = false;
-  m_up_pressed = false;
-  m_down_pressed = false;
-  m_left_pressed = false;
-  m_right_pressed = false;
-  m_escape_pressed = false;
+  SDL_SetAlpha(highscoreBackgroundSurface, SDL_SRCALPHA, 128);
+  highscoreBackground = Asset::Image(highscoreBackgroundSurface);
 
-  mode = menu_mode;
-  fps = 0;
-  m_last_fps_update_time = 0;
-  m_frame_counter = 0;
+  rng.seed();
+  Printer::debug("initializing game\n");
+  initialize();
 
-  m_key_state = SDL_GetKeyState(nullptr);
-
-  countdown_mode = false;
-  countdown_start_time = 0;
-
-  m_bell_time = SDL_GetTicks() + Random::rnd(bell_time_min, bell_time_max);
-  m_dog_time = SDL_GetTicks() + Random::rnd(dog_time_min, dog_time_max);
-
-  m_bonus_time_start = 0;
-
-  m_last_gift_time = 0;
-
-  m_highscore_score = 0;
-  m_highscore_place = 0;
-  m_highscore_name = "";
-  m_highscore_caret_blink_time = 0;
-
-  m_initialized = true;
+  musicLibrary.getAsset("bgmusic").play();
 }
 
-void Game::loop(void) {
-  while (!m_quit) {
-    process_events();
+Game::~Game() {
+  Printer::debug("closing audio\n");
+  Mix_CloseAudio();
+
+  Printer::debug("quitting sdl\n");
+  SDL_Quit();
+}
+
+void Game::loadText() {
+  const std::vector<double> data = dataLibrary.getAsset("char_widths");
+  const std::vector<size_t> textCharWidths(data.begin(), data.end());
+
+  if (textCharWidths.size() != 96) {
+    Printer::fatalError("invalid format of char_widths.txt, expected 96 values\n");
+  }
+
+  text.reset(new Text(imageLibrary.getAsset("font"), textCharWidths));
+}
+
+void Game::loadChimneys() {
+  const std::vector<double> data = dataLibrary.getAsset("chimneys");
+
+  if (data.size() % 4 != 0) {
+    Printer::fatalError("invalid format of chimneys.txt, expected size divisible by 4\n");
+  }
+
+  for (size_t i = 0; i < data.size() / 4; i++) {
+    const int mapIndex = data[4 * i];
+    const int x = data[4 * i + 1];
+    const int width = data[4 * i + 2];
+    const int y = data[4 * i + 3];
+    chimneys.emplace_back(mapIndex, x, width, y);
+  }
+}
+
+void Game::playSoundAtPosition(const Asset::Sound& sound, int x) const {
+  const double pan = std::min(std::max(
+      static_cast<double>(x) / static_cast<double>(screenWidth), 0.0), 1.0);
+  sound.playPannedWithVolume(pan, 1.0);
+}
+
+void Game::initialize() {
+  lastTime = 0;
+
+  landscape.reset(new Landscape(this));
+  level.reset(new Level(this, dataLibrary.getAsset("level"), dataLibrary.getAsset("level_objects"),
+      defaultLevelHeight));
+  sleigh.reset(new Sleigh(this));
+  score.reset(new Score(this));
+
+  sleigh->initializeSleighStars();
+  snowflakes.clear();
+
+  for (size_t i = 0; i < numberOfSnowflakes; i++) {
+    snowflakes.emplace_back(this);
+  }
+
+  quitFlag = false;
+  firePressed = false;
+  upPressed = false;
+  downPressed = false;
+  leftPressed = false;
+  rightPressed = false;
+  escapePressed = false;
+
+  mode = Mode::Menu;
+  fps = 0;
+  lastFpsUpdateTime = 0;
+  frameCounter = 0;
+
+  keyState = SDL_GetKeyState(nullptr);
+
+  countdownMode = false;
+  countdownStartTime = 0;
+
+  bellTime = SDL_GetTicks() + rng.getInteger(minBellTime, maxBellTime);
+  dogTime = SDL_GetTicks() + rng.getInteger(minDogTime, maxDogTime);
+
+  bonusTimeStart = 0;
+
+  lastGiftTime = 0;
+
+  highscore = {"", 0};
+  highscorePlace = 0;
+  highscoreCaretBlinkTime = 0;
+
+  initialized = true;
+}
+
+void Game::loop() {
+  while (!quitFlag) {
+    processEvents();
     check_keys();
     logic();
     draw();
-    frame_tick();
+    frameTick();
   }
 }
 
-void Game::process_events(void) {
+void Game::processEvents() {
   SDL_Event event;
   char ch;
 
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
-      m_quit = true;
+      quitFlag = true;
       break;
     } else if (event.key.type == SDL_KEYDOWN) {
-      if (mode == new_highscore_mode) {
+      if (mode == Mode::NewHighscore) {
         if ((event.key.keysym.sym == SDLK_BACKSPACE) ||
             (event.key.keysym.sym == SDLK_DELETE)) {
-          if (m_highscore_name.length() > 0) {
-            m_highscore_name =
-                m_highscore_name.erase(m_highscore_name.length() - 1);
-            m_highscore_caret_blink_time = SDL_GetTicks();
+          if (highscore.name.length() > 0) {
+            highscore.name =
+                highscore.name.erase(highscore.name.length() - 1);
+            highscoreCaretBlinkTime = SDL_GetTicks();
           }
         } else if (event.key.keysym.sym == SDLK_RETURN) {
-          Config::highscores[m_highscore_place].name = m_highscore_name;
-          return_to_menu();
-          mode = highscore_mode;
+          options.getHighscores()[highscorePlace].name = highscore.name;
+          returnToMenu();
+          mode = Mode::Highscores;
 
         } else if ((event.key.keysym.unicode & 0xff80) == 0) {
           ch = event.key.keysym.unicode & 0x7f;
@@ -147,9 +202,9 @@ void Game::process_events(void) {
           if (((ch >= 65) && (ch <= 90)) || ((ch >= 97) && (ch <= 120)) ||
               ((ch >= 48) && (ch <= 57)) || (ch == 64) || (ch == 95) ||
               (ch == 45) || (ch == 46) || (ch == 47) || (ch == 58)) {
-            if (m_highscore_name.length() < highscore_name_max_length) {
-              m_highscore_name += event.key.keysym.unicode;
-              m_highscore_caret_blink_time = SDL_GetTicks();
+            if (highscore.name.length() < maxHighscoreNameLength) {
+              highscore.name += event.key.keysym.unicode;
+              highscoreCaretBlinkTime = SDL_GetTicks();
             }
           }
         }
@@ -158,567 +213,547 @@ void Game::process_events(void) {
   }
 }
 
-void Game::check_keys(void) {
-  SDLMod mod_state;
-  int i;
-  int result;
-  int drunken_factor;
+void Game::check_keys() {
+  const SDLMod modState = SDL_GetModState();
 
-  mod_state = SDL_GetModState();
-  if (m_key_state[SDLK_c] && (mod_state & KMOD_CTRL)) {
-    m_quit = true;
-
-  } else if (mod_state & KMOD_CTRL && mod_state & KMOD_ALT &&
-             m_key_state[SDLK_RETURN]) {
-    result = SDL_WM_ToggleFullScreen(Setup::screen);
-    if (!result) {
-      Output::fatal_error("could not toggle fullscreen mode: %s\n",
-                          SDL_GetError());
+  if (keyState[SDLK_c] && (modState & KMOD_CTRL)) {
+    quitFlag = true;
+  } else if (modState & KMOD_CTRL && modState & KMOD_ALT && keyState[SDLK_RETURN]) {
+    if (!SDL_WM_ToggleFullScreen(screenSurface)) {
+      Printer::fatalError("could not toggle fullscreen mode: %s\n", SDL_GetError());
     }
   }
 
-  if (mode == menu_mode) {
-    if (m_key_state[SDLK_F1]) {
-      mode = help1_mode;
-    } else if (m_key_state[SDLK_F2]) {
-      mode = help2_mode;
-    } else if (m_key_state[SDLK_F3]) {
-      mode = highscore_mode;
-    } else if (m_key_state[SDLK_F5]) {
-      start_new_game();
-    } else if (m_key_state[SDLK_ESCAPE] && !m_escape_pressed) {
-      m_quit = true;
+  if (mode == Mode::Menu) {
+    if (keyState[SDLK_F1]) {
+      mode = Mode::HelpPage1;
+    } else if (keyState[SDLK_F2]) {
+      mode = Mode::HelpPage2;
+    } else if (keyState[SDLK_F3]) {
+      mode = Mode::Highscores;
+    } else if (keyState[SDLK_F5]) {
+      startNewGame();
+    } else if (keyState[SDLK_ESCAPE] && !escapePressed) {
+      quitFlag = true;
     }
 
-  } else if (mode == help1_mode || mode == help2_mode) {
-    if (m_key_state[SDLK_F1]) {
-      mode = help1_mode;
-    } else if (m_key_state[SDLK_F2]) {
-      mode = help2_mode;
-    } else if (m_key_state[SDLK_SPACE] ||
-               (m_key_state[SDLK_ESCAPE] && !m_escape_pressed)) {
-      mode = menu_mode;
+  } else if (mode == Mode::HelpPage1 || mode == Mode::HelpPage2) {
+    if (keyState[SDLK_F1]) {
+      mode = Mode::HelpPage1;
+    } else if (keyState[SDLK_F2]) {
+      mode = Mode::HelpPage2;
+    } else if (keyState[SDLK_SPACE] || (keyState[SDLK_ESCAPE] && !escapePressed)) {
+      mode = Mode::Menu;
     }
 
-  } else if (mode == highscore_mode) {
-    if (m_key_state[SDLK_F1]) {
-      mode = help1_mode;
-    } else if (m_key_state[SDLK_F2]) {
-      mode = help2_mode;
-    } else if (m_key_state[SDLK_SPACE] ||
-               (m_key_state[SDLK_ESCAPE] && !m_escape_pressed)) {
-      mode = menu_mode;
+  } else if (mode == Mode::Highscores) {
+    if (keyState[SDLK_F1]) {
+      mode = Mode::HelpPage1;
+    } else if (keyState[SDLK_F2]) {
+      mode = Mode::HelpPage2;
+    } else if (keyState[SDLK_SPACE] || (keyState[SDLK_ESCAPE] && !escapePressed)) {
+      mode = Mode::Menu;
     }
 
-  } else if ((mode == running_game) && !countdown_mode) {
-    if (sleigh->is_drunken()) {
-      drunken_factor = -1;
+  } else if ((mode == Mode::Running) && !countdownMode) {
+    const int drunkFactor = (sleigh->isDrunk() ? -1 : 1);
+
+    if (keyState[SDLK_UP]) {
+      sleigh->setSpeedY(drunkFactor * -1);
+    } else if (keyState[SDLK_DOWN]) {
+      sleigh->setSpeedY(drunkFactor * 1);
     } else {
-      drunken_factor = 1;
+      sleigh->setSpeedY(0);
+    }
+    if (keyState[SDLK_LEFT]) {
+      sleigh->setSpeedX(drunkFactor * -1);
+    } else if (keyState[SDLK_RIGHT]) {
+      sleigh->setSpeedX(drunkFactor * 1);
+    } else {
+      sleigh->setSpeedX(0);
+    }
+    if (keyState[SDLK_SPACE] && !firePressed &&
+        (lastGiftTime + giftWaitDuration < SDL_GetTicks()) &&
+        !sleigh->isImmobile()) {
+      gifts.emplace_back(this);
+      lastGiftTime = SDL_GetTicks();
     }
 
-    if (m_key_state[SDLK_UP]) {
-      sleigh->set_speed_y(drunken_factor * -1);
-    } else if (m_key_state[SDLK_DOWN]) {
-      sleigh->set_speed_y(drunken_factor * 1);
-    } else {
-      sleigh->set_speed_y(0);
-    }
-    if (m_key_state[SDLK_LEFT]) {
-      sleigh->set_speed_x(drunken_factor * -1);
-    } else if (m_key_state[SDLK_RIGHT]) {
-      sleigh->set_speed_x(drunken_factor * 1);
-    } else {
-      sleigh->set_speed_x(0);
-    }
-    if (m_key_state[SDLK_SPACE] && !m_fire_pressed &&
-        (m_last_gift_time + gift_wait_duration < SDL_GetTicks()) &&
-        !sleigh->is_unmovable()) {
-      i = 0;
-      while (i < max_gift_count && gifts[i]->exists()) {
-        i++;
-      }
-      if (i < max_gift_count) {
-        gifts[i]->reinit();
-        m_last_gift_time = SDL_GetTicks();
-      }
-    }
-
-    if (m_key_state[SDLK_ESCAPE] && !m_escape_pressed) {
-      return_to_menu();
+    if (keyState[SDLK_ESCAPE] && !escapePressed) {
+      returnToMenu();
     }
   }
 
-  m_left_pressed = m_key_state[SDLK_LEFT];
-  m_right_pressed = m_key_state[SDLK_RIGHT];
-  m_up_pressed = m_key_state[SDLK_UP];
-  m_down_pressed = m_key_state[SDLK_DOWN];
-  m_fire_pressed = m_key_state[SDLK_SPACE];
-  m_escape_pressed = m_key_state[SDLK_ESCAPE];
+  leftPressed = keyState[SDLK_LEFT];
+  rightPressed = keyState[SDLK_RIGHT];
+  upPressed = keyState[SDLK_UP];
+  downPressed = keyState[SDLK_DOWN];
+  firePressed = keyState[SDLK_SPACE];
+  escapePressed = keyState[SDLK_ESCAPE];
 }
 
-void Game::logic(void) {
-  int i;
-  int time_diff;
-  int countdown_number;
-  int x;
-  LevelObject::LevelObject *level_object;
-  LevelObject::LevelObject::ObjectType type;
-  LevelObject::Balloon::BalloonType balloon_type;
-
-  int points;
-  std::string snd_name;
-
-  if (mode == running_game) {
-    if (sleigh->is_colliding()) {
-      Output::debug("collision detected: %i\n", SDL_GetTicks());
-
-      sleigh->collided();
-      score->add_damage(collision_damage);
-      landscape->set_pause(true);
-      level->set_pause(true);
-      sleigh->set_pause(true);
-
-      if (Random::rnd(0, 1) == 0) {
-        snd_name = "damaged1";
-      } else {
-        snd_name = "damaged2";
-      }
-
-      Sound::play_panned_x(snd_name, sleigh->get_x());
+void Game::logic() {
+  if (mode == Mode::Running) {
+    if (sleigh->checkCollisionLevel()) {
+      Printer::debug("collision detected: %i\n", SDL_GetTicks());
+      sleigh->collideLevel();
+      score->addDamagePoints(collisionDamage);
+      landscape->setPaused(true);
+      level->setPaused(true);
+      sleigh->setPaused(true);
+      playSoundAtPosition(soundLibrary.getAsset((rng.getInteger(0, 1) == 0) ?
+          "damaged1" : "damaged2"), sleigh->getX());
     }
 
-    level_object = sleigh->touched_level_object();
-    if (level_object != nullptr) {
-      type = level_object->get_type();
-      x = level_object->get_level_x() - Setup::game->level->get_offset();
+    LevelObject::LevelObject* levelObject = sleigh->checkCollisionLevelObject();
 
-      if (type == LevelObject::LevelObject::CloudObject) {
-        Output::debug("touched cloud: %i\n", SDL_GetTicks());
-        score->add_damage(collision_damage);
-        Sound::play_panned_x("electrified", x);
-        sleigh->electrified();
+    if (levelObject != nullptr) {
+      const int x = levelObject->getLevelX() - level->getOffset();
 
-      } else if (type == LevelObject::LevelObject::BalloonObject) {
-        balloon_type = level_object->get_balloon()->get_type();
+      if (dynamic_cast<LevelObject::Cloud*>(levelObject) != nullptr) {
+        Printer::debug("touched cloud: %i\n", SDL_GetTicks());
+        score->addDamagePoints(collisionDamage);
+        playSoundAtPosition(soundLibrary.getAsset("electrified"), x);
+        sleigh->electrify();
 
-        if (balloon_type == LevelObject::Balloon::PointsBalloon) {
-          score->add_points(points_balloon_pts);
-          Sound::play_panned_x("success", x);
+      } else if (dynamic_cast<LevelObject::Balloon*>(levelObject) != nullptr) {
+        const LevelObject::Balloon::Type Type =
+            dynamic_cast<LevelObject::Balloon*>(levelObject)->getType();
 
-        } else if (balloon_type == LevelObject::Balloon::CashBalloon) {
-          score->add_damage(-cash_balloon_pts);
-          Sound::play_panned_x("cash", x);
+        if (Type == LevelObject::Balloon::Type::Normal) {
+          score->addGiftPoints(normalBalloonPoints);
+          playSoundAtPosition(soundLibrary.getAsset("success"), x);
 
-        } else if (balloon_type == LevelObject::Balloon::GiftBalloon) {
-          m_bonus_time_start = SDL_GetTicks();
-          Sound::play_panned_x("bonus", x);
+        } else if (Type == LevelObject::Balloon::Type::Cash) {
+          score->addDamagePoints(-cashBalloonPoints);
+          playSoundAtPosition(soundLibrary.getAsset("cash"), x);
 
-        } else if (balloon_type == LevelObject::Balloon::ShieldBalloon) {
-          sleigh->shield();
-          Sound::play_panned_x("shield", x);
+        } else if (Type == LevelObject::Balloon::Type::Gift) {
+          bonusTimeStart = SDL_GetTicks();
+          playSoundAtPosition(soundLibrary.getAsset("bonus"), x);
 
-        } else if (balloon_type == LevelObject::Balloon::ChampagneBalloon) {
-          sleigh->drunken();
-          Sound::play_panned_x("drunken", x);
+        } else if (Type == LevelObject::Balloon::Type::Shield) {
+          sleigh->activateShield();
+          playSoundAtPosition(soundLibrary.getAsset("shield"), x);
+
+        } else if (Type == LevelObject::Balloon::Type::Champagne) {
+          sleigh->becomeDrunk();
+          playSoundAtPosition(soundLibrary.getAsset("drunk"), x);
         }
 
-        level_object->hide();
+        auto& levelObjects = level->getLevelObjects();
 
-      } else if ((type == LevelObject::LevelObject::AngelObject) ||
-                 (type == LevelObject::LevelObject::GoblinObject) ||
-                 (type == LevelObject::LevelObject::GoblinSnowballObject) ||
-                 (type == LevelObject::LevelObject::SnowmanObject)) {
-        score->add_damage(collision_damage);
-        Sound::play_panned_x("hit", x);
-        sleigh->hit();
+        for (size_t i = 0; i < levelObjects.size(); i++) {
+          if (levelObjects[i].get() == levelObject) {
+            levelObjects.erase(levelObjects.begin() + i);
+            break;
+          }
+        }
+
+      } else if ((dynamic_cast<LevelObject::Angel*>(levelObject) != nullptr) ||
+                 (dynamic_cast<LevelObject::Goblin*>(levelObject) != nullptr) ||
+                 (dynamic_cast<LevelObject::GoblinSnowball*>(levelObject) != nullptr) ||
+                 (dynamic_cast<LevelObject::Snowman*>(levelObject) != nullptr)) {
+        score->addDamagePoints(collisionDamage);
+        playSoundAtPosition(soundLibrary.getAsset("hit"), x);
+        sleigh->collideLevelObject();
       }
     }
 
-    if (score->get_remaining_secs() <= 0) {
-      mode = lost_time_mode;
-      m_won_lost_time = SDL_GetTicks();
-      Sound::play("lost");
+    if (score->getRemainingTime() <= 0) {
+      mode = Mode::LostDueToTime;
+      wonLostTime = SDL_GetTicks();
+      soundLibrary.getAsset("lost").play();
       return;
     }
 
-    if (score->get_damage() > max_damage) {
-      mode = lost_damage_mode;
-      m_won_lost_time = SDL_GetTicks();
-      Sound::play("lost");
+    if (score->getDamagePoints() > maxDamage) {
+      mode = Mode::LostDueToDamage;
+      wonLostTime = SDL_GetTicks();
+      soundLibrary.getAsset("lost").play();
       return;
     }
-  } else if (mode == won_mode) {
-    if (m_won_lost_time + won_splash_duration <= SDL_GetTicks()) {
-      for (i = 0; i < 10; i++) {
-        if (m_highscore_score > Config::highscores[i].score) {
-          mode = new_highscore_mode;
-          m_highscore_place = i;
-          m_highscore_caret_blink_time = SDL_GetTicks();
+  } else if (mode == Mode::Won) {
+    std::vector<Options::Highscore>& highscores = options.getHighscores();
+
+    if (wonLostTime + wonSplashDuration <= SDL_GetTicks()) {
+      for (size_t i = 0; i < 10; i++) {
+        if (highscore.score > highscores[i].score) {
+          mode = Mode::NewHighscore;
+          highscorePlace = i;
+          highscoreCaretBlinkTime = SDL_GetTicks();
           break;
         }
       }
 
-      if (mode == new_highscore_mode) {
-        for (i = 9; i > m_highscore_place; i--) {
-          Config::highscores[i] = Config::highscores[i - 1];
+      if (mode == Mode::NewHighscore) {
+        for (int i = 9; i > static_cast<int>(highscorePlace); i--) {
+          highscores[i] = highscores[i - 1];
         }
-        Config::highscores[m_highscore_place].name = "";
-        Config::highscores[m_highscore_place].score = m_highscore_score;
+
+        highscores[highscorePlace].name = "";
+        highscores[highscorePlace].score = highscore.score;
       } else {
-        return_to_menu();
-        mode = highscore_mode;
+        returnToMenu();
+        mode = Mode::Highscores;
       }
     }
 
     return;
-  } else if ((mode == lost_time_mode) || (mode == lost_damage_mode)) {
-    if (m_won_lost_time + lost_splash_duration <= SDL_GetTicks()) {
-      return_to_menu();
+  } else if ((mode == Mode::LostDueToTime) || (mode == Mode::LostDueToDamage)) {
+    if (wonLostTime + lostSplashDuration <= SDL_GetTicks()) {
+      returnToMenu();
     }
 
     return;
   }
 
-  for (i = 0; i < snowflake_count; i++) {
-    snowflakes[i]->move();
+  for (Snowflake& snowflake : snowflakes) {
+    snowflake.move();
   }
 
-  for (i = 0; i < max_gift_count; i++) {
-    if (!gifts[i]->exists()) {
-      continue;
-    }
+  for (Gift& gift : gifts) {
+    gift.move();
+    const int x = gift.getLevelX() - level->getOffset();
 
-    gifts[i]->move();
-    x = gifts[i]->get_level_x() - Setup::game->level->get_offset();
+    if (gift.checkCollisionWithGround()) {
+      score->addDamagePoints(droppedGiftDamage);
+      playSoundAtPosition(soundLibrary.getAsset("gift_missed"), x);
 
-    if (gifts[i]->query_hit_ground()) {
-      score->add_damage(gift_ground_damage);
-      Sound::play_panned_x("gift_missed", x);
+    } else if (gift.checkCollisionWithChimney()) {
+      int points = gift.getGiftPoints();
 
-    } else if (gifts[i]->query_hit_chimney()) {
-      points = gifts[i]->get_points();
-
-      if ((m_bonus_time_start != 0) &&
-          (m_bonus_time_start + bonus_duration > SDL_GetTicks())) {
+      if ((bonusTimeStart != 0) &&
+          (bonusTimeStart + bonusDuration > SDL_GetTicks())) {
         points *= 2;
-        gifts[i]->double_points();
+        gift.activateDoublePoints();
       }
 
-      score->add_points(points);
-      Sound::play_panned_x("success", x);
+      score->addGiftPoints(points);
+      playSoundAtPosition(soundLibrary.getAsset("success"), x);
     }
   }
 
   landscape->move();
   level->move();
-  level->move_objects();
-  sleigh->stars_move();
+  level->moveObjects();
+  sleigh->moveSleighStars();
 
-  if (countdown_mode) {
-    time_diff = SDL_GetTicks() - countdown_start_time;
-    countdown_number = countdown_start - floor(time_diff / 1000);
-    if (countdown_number <= 0) {
-      countdown_mode = false;
-      landscape->set_pause(false);
-      level->set_pause(false);
-      sleigh->set_pause(false);
-      sleigh->set_alpha(255);
+  if (countdownMode) {
+    const int countdownNumber = countdownStart -
+        (static_cast<int>(SDL_GetTicks()) - countdownStartTime) / 1000;
+
+    if (countdownNumber <= 0) {
+      countdownMode = false;
+      landscape->setPaused(false);
+      level->setPaused(false);
+      sleigh->setPaused(false);
+      sleigh->setAlpha(255);
     }
 
-    score->reset(total_time_secs);
+    score->initialize(totalTimeSecs);
   }
 
-  if (sleigh->get_pause() && !sleigh->is_unmovable()) {
-    landscape->set_pause(false);
-    level->set_pause(false);
-    sleigh->set_pause(false);
+  if (sleigh->isPaused() && !sleigh->isImmobile()) {
+    landscape->setPaused(false);
+    level->setPaused(false);
+    sleigh->setPaused(false);
   }
 
-  for (i = 0; i < Level::max_level_object_count; i++) {
-    level_object = level->get_level_object(i);
+  for (std::unique_ptr<LevelObject::LevelObject>& levelObject : level->getLevelObjects()) {
+    if ((dynamic_cast<LevelObject::Goblin*>(levelObject.get()) != nullptr) &&
+        dynamic_cast<LevelObject::Goblin*>(levelObject.get())->checkSnowballThrown()) {
+      playSoundAtPosition(soundLibrary.getAsset("snowball"),
+          levelObject->getLevelX() - level->getOffset());
+    } else if ((dynamic_cast<LevelObject::Snowman*>(levelObject.get()) != nullptr) &&
+        dynamic_cast<LevelObject::Snowman*>(levelObject.get())->checkTriggered()) {
+      playSoundAtPosition(soundLibrary.getAsset("snowman"),
+          levelObject->getLevelX() - level->getOffset());
+    } else if ((dynamic_cast<LevelObject::Finish*>(levelObject.get()) != nullptr) &&
+               dynamic_cast<LevelObject::Finish*>(levelObject.get())->checkReached() &&
+               ((mode == Mode::Running) || (mode == Mode::Menu))) {
 
-    if (level_object->exists() &&
-        (level_object->get_type() == LevelObject::LevelObject::GoblinObject) &&
-        level_object->get_goblin()->query_snowball_thrown()) {
-      x = level_object->get_level_x() - Setup::game->level->get_offset();
-      Sound::play_panned_x("snowball", x);
-    } else if (level_object->exists() &&
-               (level_object->get_type() == LevelObject::LevelObject::SnowmanObject) &&
-               level_object->get_snowman()->query_triggered()) {
-      x = level_object->get_level_x() - Setup::game->level->get_offset();
-      Sound::play_panned_x("snowman", x);
-    } else if (level_object->exists() &&
-               (level_object->get_type() == LevelObject::LevelObject::FinishObject) &&
-               level_object->get_finish()->reached() &&
-               ((mode == running_game) || (mode == menu_mode))) {
-      if (mode == running_game) {
-        mode = won_mode;
-        m_won_lost_time = SDL_GetTicks();
-        m_highscore_score = score->get_score();
-        Sound::play("won");
+      if (mode == Mode::Running) {
+        mode = Mode::Won;
+        wonLostTime = SDL_GetTicks();
+        highscore.score = score->getScore();
+        soundLibrary.getAsset("won").play();
 
         return;
       } else {
-        return_to_menu();
+        returnToMenu();
       }
     }
   }
 
-  if (SDL_GetTicks() >= m_bell_time) {
-    Sound::play_volume("bell", bell_volume);
-    m_bell_time = SDL_GetTicks() + Random::rnd(bell_time_min, bell_time_max);
+  if (SDL_GetTicks() >= bellTime) {
+    soundLibrary.getAsset("bell").playWithVolume(bellVolume);
+    bellTime = SDL_GetTicks() + rng.getInteger(minBellTime, maxBellTime);
   }
-  if (SDL_GetTicks() >= m_dog_time) {
-    Sound::play_volume("dog", dog_volume);
-    m_dog_time = SDL_GetTicks() + Random::rnd(dog_time_min, dog_time_max);
+
+  if (SDL_GetTicks() >= dogTime) {
+    soundLibrary.getAsset("dog").playWithVolume(dogVolume);
+    dogTime = SDL_GetTicks() + rng.getInteger(minDogTime, maxDogTime);
   }
 }
 
-void Game::draw(void) {
-  int i;
-  char string[11];
+void Game::draw() {
+  if (mode == Mode::HelpPage1) {
+    imageLibrary.getAsset("help1").copy(screenSurface, {0, 0});
 
-  if (mode == help1_mode) {
-    Draw::copy(Setup::images["help1"], Setup::screen, 0, 0);
+  } else if (mode == Mode::HelpPage2) {
+    imageLibrary.getAsset("help2").copy(screenSurface, {0, 0});
 
-  } else if (mode == help2_mode) {
-    Draw::copy(Setup::images["help2"], Setup::screen, 0, 0);
+  } else if (mode == Mode::Won) {
+    imageLibrary.getAsset("finished").copy(screenSurface, {0, 0});
 
-  } else if (mode == won_mode) {
-    Draw::copy(Setup::images["finished"], Setup::screen, 0, 0);
+  } else if (mode == Mode::NewHighscore) {
+    imageLibrary.getAsset("finished").copy(screenSurface, {0, 0});
+    drawHighscores();
 
-  } else if (mode == new_highscore_mode) {
-    Draw::copy(Setup::images["finished"], Setup::screen, 0, 0);
-    draw_highscores();
+  } else if (mode == Mode::LostDueToTime) {
+    imageLibrary.getAsset("lost_time").copy(screenSurface, {0, 0});
 
-  } else if (mode == lost_time_mode) {
-    Draw::copy(Setup::images["lost_time"], Setup::screen, 0, 0);
-
-  } else if (mode == lost_damage_mode) {
-    Draw::copy(Setup::images["lost_damage"], Setup::screen, 0, 0);
+  } else if (mode == Mode::LostDueToDamage) {
+    imageLibrary.getAsset("lost_damage").copy(screenSurface, {0, 0});
 
   } else {
-    Draw::copy(Setup::images["bg"], Setup::screen, 0, 0);
+    imageLibrary.getAsset("bg").copy(screenSurface, {0, 0});
     landscape->draw();
-    level->draw_ballons();
+    level->drawBallons();
     level->draw();
     sleigh->draw();
-    level->draw_objects();
+    level->drawObjects();
 
-    for (i = 0; i < max_gift_count; i++) {
-      if (gifts[i]->exists()) {
-        gifts[i]->draw();
-      }
+    for (const Gift& gift : gifts) {
+      gift.draw();
     }
 
-    SDL_LockSurface(Setup::screen);
+    SDL_LockSurface(screenSurface);
 
-    for (i = 0; i < snowflake_count; i++) {
-      snowflakes[i]->draw();
+    for (const Snowflake& snowflake : snowflakes) {
+      snowflake.draw();
     }
 
-    SDL_UnlockSurface(Setup::screen);
+    SDL_UnlockSurface(screenSurface);
 
-    draw_text();
+    drawText();
 
-    if (mode == highscore_mode) {
-      draw_highscores();
+    if (mode == Mode::Highscores) {
+      drawHighscores();
     }
   }
 
-  if (Setup::debug_mode) {
+#ifdef DEBUG
+  {
+    char string[11];
     snprintf(string, 10, "%i FPS", fps);
-    Setup::text->draw(string, Setup::screen_width, Setup::screen_height,
-                      Text::BottomRight);
+    text->draw(screenSurface, string, screenWidth, screenHeight, Text::Alignment::BottomRight);
+  }
+#endif
+
+  if ((mode == Mode::Menu) || (mode == Mode::Highscores)) {
+    const Asset::Image& logo = imageLibrary.getAsset("logo");
+    logo.copy(screenSurface, {0, static_cast<int>(screenHeight - logo.getHeight())});
   }
 
-  if ((mode == menu_mode) || (mode == highscore_mode)) {
-    Draw::copy(Setup::images["logo"], Setup::screen, 0,
-               Setup::screen_height - Setup::images["logo"]->h);
-  }
-
-  SDL_Flip(Setup::screen);
+  SDL_Flip(screenSurface);
 }
 
-void Game::frame_tick(void) {
-  int cur_time;
+void Game::frameTick() {
+  const size_t currentTime = SDL_GetTicks();
 
-  cur_time = SDL_GetTicks();
-  if (m_last_fps_update_time + 1000 < cur_time) {
-    fps = (m_frame_counter * 1000) / (cur_time - m_last_fps_update_time);
+  if (lastFpsUpdateTime + 1000 < currentTime) {
+    fps = (frameCounter * 1000) / (currentTime - lastFpsUpdateTime);
     // debug("%i", frame_counter);
-    m_last_fps_update_time = cur_time;
-    m_frame_counter = 0;
+    lastFpsUpdateTime = currentTime;
+    frameCounter = 0;
   }
 
-  fps_delay();
-  m_frame_counter++;
+  fpsDelay();
+  frameCounter++;
 }
 
-void Game::fps_delay(void) {
-  float cur_fps;
-  int cur_delay;
-  int cur_time;
-  float target_delay;
-  int exec_delay;
+void Game::fpsDelay() {
+  const int currentTime = SDL_GetTicks();
 
-  cur_time = SDL_GetTicks();
+  if (lastTime != 0) {
+    const int currentFrameTime = currentTime - lastTime;
+    //cur_fps = 1000.0 / cur_delay;
+    const double targetFrameTime = 1000.0 / targetFps;
 
-  if (m_last_time != 0) {
-    cur_delay = cur_time - m_last_time;
-    cur_fps = 1000.0 / cur_delay;
-    target_delay = 1000.0 / Setup::target_fps;
-    if (cur_delay < target_delay) {
-      exec_delay = round((target_delay - cur_delay));
-      // debug("%f\n", target_delay - cur_delay);
-      // debug("%i\n", exec_delay);
-      SDL_Delay(exec_delay);
+    if (currentFrameTime < targetFrameTime) {
+      SDL_Delay(static_cast<int>((targetFrameTime - currentFrameTime)));
     }
   }
 
-  m_last_time = cur_time;
+  lastTime = currentTime;
 }
 
-void Game::start_new_game(void) {
-  int i;
+void Game::startNewGame() {
+  mode = Mode::Running;
 
-  mode = running_game;
+  countdownMode = true;
+  countdownStartTime = SDL_GetTicks();
 
-  countdown_mode = true;
-  countdown_start_time = SDL_GetTicks();
+  sleigh->initialize();
+  sleigh->initializeSleighStars();
+  sleigh->setInMenuMode(false);
+  sleigh->setAlpha(128);
+  sleigh->setX(sleighStartX);
+  sleigh->setY(sleighStartY);
+  sleigh->setPaused(true);
 
-  sleigh->reset();
-  sleigh->reset_stars();
-  sleigh->set_menu_mode(false);
-  sleigh->set_alpha(128);
-  sleigh->set_x(sleigh_start_x);
-  sleigh->set_y(sleigh_start_y);
-  sleigh->set_pause(true);
+  level->setInMenuMode(false);
+  level->setOffset(0);
+  level->setPaused(true);
+  level->clearObjects();
 
-  level->set_menu_mode(false);
-  level->set_offset(0);
-  level->set_pause(true);
-  level->clear_objects();
+  landscape->initialize();
+  landscape->setPaused(true);
 
-  landscape->reset();
-  landscape->set_pause(true);
+  sleigh->initializeSleighStars();
 
-  sleigh->reset_stars();
-
-  for (i = 0; i < snowflake_count; i++) {
-    snowflakes[i]->reinit(true);
+  for (Snowflake& snowflake : snowflakes) {
+    snowflake.initialize();
   }
 
-  for (i = 0; i < max_gift_count; i++) {
-    gifts[i]->reset();
-  }
-
-  score->reset(total_time_secs);
+  gifts.clear();
+  score->initialize(totalTimeSecs);
 }
 
-void Game::return_to_menu(void) {
-  int i;
+void Game::returnToMenu() {
+  mode = Mode::Menu;
 
-  mode = menu_mode;
+  countdownMode = false;
 
-  countdown_mode = false;
+  sleigh->initialize();
+  sleigh->initializeSleighStars();
+  sleigh->setInMenuMode(true);
 
-  sleigh->reset();
-  sleigh->reset_stars();
-  sleigh->set_menu_mode(true);
+  level->setInMenuMode(true);
+  level->setOffset(0);
+  level->setPaused(false);
+  level->clearObjects();
 
-  level->set_menu_mode(true);
-  level->set_offset(0);
-  level->set_pause(false);
-  level->clear_objects();
+  landscape->initialize();
+  landscape->setPaused(false);
 
-  landscape->reset();
-  landscape->set_pause(false);
+  sleigh->initializeSleighStars();
 
-  sleigh->reset_stars();
-
-  for (i = 0; i < snowflake_count; i++) {
-    snowflakes[i]->reinit(true);
+  for (Snowflake& snowflake : snowflakes) {
+    snowflake.initialize();
   }
 
-  for (i = 0; i < max_gift_count; i++) {
-    gifts[i]->reset();
-  }
+  gifts.clear();
 }
 
-void Game::draw_text(void) {
-  int time_diff;
-  int countdown_number;
-  char string[11];
+void Game::drawText() {
+  if (mode == Mode::Menu || mode == Mode::Highscores) {
+    text->draw(screenSurface, {0, 0}, "F1/F2 - Hilfe", Text::Alignment::TopLeft);
+    text->draw(screenSurface, {static_cast<int>(screenWidth / 2), 0}, "F3 - Highscores",
+        Text::Alignment::TopCenter);
+    text->draw(screenSurface, {static_cast<int>(screenWidth), 0}, "F5 - Spielen",
+        Text::Alignment::TopRight);
+  } else {
+    score->draw();
 
-  if (mode == menu_mode || mode == highscore_mode) {
-    Setup::text->draw("F1/F2 - Hilfe", 0, 0, Text::TopLeft);
-    Setup::text->draw("F3 - Highscores", Setup::screen_width / 2, 0,
-                      Text::TopCenter);
-    Setup::text->draw("F5 - Spielen", Setup::screen_width, 0, Text::TopRight);
-
-    return;
-  }
-
-  score->draw();
-
-  if (countdown_mode) {
-    time_diff = SDL_GetTicks() - countdown_start_time;
-    countdown_number = countdown_start - floor(time_diff / 1000);
-    if (countdown_number <= 0) {
-      countdown_number = 1;
+    if (countdownMode) {
+      const int countdownNumber = std::max(static_cast<size_t>(1),
+          countdownStart - (SDL_GetTicks() - countdownStartTime) / 1000);
+      text->draw(screenSurface,
+          {sleigh->getX() - 10, sleigh->getY() + static_cast<int>(sleigh->getHeight() / 2)},
+          Printer::printToString("%i", countdownNumber), Text::Alignment::CenterRight);
     }
-    snprintf(string, 10, "%i", countdown_number);
-    Setup::text->draw(string, sleigh->get_x() - 10,
-                      sleigh->get_y() + sleigh->get_height() / 2,
-                      Text::CenterRight);
   }
 }
 
-void Game::draw_highscores(void) {
-  int x;
-  int y;
-  int line_spacing;
-  int i;
-  char score_string[11];
-  std::string name;
+void Game::drawHighscores() {
+  int x = screenWidth / 2 - highscoreWidth / 2;
+  int y = screenHeight / 2 - highscoreHeight / 2;
+  const size_t lineSpacing =
+      (highscoreHeight - text->getLineHeight() - 2 * highscorePaddingY) / 9;
 
-  x = Setup::screen_width / 2 - highscore_width / 2;
-  y = Setup::screen_height / 2 - highscore_height / 2;
-  line_spacing = (highscore_height - Setup::text->get_line_height() -
-                  2 * highscore_padding_y) /
-                 9;
+  highscoreBackground.blit({0, 0, highscoreWidth, highscoreHeight}, screenSurface, {x, y});
 
-  Draw::blit(m_highscore_bg, 0, 0, highscore_width, highscore_height,
-             Setup::screen, x, y);
+  x += highscorePaddingX;
+  y += highscorePaddingY;
 
-  x += highscore_padding_x;
-  y += highscore_padding_y;
+  for (size_t i = 0; i < 10; i++) {
+    std::string name;
+    char scoreString[11];
+    snprintf(scoreString, 10, "%i", options.getHighscores()[i].score);
 
-  for (i = 0; i < 10; i++) {
-    snprintf(score_string, 10, "%i", Config::highscores[i].score);
-
-    if ((mode == new_highscore_mode) && (i == m_highscore_place)) {
-      if ((SDL_GetTicks() - m_highscore_caret_blink_time) %
-              (2 * highscore_caret_blink_duration) <
-          highscore_caret_blink_duration) {
-        name = m_highscore_name + "_";
+    if ((mode == Mode::NewHighscore) && (i == highscorePlace)) {
+      if ((SDL_GetTicks() - highscoreCaretBlinkTime) % (2 * highscoreCaretBlinkDuration) <
+          highscoreCaretBlinkDuration) {
+        name = highscore.name + "_";
       } else {
-        name = m_highscore_name;
+        name = highscore.name;
       }
     } else {
-      name = Config::highscores[i].name;
+      name = options.getHighscores()[i].name;
     }
 
-    Setup::text->draw(name.c_str(), x, y, Text::TopLeft);
+    text->draw(screenSurface, {x, y}, name, Text::Alignment::TopLeft);
+    text->draw(screenSurface,
+        {x + static_cast<int>(highscoreWidth) - static_cast<int>(2 * highscorePaddingX), y},
+        scoreString, Text::Alignment::TopRight);
 
-    Setup::text->draw(score_string,
-                      x + highscore_width - 2 * highscore_padding_x, y,
-                      Text::TopRight);
-
-    y += line_spacing;
+    y += lineSpacing;
   }
+}
+
+Asset::ImageLibrary& Game::getImageLibrary() {
+  return imageLibrary;
+}
+
+Asset::MusicLibrary& Game::getMusicLibrary() {
+  return musicLibrary;
+}
+
+Asset::SoundLibrary& Game::getSoundLibrary() {
+  return soundLibrary;
+}
+
+Text& Game::getText() const {
+  return *text;
+}
+
+size_t Game::getScreenWidth() const {
+  return screenWidth;
+}
+
+size_t Game::getScreenHeight() const {
+  return screenHeight;
+}
+
+SDL_Surface& Game::getScreenSurface() const {
+  return *screenSurface;
+}
+
+size_t Game::getTargetFps() const {
+  return targetFps;
+}
+
+Options& Game::getOptions() {
+  return options;
+}
+
+RNG& Game::getRNG() {
+  return rng;
+}
+
+Level& Game::getLevel() {
+  return *level;
+}
+
+Sleigh& Game::getSleigh() {
+  return *sleigh;
+}
+
+const std::vector<Chimney>& Game::getChimneys() const {
+  return chimneys;
 }
 
 }  // namespace SantaRacer

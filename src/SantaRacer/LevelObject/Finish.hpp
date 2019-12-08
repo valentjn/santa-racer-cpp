@@ -6,29 +6,25 @@
 
 #pragma once
 
+#include "SantaRacer/LevelObject/LevelObject.hpp"
+
 namespace SantaRacer {
 namespace LevelObject {
 
-class Finish {
+class Finish : public LevelObject {
  public:
-  explicit Finish(void *parent);
-  ~Finish(void);
+  Finish(Game* game, size_t tileX, size_t tileY);
+  ~Finish() override;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
+  bool checkReached() const;
 
-  bool reached(void);
-
- private:
-  void *m_parent;
-
-  int m_level_x;
-  int m_y;
+ protected:
+  int levelX;
+  int y;
 };
 
 }  // namespace LevelObject

@@ -6,139 +6,125 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <vector>
 
+#include "SantaRacer/SleighStar.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
-#include "SantaRacer/Mask.hpp"
-#include "SantaRacer/LevelObject/SleighStar.hpp"
 
 namespace SantaRacer {
 
+class Game;
+
 class Sleigh {
  public:
-  Sleigh(void);
-  ~Sleigh(void);
+  Sleigh(Game* game);
 
-  void reset(void);
-  void reset_stars(void);
-  void draw(void);
-  void stars_move(void);
-  void electrified(void);
-  void hit(void);
-  void collided(void);
-  void drunken(void);
-  void shield(void);
+  void initialize();
+  void initializeSleighStars();
+  void draw() const;
+  void moveSleighStars();
+  void electrify();
+  void collideLevelObject();
+  void collideLevel();
+  void becomeDrunk();
+  void activateShield();
 
-  bool is_invincible(void);
-  bool is_electrified(void);
-  bool is_drunken(void);
-  bool has_shield(void);
-  bool is_unmovable(void);
+  bool isInvincible() const;
+  bool isElectrified() const;
+  bool isDrunk() const;
+  bool isShieldActivated() const;
+  bool isImmobile() const;
 
-  bool is_colliding(void);
-  LevelObject::LevelObject *touched_level_object(void);
+  bool checkCollisionLevel();
+  LevelObject::LevelObject *checkCollisionLevelObject();
 
-  int get_x(void);
-  void set_x(int x);
+  int getX() const;
+  void setX(int x);
 
-  int get_y(void);
-  void set_y(int y);
+  int getY() const;
+  void setY(int y);
 
-  int get_speed_x(void);
-  void set_speed_x(int direction);
+  int getSpeedX() const;
+  void setSpeedX(int direction);
 
-  int get_speed_y(void);
-  void set_speed_y(int direction);
+  int getSpeedY() const;
+  void setSpeedY(int direction);
 
-  bool get_pause(void);
-  void set_pause(bool pause);
+  bool isPaused() const;
+  void setPaused(bool paused);
 
-  int get_width(void);
-  int get_height(void);
-  int get_frame(void);
+  size_t getWidth() const;
+  size_t getHeight() const;
+  size_t getFrame() const;
+  size_t getReindeerFrame() const;
 
-  void set_menu_mode(bool menu_mode);
-  void set_alpha(Uint8 alpha);
+  void setInMenuMode(bool inMenuMode);
+  void setAlpha(Uint8 alpha);
 
- private:
-  static const int frame_count = 14;
-  static const int frame_speed = frame_count;
-  static const int shield_frame_count = 8;
-  static const int shield_frame_speed = shield_frame_count;
+ protected:
+  const size_t frameSpeed = 14;
+  const size_t shieldFrameSpeed = 8;
 
-  static const int menu_x_period_length = 30000;
-  static const int menu_min_x = 50;
-  static const int menu_max_x = 450;
-  static const int menu_y_period_length = 20000;
-  static const int menu_min_y = 50;
-  static const int menu_max_y = 200;
+  const size_t menuXPeriod = 30000;
+  const int minMenuX = 50;
+  const int maxMenuX = 450;
+  const size_t menuYPeriod = 20000;
+  const int minMenuY = 50;
+  const int maxMenuY = 200;
 
-  static const int star_count = 50;
-  static const int acceleration = 25;
-  static const int max_move_speed = 200;
+  const size_t numberOfStars = 50;
+  const size_t acceleration = 25;
+  const size_t maxMoveSpeed = 200;
 
-  static const int electrified_offset_x = -3;
-  static const int electrified_offset_y = -2;
-  static const int reindeer_offset_x = 10;
-  static const int reindeer_offset_y = 3;
-  static const int shield_offset_x = -12;
-  static const int shield_offset_y = -17;
+  const int electrifiedOffsetX = -3;
+  const int electrifiedOffsetY = -2;
+  const int reindeerOffsetX = 10;
+  const int reindeerOffsetY = 3;
+  const int shieldOffsetX = -12;
+  const int shieldOffsetY = -17;
 
-  static const int invincible_invisible_period = 200;
+  const size_t invincibleInvisiblePeriod = 200;
 
-  static const int invincible_duration = 3000;
-  static const int electrified_duration = 1000;
-  static const int drunken_duration = 15000;
-  static const int shield_duration = 15000;
-  static const int collision_invincible_duration = 8000;
-  static const int collision_unmovable_duration = 5000;
+  const size_t invincibleDuration = 3000;
+  const size_t electrifiedDuration = 1000;
+  const size_t drunkDuration = 15000;
+  const size_t shieldDuration = 15000;
+  const size_t collisionInvincibleDuration = 8000;
+  const size_t collisionUnmovableDuration = 5000;
 
-  int m_x;
-  int m_y;
-  int m_speed_x;
-  int m_speed_y;
-  int m_width;
-  int m_height;
-  int m_frame;
-  int m_time;
-  int m_time_x;
-  int m_time_y;
+  Game *game;
 
-  Uint8 m_alpha;
-  bool m_menu_mode;
-  float m_rand_offset_x;
-  float m_rand_offset_y;
-  LevelObject::SleighStar **m_stars;
+  Asset::Image& sleighImage;
+  Asset::Image& electrifiedSleighImage;
+  Asset::Image& reindeerImage;
+  Asset::Image& electrifiedReindeerImage;
+  Asset::Image& shieldImage;
+  Asset::Image& levelImage;
 
-  SDL_Surface *m_sleigh_surface;
-  int m_sleigh_width;
-  int m_sleigh_height;
-  Mask *m_sleigh_mask;
+  int x;
+  int y;
+  int speedX;
+  int speedY;
+  size_t width;
+  size_t height;
+  size_t frame;
+  size_t time;
+  size_t timeX;
+  size_t timeY;
 
-  SDL_Surface *m_sleigh_electrified_surface;
-  int m_sleigh_electrified_width;
-  int m_sleigh_electrified_height;
+  Uint8 alpha;
+  bool inMenuMode;
+  double menuOffsetAngleX;
+  double menuOffsetAngleY;
+  std::vector<SleighStar> sleighStars;
 
-  SDL_Surface *m_reindeer_surface;
-  int m_reindeer_width;
-  int m_reindeer_height;
-  Mask *m_reindeer_mask;
+  size_t electrifiedEndTime;
+  size_t invincibleEndTime;
+  size_t drunkEndTime;
+  size_t shieldEndTime;
+  size_t immobileEndTime;
 
-  SDL_Surface *m_reindeer_electrified_surface;
-  int m_reindeer_electrified_width;
-  int m_reindeer_electrified_height;
-
-  SDL_Surface *m_shield_surface;
-  int m_shield_width;
-  int m_shield_height;
-
-  int m_electrified_end;
-  int m_invincible_end;
-  int m_drunken_end;
-  int m_shield_end;
-  int m_unmovable_end;
-
-  bool m_pause;
+  bool paused;
 };
 
 }  // namespace SantaRacer

@@ -6,67 +6,68 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <memory>
+#include <vector>
 
 #include "SantaRacer/LevelObject/LevelObject.hpp"
-#include "SantaRacer/Mask.hpp"
 
 namespace SantaRacer {
 
+class Game;
+
 class Level {
  public:
-  static const int tile_width = 128;
-  static const int tile_height = 128;
-  static const int max_level_object_count = 50;
+  Level(Game* game, const std::vector<double>& mapData,
+      const std::vector<double>& levelObjectsMapData, size_t numberOfTilesY);
 
-  Level(int **array, int **level_objects, int width, int height);
-  ~Level(void);
+  void draw() const;
+  void drawBallons() const;
+  void drawObjects() const;
+  void move();
+  void moveObjects();
+  void moveObject(size_t tileX, size_t tileY);
+  void clearObjects();
 
-  void draw(void);
-  void draw_ballons(void);
-  void draw_objects(void);
-  void move(void);
-  void move_objects(void);
-  void move_object(int tile_x, int tile_y);
-  void clear_objects(void);
+  double getOffset() const;
+  void setOffset(double offset);
 
-  float get_offset(void);
-  void set_offset(float offset);
+  double getSpeed() const;
+  size_t getNumberOfTilesPerScreenWidth() const;
+  size_t getTileWidth() const;
+  size_t getTileHeight() const;
+  size_t getNumberOfTilesX() const;
+  size_t getNumberOfTilesY() const;
+  std::vector<std::vector<size_t>>& getMap();
+  std::vector<std::vector<size_t>>& getLevelObjectsMap();
+  std::vector<std::unique_ptr<LevelObject::LevelObject>>& getLevelObjects();
 
-  float get_speed(void);
-  int get_tiles_to_draw(void);
-  int get_tile_width(void);
-  int get_tile_height(void);
-  int get_width(void);
-  int get_height(void);
-  SantaRacer::Mask *get_mask(void);
-  int **get_map(void);
-  LevelObject::LevelObject *get_level_object(int index);
+  void setInMenuMode(bool menu_mode);
 
-  void set_menu_mode(bool menu_mode);
+  bool isPaused() const;
+  void setPaused(bool paused);
 
-  bool get_pause(void);
-  void set_pause(bool pause);
+ protected:
+  const int minSpeed = 40;
+  const int maxSpeed = 160;
+  const int menuSpeed = 40;
 
- private:
-  static const int min_speed = 40;
-  static const int max_speed = 160;
-  static const int menu_speed = 40;
+  Game* game;
+  const Asset::Image& image;
 
-  SDL_Surface *m_surface;
-  Mask *m_mask;
+  const size_t tileWidth;
+  const size_t tileHeight;
 
-  int m_width;
-  int m_height;
-  int m_time;
-  int m_tiles_to_draw;
-  float m_offset;
-  bool m_menu_mode;
-  bool m_pause;
+  size_t numberOfTilesX;
+  size_t numberOfTilesY;
+  size_t time;
+  size_t numberOfTilesPerScreenWidth;
+  double offset;
+  bool inMenuMode;
+  bool paused;
 
-  int **m_map;
-  int **m_level_object_map;
-  LevelObject::LevelObject **m_level_objects;
+  std::vector<std::vector<size_t>> map;
+  std::vector<std::vector<size_t>> levelObjectsMap;
+  std::vector<std::unique_ptr<LevelObject::LevelObject>> levelObjects;
 };
 
 }  // namespace SantaRacer

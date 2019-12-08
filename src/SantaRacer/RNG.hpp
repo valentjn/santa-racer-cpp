@@ -6,18 +6,18 @@
 
 #pragma once
 
+#include <random>
+
 namespace SantaRacer {
-namespace Setup {
 
-void santa_setup(void);
-bool load_images(void);
-bool load_text(void);
-bool load_level(void);
-bool load_level_objects(void);
-bool load_chimneys(void);
-bool load_sounds(void);
-bool load_music(void);
-void santa_cleanup(void);
+class RNG {
+ public:
+  int getInteger(int min, int max);
+  void seed();
+  void seed(size_t seed);
 
-}  // namespace Setup
+ protected:
+  std::mt19937 engine;
+};
+
 }  // namespace SantaRacer

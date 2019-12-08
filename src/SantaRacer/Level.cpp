@@ -4,249 +4,173 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Draw.hpp"
-#include "SantaRacer/Globals.hpp"
+#include <memory>
+#include <vector>
+
+#include "SantaRacer/Game.hpp"
 #include "SantaRacer/Level.hpp"
+#include "SantaRacer/LevelObject/Balloon.hpp"
 
 namespace SantaRacer {
 
-Level::Level(int **map, int **level_object_map, int width, int height) {
-  int i;
-
-  m_surface = Setup::images["level"];
-  m_mask = new Mask(m_surface, m_surface->w / tile_width);
-  m_width = width;
-  m_height = height;
-  m_offset = 0.0;
-  m_time = SDL_GetTicks();
-  m_tiles_to_draw = Setup::screen_width / tile_width + 1;
-  m_menu_mode = true;
-  m_pause = false;
-
-  m_map = map;
-  m_level_object_map = level_object_map;
-
-  m_level_objects = new LevelObject::LevelObject *[max_level_object_count];
-  for (i = 0; i < max_level_object_count; i++) {
-    m_level_objects[i] = new LevelObject::LevelObject();
+Level::Level(Game* game, const std::vector<double>& mapData,
+    const std::vector<double>& levelObjectsMapData, size_t numberOfTilesY) :
+    game(game), image(game->getImageLibrary().getAsset("level")),
+    tileWidth(image.getWidth()), tileHeight(image.getHeight()),
+    numberOfTilesX(mapData.size() / numberOfTilesY), numberOfTilesY(numberOfTilesY),
+    time(SDL_GetTicks()), numberOfTilesPerScreenWidth(game->getScreenWidth() / tileWidth + 1),
+    offset(0.0), inMenuMode(true), paused(false) {
+  for (size_t y = 0; y < numberOfTilesY; y++) {
+    map.emplace_back(mapData.begin() + y * numberOfTilesX,
+        mapData.begin() + (y + 1) * numberOfTilesX);
+    levelObjectsMap.emplace_back(levelObjectsMapData.begin() + y * numberOfTilesX,
+        levelObjectsMapData.begin() + (y + 1) * numberOfTilesX);
   }
 }
 
-Level::~Level(void) {
-  int i;
+void Level::draw() const {
+  const size_t x0 = getOffset() / tileWidth;
 
-  for (i = 0; i < max_level_object_count; i++) {
-    delete m_level_objects[i];
-  }
-  delete[] m_level_objects;
-}
+  for (size_t y = 0; y < numberOfTilesY; y++) {
+    for (size_t x = x0; x < x0 + numberOfTilesPerScreenWidth; x++) {
+      const size_t frame = map[y][x];
 
-void Level::draw(void) {
-  int start_x;
-  int x;
-  int y;
-  int index;
-
-  start_x = static_cast<int>(get_offset()) / tile_width;
-
-  for (y = 0; y < m_height; y++) {
-    for (x = start_x; x < start_x + m_tiles_to_draw; x++) {
-      index = m_map[y][x];
-
-      if (index != 0) {
-        Draw::blit(m_surface, index * tile_width, 0, tile_width, tile_height,
-                   Setup::screen, x * tile_width - m_offset, y * tile_height);
+      if (frame != 0) {
+        image.copy(&game->getScreenSurface(), {static_cast<int>(x * tileWidth - offset),
+            static_cast<int>(y * tileHeight)}, frame);
       }
     }
   }
 }
 
-void Level::draw_ballons(void) {
-  int i;
-  LevelObject::LevelObject *object;
-
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
-    if (object->exists() &&
-        (object->get_type() == LevelObject::LevelObject::BalloonObject)) {
-      object->draw();
+void Level::drawBallons() const {
+  for (const std::unique_ptr<LevelObject::LevelObject>& levelObject : levelObjects) {
+    if (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) != nullptr) {
+      levelObject->draw();
     }
   }
 }
 
-void Level::draw_objects(void) {
-  int i;
-  LevelObject::LevelObject *object;
-
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
-    if (object->exists() &&
-        (object->get_type() != LevelObject::LevelObject::BalloonObject)) {
-      object->draw();
+void Level::drawObjects() const {
+  for (const std::unique_ptr<LevelObject::LevelObject>& levelObject : levelObjects) {
+    if (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) == nullptr) {
+      levelObject->draw();
     }
   }
 }
 
-void Level::move(void) {
-  m_offset = get_offset();
-  m_time = SDL_GetTicks();
+void Level::move() {
+  offset = getOffset();
+  time = SDL_GetTicks();
 }
 
-void Level::move_objects(void) {
-  int start_x;
-  int x;
-  int y;
-  int i;
-  int index;
-  LevelObject::LevelObject *object;
+void Level::moveObjects() {
+  const size_t x0 = static_cast<size_t>(getOffset() / tileWidth);
 
-  start_x = static_cast<int>(get_offset()) / tile_width;
-
-  for (y = 0; y < m_height; y++) {
-    for (x = start_x; x < start_x + m_tiles_to_draw + 1; x++) {
-      index = m_level_object_map[y][x];
-
-      if (index != 0) {
-        move_object(x, y);
+  for (size_t y = 0; y < numberOfTilesY; y++) {
+    for (size_t x = x0; x < x0 + numberOfTilesPerScreenWidth + 1; x++) {
+      if (levelObjectsMap[y][x] != 0) {
+        moveObject(x, y);
       }
     }
   }
 
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
+  auto it = levelObjects.begin();
 
-    if (object->exists()) {
-      if ((object->get_tile_x() < start_x - 1) ||
-          (object->get_y() > (2 * Setup::screen_height))) {
-        object->reset();
-      }
+  while (it != levelObjects.end()) {
+    if ((static_cast<int>((*it)->getTileX()) < static_cast<int>(x0) - 1) ||
+        ((*it)->getY() > static_cast<int>(2 * game->getScreenHeight()))) {
+      it = levelObjects.erase(it);
+    } else {
+      ++it;
     }
   }
 }
 
-void Level::move_object(int tile_x, int tile_y) {
-  int i;
-  int index;
-  LevelObject::LevelObject *object;
-  bool object_moved;
-
-  object_moved = false;
-
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
-    /*if ((tile_x == 7) && (tile_y == 2)) {
-      Output::debug("move_goblin_object! %i\n", SDL_GetTicks());
-      if (object->exists()) {
-        Output::debug("object exists\n");
-      } else {
-        Output::debug("!object exists\n");
-      }
-      if (object->get_tile_x() == tile_x) {
-        Output::debug("object tile_x\n");
-      } else {
-        Output::debug("!object tile_x %i, %i\n", object->get_tile_x(), tile_x);
-      }
-      if (object->get_tile_y() == tile_y) {
-        Output::debug("object tile_y\n");
-      } else {
-        Output::debug("!object tile_y %i, %i\n", object->get_tile_y(), tile_y);
-      }
-    }*/
-
-    if (object->exists() && (object->get_tile_x() == tile_x) &&
-        (object->get_tile_y() == tile_y)) {
-      /*if ((tile_x == 7) && (tile_y == 2)) {
-    Output::debug("real_move_goblin_object! %i\n", SDL_GetTicks());
-      }*/
-      object->move();
-      object_moved = true;
-    }
-  }
-
-  if (object_moved) {
-    return;
-  }
-
-  index = m_level_object_map[tile_y][tile_x];
-
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
-    if (!object->exists()) {
-      object->reinit(tile_x, tile_y, index);
+void Level::moveObject(size_t tileX, size_t tileY) {
+  for (std::unique_ptr<LevelObject::LevelObject>& levelObject : levelObjects) {
+    if ((levelObject->getTileX() == tileX) && (levelObject->getTileY() == tileY)) {
+      levelObject->move();
       return;
     }
   }
+
+  levelObjects.push_back(LevelObject::LevelObject::create(
+      game, tileX, tileY, levelObjectsMap[tileY][tileX]));
 }
 
-void Level::clear_objects(void) {
-  int i;
-  LevelObject::LevelObject *object;
-
-  for (i = 0; i < max_level_object_count; i++) {
-    object = m_level_objects[i];
-    if (object->exists()) {
-      object->reset();
-    }
-  }
+void Level::clearObjects() {
+  levelObjects.clear();
 }
 
-float Level::get_offset(void) {
-  if (m_pause) {
-    return m_offset;
-  }
-
-  return m_offset + (SDL_GetTicks() - m_time) / 1000.0 * get_speed();
+double Level::getOffset() const {
+  return (paused ? offset : (offset + (SDL_GetTicks() - time) / 1000.0 * getSpeed()));
 }
 
-void Level::set_offset(float offset) {
-  m_offset = offset;
-  m_time = SDL_GetTicks();
+void Level::setOffset(double offset) {
+  offset = offset;
+  time = SDL_GetTicks();
 }
 
-float Level::get_speed(void) {
-  if (m_pause) {
+double Level::getSpeed() const {
+  if (paused) {
     return 0.0;
-  }
-
-  if (m_menu_mode) {
-    return menu_speed;
+  } else if (inMenuMode) {
+    return menuSpeed;
   } else {
-    return Setup::game->sleigh->get_x() /
-               static_cast<float>(Setup::screen_width - Setup::game->sleigh->get_width()) *
-               (max_speed - min_speed) +
-           min_speed;
+    return game->getSleigh().getX() /
+        static_cast<double>(game->getScreenWidth() - game->getSleigh().getWidth()) *
+        (maxSpeed - minSpeed) + minSpeed;
   }
 }
 
-int Level::get_tiles_to_draw(void) { return m_tiles_to_draw; }
-
-int Level::get_tile_width(void) { return tile_width; }
-
-int Level::get_tile_height(void) { return tile_height; }
-
-int Level::get_width(void) { return m_width; }
-
-int Level::get_height(void) { return m_height; }
-
-SantaRacer::Mask *Level::get_mask(void) { return m_mask; }
-
-int **Level::get_map(void) { return m_map; }
-
-SantaRacer::LevelObject::LevelObject *Level::get_level_object(int index) {
-  return m_level_objects[index];
+size_t Level::getNumberOfTilesPerScreenWidth() const {
+  return numberOfTilesPerScreenWidth;
 }
 
-void Level::set_menu_mode(bool menu_mode) { m_menu_mode = menu_mode; }
+size_t Level::getTileWidth() const {
+  return tileWidth;
+}
 
-bool Level::get_pause(void) { return m_pause; }
+size_t Level::getTileHeight() const {
+  return tileHeight;
+}
 
-void Level::set_pause(bool pause) {
-  if ((pause && !m_pause) || (!pause && m_pause)) {
-    m_offset = get_offset();
-    m_time = SDL_GetTicks();
+size_t Level::getNumberOfTilesX() const {
+  return numberOfTilesX;
+}
+
+size_t Level::getNumberOfTilesY() const {
+  return numberOfTilesY;
+}
+
+std::vector<std::vector<size_t>>& Level::getMap() {
+  return map;
+}
+
+std::vector<std::vector<size_t>>& Level::getLevelObjectsMap() {
+  return levelObjectsMap;
+}
+
+std::vector<std::unique_ptr<LevelObject::LevelObject>>& Level::getLevelObjects() {
+  return levelObjects;
+}
+
+void Level::setInMenuMode(bool menu_mode) {
+  inMenuMode = menu_mode;
+}
+
+bool Level::isPaused() const {
+  return paused;
+}
+
+void Level::setPaused(bool paused) {
+  if (paused != this->paused) {
+    offset = getOffset();
+    time = SDL_GetTicks();
   }
 
-  m_pause = pause;
+  this->paused = paused;
 }
 
 }  // namespace SantaRacer

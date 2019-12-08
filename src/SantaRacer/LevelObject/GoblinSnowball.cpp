@@ -4,68 +4,36 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Game.hpp"
 #include "SantaRacer/LevelObject/GoblinSnowball.hpp"
-
-#include "SantaRacer/Draw.hpp"
-#include "SantaRacer/Globals.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
 namespace LevelObject {
 
-GoblinSnowball::GoblinSnowball(void *parent) { m_parent = parent; }
-
-GoblinSnowball::~GoblinSnowball(void) { return; }
-
-void GoblinSnowball::reinit(int tile_x, int tile_y) {
-  LevelObject *object;
-  SDL_Surface *surface;
-
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = Setup::images["snowball"];
-
-  m_level_x = tile_x * Setup::game->level->tile_width + offset_x;
-  m_y = tile_y * Setup::game->level->tile_height + offset_y;
-
-  object->set_surface(surface);
-  object->set_frame_count(frame_count);
-
-  m_time = SDL_GetTicks();
-  m_frame = 0;
+GoblinSnowball::GoblinSnowball(Game* game, size_t tileX, size_t tileY) :
+    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("snowball")),
+    levelX(tileX * game->getLevel().getTileWidth() + offsetX),
+    y(tileY * game->getLevel().getTileHeight() + offsetY), frame(0), time(SDL_GetTicks()) {
 }
 
-void GoblinSnowball::draw(void) {
-  LevelObject *object;
-  SDL_Surface *surface;
-
-  int level_x;
-  int y;
-
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = object->get_surface();
-
-  level_x = get_level_x();
-  y = get_y();
-
-  Draw::copy(surface, Setup::screen, level_x - Setup::game->level->get_offset(), y);
+GoblinSnowball::~GoblinSnowball() {
 }
 
-void GoblinSnowball::move(void) { return; }
-
-int GoblinSnowball::get_level_x(void) {
-  return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * speed_x);
+int GoblinSnowball::getLevelX() const {
+  return levelX + static_cast<int>((SDL_GetTicks() - time) / 1000.0 * speedX);
 }
 
-int GoblinSnowball::get_y(void) {
-  float time_diff;
+int GoblinSnowball::getY() const {
+  const double duration = (SDL_GetTicks() - time) / 1000.0;
 
-  time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-
-  return m_y + speed_y_start * time_diff +
-         0.5 * gravity_acceleration * time_diff * time_diff;
+  return y + speedYStart * duration +
+         0.5 * gravityAcceleration * duration * duration;
 }
 
-int GoblinSnowball::get_frame(void) { return 0; }
+size_t GoblinSnowball::getFrame() const {
+  return 0;
+}
 
 }  // namespace LevelObject
 }  // namespace SantaRacer

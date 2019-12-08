@@ -6,26 +6,23 @@
 
 #pragma once
 
+#include "SantaRacer/LevelObject/LevelObject.hpp"
+
 namespace SantaRacer {
 namespace LevelObject {
 
-class Cloud {
+class Cloud : public LevelObject {
  public:
-  explicit Cloud(void *parent);
+  Cloud(Game* game, size_t tileX, size_t tileY);
+  ~Cloud() override;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
-
- private:
-  void *m_parent;
-
-  int m_level_x;
-  int m_y;
+ protected:
+  int levelX;
+  int y;
 };
 
 }  // namespace LevelObject

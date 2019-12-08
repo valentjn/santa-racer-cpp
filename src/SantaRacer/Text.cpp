@@ -4,72 +4,65 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Globals.hpp"
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include <SDL/SDL.h>
+
 #include "SantaRacer/Text.hpp"
 
 namespace SantaRacer {
 
-Text::Text(SDL_Surface *surface) {
-  int i;
-  int char_width;
-
-  m_surface = surface;
-  m_char_width = m_surface->w / 16;
-  m_char_height = m_surface->h / 6;
-
-  m_max_char_width = 0;
-  for (i = 0; i < 97; i++) {
-    char_width = Setup::text_char_widths[i];
-    if (char_width > m_max_char_width) {
-      m_max_char_width = char_width;
-    }
-  }
+Text::Text(const Asset::Image& image, const std::vector<size_t>& actualCharWidths) :
+    image(image), actualCharWidths(actualCharWidths),
+    maxActualCharWidth(*std::max_element(actualCharWidths.begin(), actualCharWidths.end())),
+    charWidth(image.getWidth() / 16),
+    charHeight(image.getHeight() / 6) {
 }
 
-void Text::draw(const char *text, int x, int y, TextAlign align,
-                       bool monospace) {
-  int width;
-  int char_width;
-  int i;
-  SDL_Rect src_rect;
-  SDL_Rect dest_rect;
+void Text::draw(SDL_Surface* targetSurface, Asset::Image::Point targetPoint,
+    const std::string& text, Alignment alignment, bool isMonospace) const {
+  size_t width;
 
-  if (monospace) {
-    width = strlen(text) * m_max_char_width;
+  if (isMonospace) {
+    width = text.size() * maxActualCharWidth;
   } else {
     width = 0;
-    for (i = 0; i < strlen(text); i++) {
-      width += Setup::text_char_widths[text[i] - 32];
+
+    for (const char ch : text) {
+      width += actualCharWidths[ch - 32];
     }
   }
 
-  x -= (align % 3) * (width / 2);
-  y -= (align / 3) * (m_char_height / 2);
+  targetPoint.x -= (static_cast<size_t>(alignment) % 3) * (width / 2);
+  targetPoint.y -= (static_cast<size_t>(alignment) / 3) * (charHeight / 2);
 
-  for (i = 0; i < strlen(text); i++) {
-    char_width = Setup::text_char_widths[text[i] - 32];
+  for (const char ch : text) {
+    const size_t actualCharWidth = actualCharWidths[ch - 32];
 
-    src_rect.x = (text[i] % 16) * m_char_width;
-    src_rect.y = (text[i] / 16 - 2) * m_char_height;
-    src_rect.w = m_char_width;
-    src_rect.h = m_char_height;
-    dest_rect.x = x;
-    dest_rect.y = y;
+    Asset::Image::Rectangle sourceRectangle;
+    sourceRectangle.x = (ch % 16) * charWidth;
+    sourceRectangle.y = (ch / 16 - 2) * charHeight;
+    sourceRectangle.w = charWidth;
+    sourceRectangle.h = charHeight;
 
-    if (monospace) {
-      dest_rect.x += m_max_char_width / 2 - char_width / 2;
+    if (isMonospace) {
+      targetPoint.x += maxActualCharWidth / 2 - actualCharWidth / 2;
     }
 
-    SDL_BlitSurface(m_surface, &src_rect, Setup::screen, &dest_rect);
+    image.blit(sourceRectangle, targetSurface, targetPoint);
 
-    if (monospace) {
-      x += m_max_char_width;
+    if (isMonospace) {
+      targetPoint.x += maxActualCharWidth;
     } else {
-      x += char_width;
+      targetPoint.x += actualCharWidth;
     }
   }
 }
 
-int Text::get_line_height(void) { return m_char_height; }
+size_t Text::getLineHeight() const {
+  return charHeight;
+}
 
 }  // namespace SantaRacer

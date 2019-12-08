@@ -4,108 +4,51 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include "SantaRacer/Game.hpp"
 #include "SantaRacer/LevelObject/Goblin.hpp"
-
-#include "SantaRacer/Draw.hpp"
-#include "SantaRacer/Globals.hpp"
+#include "SantaRacer/LevelObject/GoblinSnowball.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
 namespace LevelObject {
 
-Goblin::Goblin(void *parent) { m_parent = parent; }
-
-Goblin::~Goblin(void) { return; }
-
-void Goblin::reinit(int tile_x, int tile_y) {
-  LevelObject *object;
-  SDL_Surface *surface;
-
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = Setup::images["goblin"];
-
-  m_level_x = (tile_x + 0.5) * Setup::game->level->tile_width -
-              (surface->w / frame_count) / 2;
-  m_y = (tile_y + 0.5) * Setup::game->level->tile_height - surface->h / 2;
-
-  object->set_surface(surface);
-  object->set_frame_count(frame_count);
-
-  m_time = SDL_GetTicks();
-  m_frame = 0;
-  m_snowball_thrown = false;
-  m_snowball_thrown_query = false;
+Goblin::Goblin(Game* game, size_t tileX, size_t tileY) :
+    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("goblin")),
+    levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
+      (image.getWidth() / image.getNumberOfFrames()) / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+    frame(0), time(SDL_GetTicks()), snowballThrown(false), snowballThrownCheck(false) {
 }
 
-void Goblin::draw(void) {
-  LevelObject *object;
-  SDL_Surface *surface;
-  int frame;
-  int width;
-  int height;
-
-  int level_x;
-  int y;
-
-  object = reinterpret_cast<LevelObject*>(m_parent);
-  surface = object->get_surface();
-  width = object->get_width();
-  height = object->get_height();
-
-  level_x = get_level_x();
-  y = get_y();
-  frame = get_frame();
-
-  Draw::blit(surface, width * frame, 0, width, height, Setup::screen,
-             level_x - Setup::game->level->get_offset(), y);
+Goblin::~Goblin() {
 }
 
-void Goblin::move(void) {
-  int frame;
-  int i;
-  LevelObject *parent;
-  LevelObject *object;
-
-  frame = get_frame();
-  object = reinterpret_cast<LevelObject*>(m_parent);
-
-  // Output::debug("frame %i\n", frame);
-
-  if (frame == 13 && !m_snowball_thrown) {
-    m_snowball_thrown = true;
-    m_snowball_thrown_query = true;
-    // Output::debug("new snowball %i\n", SDL_GetTicks());
-
-    for (i = 0; i < Level::max_level_object_count; i++) {
-      object = Setup::game->level->get_level_object(i);
-      if (!object->exists()) {
-        object->reinit(parent->get_tile_x(), parent->get_tile_y(), 200);
-        return;
-      }
-    }
-
-  } else if (frame != 13) {
-    m_snowball_thrown = false;
+void Goblin::move() {
+  if (frame != 13) {
+    snowballThrown = false;
+  } else if (!snowballThrown) {
+    snowballThrown = true;
+    snowballThrownCheck = true;
+    game->getLevel().getLevelObjects().emplace_back(new GoblinSnowball(game, tileX, tileY));
   }
 }
 
-int Goblin::get_level_x(void) { return m_level_x; }
-
-int Goblin::get_y(void) { return m_y; }
-
-int Goblin::get_frame(void) {
-  float time_diff;
-  int frame;
-
-  time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-  frame = static_cast<int>(time_diff * frame_speed + m_frame) % frame_count;
-
-  return frame;
+int Goblin::getLevelX() const {
+  return levelX;
 }
 
-bool Goblin::query_snowball_thrown(void) {
-  if (m_snowball_thrown_query) {
-    m_snowball_thrown_query = false;
+int Goblin::getY() const {
+  return y;
+}
+
+size_t Goblin::getFrame() const {
+  return static_cast<int>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame) %
+      image.getNumberOfFrames();
+}
+
+bool Goblin::checkSnowballThrown() {
+  if (snowballThrownCheck) {
+    snowballThrownCheck = false;
     return true;
   } else {
     return false;

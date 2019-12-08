@@ -6,37 +6,33 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
 namespace LevelObject {
 
-class Goblin {
+class Goblin : public LevelObject {
  public:
-  explicit Goblin(void *parent);
-  ~Goblin(void);
+  Goblin(Game* game, size_t tileX, size_t tileY);
+  ~Goblin() override;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  void move() override;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
-  bool query_snowball_thrown(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
 
- private:
-  static const int frame_count = 19;
-  static const int frame_speed = frame_count / 1.5;
+  bool checkSnowballThrown();
 
-  void *m_parent;
+ protected:
+  const int frameSpeed = 12;
 
-  int m_level_x;
-  int m_y;
-  int m_frame;
-  int m_time;
-  bool m_snowball_thrown;
-  bool m_snowball_thrown_query;
+  int levelX;
+  int y;
+  size_t frame;
+  size_t time;
+  bool snowballThrown;
+  bool snowballThrownCheck;
 };
 
 }  // namespace LevelObject

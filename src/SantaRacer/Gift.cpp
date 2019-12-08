@@ -4,236 +4,125 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Draw.hpp"
+#include <algorithm>
+#include <vector>
+
+#include "SantaRacer/Game.hpp"
 #include "SantaRacer/Gift.hpp"
-#include "SantaRacer/Globals.hpp"
-#include "SantaRacer/Random.hpp"
-#include "SantaRacer/LevelObject/Chimney.hpp"
+#include "SantaRacer/Printer.hpp"
+#include "SantaRacer/RNG.hpp"
+#include "SantaRacer/Chimney.hpp"
 
 namespace SantaRacer {
 
-Gift::Gift(void) {
-  int i;
+const std::vector<int> Gift::allGiftPoints = {10, 15, 20};
 
-  m_surfaces[0] = Setup::images["gift1"];
-  m_surfaces[1] = Setup::images["gift2"];
-  m_surfaces[2] = Setup::images["gift3"];
-
-  for (i = 0; i < 3; i++) {
-    m_widths[i] = m_surfaces[i]->w / frame_count;
-    m_heights[i] = m_surfaces[i]->h;
-  }
-
-  m_big_star_surface = Setup::images["big_star"];
-  m_big_star_width = m_big_star_surface->w / big_star_frame_count;
-  m_big_star_height = m_big_star_surface->h;
-
-  m_points_surfaces[0] = Setup::images["10"];
-  m_points_surfaces[1] = Setup::images["15"];
-  m_points_surfaces[2] = Setup::images["20"];
-
-  reset();
+Gift::Gift(Game* game) : game(game),
+    imagesGift({&game->getImageLibrary().getAsset("gift1"),
+        &game->getImageLibrary().getAsset("gift2"), &game->getImageLibrary().getAsset("gift3")}),
+    imageBigStar(game->getImageLibrary().getAsset("big_star")),
+    imagesGiftPoints({&game->getImageLibrary().getAsset("10"),
+        &game->getImageLibrary().getAsset("15"), &game->getImageLibrary().getAsset("20")}),
+    levelX(game->getSleigh().getX() + game->getLevel().getOffset()),
+    y(game->getSleigh().getY() + game->getSleigh().getHeight()),
+    speedX(game->getLevel().getSpeed()), type(game->getRNG().getInteger(0, 2)),
+    frame(game->getRNG().getInteger(0, imagesGift[0]->getNumberOfFrames() - 1)),
+    time(SDL_GetTicks()), collidedWithGround(false), collidedWithChimney(false), succeeded(false),
+    deleted(false), giftPoints(0), doublePointsActivated(false), bigStarTime(0) {
 }
 
-void Gift::reinit(void) {
-  m_exists = true;
+void Gift::draw() const {
+  if (succeeded) {
+    const int x = getLevelX() - game->getLevel().getOffset() - imageBigStar.getWidth() / 2;
+    const int y = getY() - imageBigStar.getHeight() / 2;
 
-  m_level_x = Setup::game->sleigh->get_x() + Setup::game->level->get_offset();
-
-  m_y = Setup::game->sleigh->get_y() + Setup::game->sleigh->get_height();
-  m_speed_x = Setup::game->level->get_speed();
-  m_type = Random::rnd(0, 2);
-  m_frame = Random::rnd(0, frame_count - 1);
-  m_time = SDL_GetTicks();
-  m_hit_ground = false;
-  m_hit_chimney = false;
-  m_points = 0;
-  m_success = false;
-  m_big_star_time = 0;
-  m_double_points = false;
-}
-
-void Gift::reset(void) {
-  m_exists = false;
-  m_level_x = 0;
-  m_y = 0;
-  m_speed_x = 0;
-  m_type = 0;
-  m_frame = 0;
-  m_time = 0;
-  m_hit_ground = false;
-  m_hit_chimney = false;
-  m_points = 0;
-  m_success = false;
-  m_big_star_time = 0;
-  m_double_points = false;
-}
-
-void Gift::draw(void) {
-  int x;
-  int y;
-
-  if (!m_exists) {
-    return;
-  }
-
-  if (m_success) {
-    x = get_level_x() - Setup::game->level->get_offset() - m_big_star_width / 2;
-    y = get_y() - m_big_star_height / 2;
-
-    if (m_double_points) {
-      draw_big_star(x, y);
-      draw_big_star(x + double_points_x_offset, y + double_points_x_offset);
-      draw_points(x, y);
-      draw_points(x + double_points_x_offset, y + double_points_y_offset);
+    if (doublePointsActivated) {
+      drawBigStar(x, y);
+      drawBigStar(x + doublePointsXOffset, y + doublePointsXOffset);
+      drawPoints(x, y);
+      drawPoints(x + doublePointsXOffset, y + doublePointsYOffset);
     } else {
-      draw_big_star(x, y);
-      draw_points(x, y);
+      drawBigStar(x, y);
+      drawPoints(x, y);
+    }
+  } else {
+    imagesGift[type]->copy(&game->getScreenSurface(),
+        {getLevelX() - static_cast<int>(game->getLevel().getOffset()), getY()}, getFrame());
+  }
+}
+
+void Gift::drawBigStar(int x, int y) const {
+  const size_t bigStarVirtualFrame = std::min(getBigStarFrame(), bigStarVirtualFrameCount - 1);
+
+  if (bigStarVirtualFrame < 10) {
+    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar1XOffset, y + bigStar1YOffset},
+        bigStarVirtualFrame);
+  }
+
+  if ((bigStarVirtualFrame >= 2) && (bigStarVirtualFrame < 12)) {
+    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar2XOffset, y + bigStar2YOffset},
+        bigStarVirtualFrame - 2);
+  }
+
+  if (bigStarVirtualFrame >= 4) {
+    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar3XOffset, y + bigStar3YOffset},
+        bigStarVirtualFrame - 4);
+  }
+}
+
+void Gift::drawPoints(int x, int y) const {
+  const size_t frame = std::find(allGiftPoints.begin(), allGiftPoints.end(), giftPoints) -
+      allGiftPoints.begin();
+  imagesGiftPoints[frame]->copy(&game->getScreenSurface(),
+      {x + pointsXOffset + static_cast<int>(imageBigStar.getWidth() / 2),
+      y + pointsYOffset + static_cast<int>(imageBigStar.getHeight() / 2)});
+}
+
+void Gift::move() {
+  if (deleted) {
+    return;
+  } else if (succeeded) {
+    if (getBigStarFrame() >= bigStarVirtualFrameCount) {
+      deleted = true;
     }
 
     return;
   }
 
-  Draw::blit(m_surfaces[m_type], m_widths[m_type] * get_frame(), 0,
-             m_widths[m_type], m_heights[m_type], Setup::screen,
-             get_level_x() - Setup::game->level->get_offset(), get_y());
-}
+  const int y = getY();
 
-void Gift::draw_big_star(int x, int y) {
-  int big_star_frame;
-
-  big_star_frame = get_big_star_frame();
-  if (big_star_frame >= big_star_vframe_count) {
-    big_star_frame = big_star_vframe_count - 1;
-  }
-
-  if (big_star_frame < 10) {
-    Draw::blit(m_big_star_surface, m_big_star_width * big_star_frame, 0,
-               m_big_star_width, m_big_star_height, Setup::screen,
-               x + big_star1_x_offset, y + big_star1_y_offset);
-  }
-
-  if ((big_star_frame >= 2) && (big_star_frame < 12)) {
-    Draw::blit(m_big_star_surface, m_big_star_width * (big_star_frame - 2), 0,
-               m_big_star_width, m_big_star_height, Setup::screen,
-               x + big_star2_x_offset, y + big_star2_y_offset);
-  }
-
-  if (big_star_frame >= 4) {
-    Draw::blit(m_big_star_surface, m_big_star_width * (big_star_frame - 4), 0,
-               m_big_star_width, m_big_star_height, Setup::screen,
-               x + big_star3_x_offset, y + big_star3_y_offset);
-  }
-}
-
-void Gift::draw_points(int x, int y) {
-  int points_surface_index;
-
-  if (m_points == gift_points_easy) {
-    points_surface_index = 0;
-  } else if (m_points == gift_points_medium) {
-    points_surface_index = 1;
-  } else if (m_points == gift_points_hard) {
-    points_surface_index = 2;
-  }
-
-  Draw::copy(m_points_surfaces[points_surface_index], Setup::screen,
-             x + points_x_offset + m_big_star_width / 2,
-             y + points_y_offset + m_big_star_height / 2);
-}
-
-void Gift::move(void) {
-  int level_x;
-  int y;
-
-  int tile_x;
-  int tile_y;
-  int start_x;
-  int tiles_to_draw;
-  int height;
-  int tile_width;
-  int tile_height;
-
-  int chimney_x;
-  int chimney_y;
-
-  int chimney_int_x;
-  int chimney_int_y;
-  int chimney_int_width;
-  int chimney_int_height;
-  int points;
-
-  int **level_map;
-  int map_index;
-
-  LevelObject::Chimney **chimneys;
-  int chimney_count;
-
-  int i;
-
-  if (!m_exists) {
+  if (y >= static_cast<int>(game->getScreenHeight())) {
+    collideWithGround();
     return;
   }
 
-  if (m_success) {
-    if (get_big_star_frame() >= big_star_vframe_count) {
-      reset();
-    }
+  const int levelX = getLevelX();
+  const size_t tileX0 = static_cast<size_t>(game->getLevel().getOffset() /
+      game->getLevel().getTileWidth());
 
-    return;
-  }
+  for (size_t tileY = 0; tileY < game->getLevel().getNumberOfTilesY(); tileY++) {
+    for (size_t tileX = tileX0; tileX < tileX0 + game->getLevel().getNumberOfTilesPerScreenWidth();
+        tileX++) {
+      const size_t mapValue = game->getLevel().getMap()[tileY][tileX];
 
-  level_x = get_level_x();
-  y = get_y();
-
-  if (y >= Setup::screen_height) {
-    hit_ground();
-    return;
-  }
-
-  start_x = static_cast<int>(Setup::game->level->get_offset()) / Setup::game->level->tile_width;
-  tiles_to_draw = Setup::game->level->get_tiles_to_draw();
-  height = Setup::game->level->get_height();
-  level_map = Setup::game->level->get_map();
-  tile_width = Setup::game->level->get_tile_width();
-  tile_height = Setup::game->level->get_tile_width();
-
-  chimneys = Setup::chimneys;
-  chimney_count = Setup::chimney_count;
-  chimney_int_height = LevelObject::Chimney::chimney_height;
-
-  for (tile_y = 0; tile_y < height; tile_y++) {
-    for (tile_x = start_x; tile_x < start_x + tiles_to_draw; tile_x++) {
-      map_index = level_map[tile_y][tile_x];
-      if (map_index == 0) {
+      if (mapValue == 0) {
         continue;
       }
 
-      chimney_x = tile_x * tile_width;
-      chimney_y = tile_y * tile_height;
+      const int chimneyX = static_cast<int>(tileX * game->getLevel().getTileWidth());
+      const int chimneyY = static_cast<int>(tileY * game->getLevel().getTileHeight());
 
-      for (i = 0; i < chimney_count; i++) {
-        if (chimneys[i]->get_map_index() != map_index) {
+      for (const Chimney& chimney : game->getChimneys()) {
+        if (chimney.getMapValue() != mapValue) {
           continue;
         }
 
-        chimney_int_x = chimneys[i]->get_x();
-        chimney_int_y = chimneys[i]->get_y();
-        chimney_int_width = chimneys[i]->get_width();
-
-        if ((level_x >= chimney_x + chimney_int_x) &&
-            (y + m_heights[m_type] / 2 >= chimney_y + chimney_int_y) &&
-            (level_x <= chimney_x + chimney_int_x + chimney_int_width) &&
-            (y <= chimney_y + chimney_int_y + chimney_int_height)) {
-          if (tile_y == 1) {
-            points = gift_points_easy;
-          } else if (tile_y == 2) {
-            points = gift_points_medium;
-          } else if (tile_y == 3) {
-            points = gift_points_hard;
-          }
-
-          hit_chimney(points);
+        if ((levelX >= chimneyX + chimney.getX()) &&
+            (y + static_cast<int>(imagesGift[type]->getHeight()) / 2 >=
+              chimneyY + chimney.getY()) &&
+            (levelX <= chimneyX + chimney.getX() + static_cast<int>(chimney.getWidth())) &&
+            (y <= chimneyY + chimney.getY() + static_cast<int>(chimney.getHeight()))) {
+          collideWithChimney(*std::find(allGiftPoints.begin(), allGiftPoints.end(), giftPoints));
           return;
         }
       }
@@ -241,70 +130,71 @@ void Gift::move(void) {
   }
 }
 
-void Gift::hit_ground(void) { m_hit_ground = true; }
-
-void Gift::hit_chimney(int points) {
-  m_points = points;
-  m_big_star_time = SDL_GetTicks();
-
-  m_level_x = get_level_x();
-  m_y = get_y();
-
-  m_success = true;
-  m_hit_chimney = true;
+void Gift::collideWithGround() {
+  collidedWithGround = true;
 }
 
-void Gift::double_points(void) { m_double_points = true; }
+void Gift::collideWithChimney(int points) {
+  giftPoints = points;
+  bigStarTime = SDL_GetTicks();
 
-int Gift::get_level_x(void) {
-  if (m_success) {
-    return m_level_x;
+  levelX = getLevelX();
+  y = getY();
+
+  succeeded = true;
+  collidedWithChimney = true;
+}
+
+void Gift::activateDoublePoints() {
+  doublePointsActivated = true;
+}
+
+int Gift::getLevelX() const {
+  return (succeeded ? levelX :
+      (levelX + static_cast<int>((SDL_GetTicks() - time) / 1000.0 * speedX)));
+}
+
+int Gift::getY() const {
+  if (succeeded) {
+    return y;
+  } else {
+    const double duration = (SDL_GetTicks() - time) / 1000.0;
+    return y + speedYStart * duration + 0.5 * gravityAcceleration * duration * duration;
   }
-
-  return m_level_x + static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * m_speed_x);
 }
 
-int Gift::get_y(void) {
-  float time_diff;
-
-  if (m_success) {
-    return m_y;
-  }
-
-  time_diff = (SDL_GetTicks() - m_time) / 1000.0;
-
-  return m_y + speed_y_start * time_diff +
-         0.5 * gravity_acceleration * time_diff * time_diff;
+size_t Gift::getFrame() const {
+  return static_cast<size_t>((SDL_GetTicks() - time) / 1000.0 * frameSpeed) + frame;
 }
 
-int Gift::get_frame(void) {
-  return static_cast<int>((SDL_GetTicks() - m_time) / 1000.0 * frame_speed + m_frame) % frame_count;
+size_t Gift::getBigStarFrame() const {
+  return static_cast<size_t>((SDL_GetTicks() - bigStarTime) / 1000.0 * bigStarVirtualFrameSpeed);
 }
 
-int Gift::get_big_star_frame(void) {
-  return static_cast<int>((SDL_GetTicks() - m_big_star_time) / 1000.0 * big_star_vframe_speed);
-}
-
-bool Gift::exists(void) { return m_exists; }
-
-bool Gift::query_hit_ground(void) {
-  if (m_hit_ground) {
-    reset();
+bool Gift::checkCollisionWithGround() {
+  if (collidedWithGround) {
+    deleted = true;
     return true;
   } else {
     return false;
   }
 }
 
-bool Gift::query_hit_chimney(void) {
-  bool hit_chimney;
-
-  hit_chimney = m_hit_chimney;
-  m_hit_chimney = false;
-
-  return hit_chimney;
+bool Gift::checkCollisionWithChimney() {
+  if (collidedWithChimney) {
+    collidedWithChimney = false;
+    return true;
+  } else {
+    return false;
+  }
 }
 
-int Gift::get_points(void) { return m_points; }
+int Gift::getGiftPoints() const {
+  return giftPoints;
+}
+
+bool Gift::shouldBeDeleted() const {
+  return deleted;
+}
 
 }  // namespace SantaRacer

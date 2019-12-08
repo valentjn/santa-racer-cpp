@@ -6,31 +6,35 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include "SantaRacer/Asset/Image.hpp"
 
 namespace SantaRacer {
 
+class Game;
+
 class Landscape {
  public:
-  Landscape(void);
-  void reset(void);
+  Landscape(Game* game);
 
-  void draw(void);
-  void move(void);
+  void initialize();
 
-  float get_offset(void);
-  float get_speed(void);
+  void draw() const;
+  void move();
 
-  bool get_pause(void);
-  void set_pause(bool pause);
+  double getOffset() const;
+  double getSpeed() const;
 
- private:
-  SDL_Surface *m_surface;
-  int m_time;
-  float m_offset;
-  float m_speed;
+  bool isPaused() const;
+  void setPaused(bool paused);
 
-  bool m_pause;
+ protected:
+  Game* game;
+  const Asset::Image& image;
+
+  size_t time;
+  double offset;
+  double speed;
+  bool paused;
 };
 
 }  // namespace SantaRacer

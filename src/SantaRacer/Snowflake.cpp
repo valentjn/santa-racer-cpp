@@ -4,92 +4,79 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Globals.hpp"
-#include "SantaRacer/Random.hpp"
+#include <algorithm>
+
+#include <SDL/SDL.h>
+
+#include "SantaRacer/Game.hpp"
+#include "SantaRacer/RNG.hpp"
 #include "SantaRacer/Snowflake.hpp"
 
 namespace SantaRacer {
 
-Snowflake::Snowflake(void) { reinit(true); }
-
-void Snowflake::reinit(bool first_init) {
-  m_level_x = Random::rnd(left_margin, 2 * Setup::screen_width) +
-              Setup::game->level->get_offset();
-  m_z = Random::rnd(0, 255);
-  m_color = SDL_MapRGB(Setup::screen->format, 255 - m_z, 255 - m_z, 255 - m_z);
-  m_time = SDL_GetTicks();
-  m_speed_x = Random::rnd(min_speed_x, max_speed_x);
-  m_speed_y = Random::rnd(min_speed_y, max_speed_y);
-  m_speed_change_time = SDL_GetTicks() + Random::rnd(min_speed_change_time,
-                                                     max_speed_change_time);
-
-  if (first_init) {
-    m_y = Random::rnd(0, Setup::screen_height);
-  } else {
-    m_y = 0.0;
-  }
+Snowflake::Snowflake(Game* game) : game(game) {
+  initialize(false);
 }
 
-void Snowflake::draw(void) {
+void Snowflake::initialize(bool putOnTop) {
+  levelX = game->getRNG().getInteger(leftMargin, 2 * game->getScreenWidth()) +
+      game->getLevel().getOffset();
+  y = (putOnTop ? 0.0 : game->getRNG().getInteger(0, game->getScreenHeight()));
+  const int z = game->getRNG().getInteger(0, 255);
+  color = SDL_MapRGB(game->getScreenSurface().format, 255 - z, 255 - z, 255 - z);
+  time = SDL_GetTicks();
+  speedX = game->getRNG().getInteger(minSpeedX, maxSpeedX);
+  speedY = game->getRNG().getInteger(minSpeedY, maxSpeedY);
+  speedChangeTime = SDL_GetTicks() +
+      game->getRNG().getInteger(minSpeedChangeTime, maxSpeedChangeTime);
+}
+
+void Snowflake::draw() const {
   int x;
   int y;
   Uint32 *bufp;
 
-  x = get_level_x() - Setup::game->level->get_offset();
-  y = get_y();
+  x = getLevelX() - game->getLevel().getOffset();
+  y = getY();
 
-  if (x < 0 || x >= Setup::screen_width || y < 0 || y >= Setup::screen_height) {
+  if ((x < 0) || (x >= static_cast<int>(game->getScreenWidth())) || (y < 0) ||
+      (y >= static_cast<int>(game->getScreenHeight()))) {
     return;
   }
 
-  bufp = reinterpret_cast<Uint32*>(Setup::screen->pixels) + y * Setup::screen->pitch / 4 + x / 2;
+  bufp = reinterpret_cast<Uint32*>(game->getScreenSurface().pixels) +
+      y * game->getScreenSurface().pitch / 4 + x / 2;
   // FIXME ??
-  *bufp = m_color;
+  *bufp = color;
 }
 
-void Snowflake::move(void) {
-  int level_x;
-  int y;
+void Snowflake::move() {
+  const int currentLevelX = getLevelX();
+  const int currentY = getY();
 
-  level_x = get_level_x();
-  y = get_y();
-
-  if (y >= Setup::screen_height ||
-      level_x - Setup::game->level->get_offset() < left_margin) {
-    reinit();
-  } else if (SDL_GetTicks() > m_speed_change_time) {
-    m_level_x = level_x;
-    m_y = y;
-    m_time = SDL_GetTicks();
-    change_speed();
+  if ((currentY >= static_cast<int>(game->getScreenHeight())) ||
+      (currentLevelX - game->getLevel().getOffset() < leftMargin)) {
+    initialize(true);
+  } else if (SDL_GetTicks() > speedChangeTime) {
+    levelX = currentLevelX;
+    y = currentY;
+    time = SDL_GetTicks();
+    changeSpeed();
   }
 }
 
-void Snowflake::change_speed(void) {
-  m_speed_x += Random::rnd(-10, 10);
-  if (m_speed_x < min_speed_x) {
-    m_speed_x = min_speed_x;
-  } else if (m_speed_x > max_speed_x) {
-    m_speed_x = max_speed_x;
-  }
-
-  m_speed_y += Random::rnd(-10, 10);
-  if (m_speed_y < min_speed_y) {
-    m_speed_y = min_speed_y;
-  } else if (m_speed_y > max_speed_y) {
-    m_speed_y = max_speed_y;
-  }
-
-  m_speed_change_time = SDL_GetTicks() + Random::rnd(min_speed_change_time,
-                                                     max_speed_change_time);
+void Snowflake::changeSpeed() {
+  speedX = std::min(std::max(speedX + game->getRNG().getInteger(-10, 10), minSpeedX), maxSpeedX);
+  speedY = std::min(std::max(speedY + game->getRNG().getInteger(-10, 10), minSpeedY), maxSpeedY);
+  speedChangeTime = SDL_GetTicks() + game->getRNG().getInteger(minSpeedChangeTime, maxSpeedChangeTime);
 }
 
-float Snowflake::get_level_x(void) {
-  return m_level_x + m_speed_x * ((SDL_GetTicks() - m_time) / 1000.0);
+double Snowflake::getLevelX() const {
+  return levelX + speedX * ((SDL_GetTicks() - time) / 1000.0);
 }
 
-float Snowflake::get_y(void) {
-  return m_y + m_speed_y * (SDL_GetTicks() - m_time) / 1000.0;
+double Snowflake::getY() const {
+  return y + speedY * (SDL_GetTicks() - time) / 1000.0;
 }
 
 }  // namespace SantaRacer

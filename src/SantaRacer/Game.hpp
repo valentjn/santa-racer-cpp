@@ -6,134 +6,184 @@
 
 #pragma once
 
-#include <string>
+#include <SDL/SDL.h>
 
+#include <memory>
+#include <vector>
+
+#include "SantaRacer/Chimney.hpp"
 #include "SantaRacer/Gift.hpp"
 #include "SantaRacer/Landscape.hpp"
 #include "SantaRacer/Level.hpp"
+#include "SantaRacer/Options.hpp"
+#include "SantaRacer/RNG.hpp"
 #include "SantaRacer/Score.hpp"
 #include "SantaRacer/Sleigh.hpp"
 #include "SantaRacer/Snowflake.hpp"
+#include "SantaRacer/Text.hpp"
+#include "SantaRacer/Asset/DataLibrary.hpp"
+#include "SantaRacer/Asset/ImageLibrary.hpp"
+#include "SantaRacer/Asset/MusicLibrary.hpp"
+#include "SantaRacer/Asset/Sound.hpp"
+#include "SantaRacer/Asset/SoundLibrary.hpp"
 
 namespace SantaRacer {
 
 class Game {
  public:
-  enum GameMode {
-    menu_mode,
-    help1_mode,
-    help2_mode,
-    highscore_mode,
-    running_game,
-    won_mode,
-    lost_time_mode,
-    lost_damage_mode,
-    new_highscore_mode
+  enum class Mode {
+    Menu,
+    HelpPage1,
+    HelpPage2,
+    Highscores,
+    Running,
+    Won,
+    LostDueToTime,
+    LostDueToDamage,
+    NewHighscore,
   };
 
-  Game(void);
-  ~Game(void);
-  void init(void);
+  Game(Options&& options);
+  Game(const Game& other) = delete;
+  ~Game();
 
-  void loop(void);
-  void process_events(void);
-  void check_keys(void);
-  void logic(void);
-  void draw(void);
-  void frame_tick(void);
-  void fps_delay(void);
+  void initialize();
 
-  void start_new_game(void);
-  void return_to_menu(void);
+  void loop();
+  void processEvents();
+  void check_keys();
+  void logic();
+  void draw();
+  void frameTick();
+  void fpsDelay();
 
-  void draw_text(void);
-  void draw_highscores(void);
+  void startNewGame();
+  void returnToMenu();
 
-  Landscape *landscape;
-  Snowflake **snowflakes;
-  Level *level;
-  Sleigh *sleigh;
-  Gift **gifts;
-  Score *score;
+  void drawText();
+  void drawHighscores();
 
-  GameMode mode;
-  int fps;
+  Asset::ImageLibrary& getImageLibrary();
+  Asset::MusicLibrary& getMusicLibrary();
+  Asset::SoundLibrary& getSoundLibrary();
+  Text& getText() const;
 
-  bool countdown_mode;
-  int countdown_start_time;
+  size_t getScreenWidth() const;
+  size_t getScreenHeight() const;
+  SDL_Surface& getScreenSurface() const;
+  size_t getTargetFps() const;
 
- private:
-  static const int highscore_width = 400;
-  static const int highscore_height = 300;
-  static const int highscore_padding_x = 10;
-  static const int highscore_padding_y = 10;
+  Options& getOptions();
+  RNG& getRNG();
+  Level& getLevel();
+  Sleigh& getSleigh();
+  const std::vector<Chimney>& getChimneys() const;
 
-  static const int countdown_start = 3;
+ protected:
+  void loadText();
+  void loadChimneys();
+  void playSoundAtPosition(const Asset::Sound& sound, int x) const;
 
-  static const int sleigh_start_x = 50;
-  static const int sleigh_start_y = 100;
+  Options options;
+  RNG rng;
+  SDL_Surface *screenSurface;
 
-  static const int hit_damage = 20;
-  static const int collision_damage = 50;
-  static const int gift_ground_damage = 15;
-  static const int max_damage = 300;
+  Asset::DataLibrary dataLibrary;
+  Asset::ImageLibrary imageLibrary;
+  Asset::MusicLibrary musicLibrary;
+  Asset::SoundLibrary soundLibrary;
+  std::unique_ptr<Text> text;
 
-  static const int total_time_secs = 450;
+  size_t screenWidth;
+  size_t screenHeight;
+  size_t targetFps;
 
-  static const int points_balloon_pts = 20;
-  static const int cash_balloon_pts = 50;
+  const size_t numberOfChannels = 64;
+  const size_t defaultLevelHeight = 5;
 
-  static const int bonus_duration = 15000;
+  std::unique_ptr<Landscape> landscape;
+  std::vector<Snowflake> snowflakes;
+  std::unique_ptr<Level> level;
+  std::unique_ptr<Sleigh> sleigh;
+  std::vector<Gift> gifts;
+  std::vector<Chimney> chimneys;
+  std::unique_ptr<Score> score;
 
-  static const int snowflake_count = 1200;
-  static const int max_gift_count = 20;
+  Mode mode;
+  size_t fps;
 
-  static const int bell_time_min = 10000;
-  static const int bell_time_max = 20000;
-  static constexpr float bell_volume = 0.5;
+  bool countdownMode;
+  size_t countdownStartTime;
 
-  static const int dog_time_min = 10000;
-  static const int dog_time_max = 20000;
-  static constexpr float dog_volume = 0.5;
+  const size_t highscoreWidth = 400;
+  const size_t highscoreHeight = 300;
+  const size_t highscorePaddingX = 10;
+  const size_t highscorePaddingY = 10;
 
-  static const int gift_wait_duration = 250;
+  const size_t countdownStart = 3;
 
-  static const int won_splash_duration = 5000;
-  static const int lost_splash_duration = 5000;
+  const int sleighStartX = 50;
+  const int sleighStartY = 100;
 
-  static const int highscore_caret_blink_duration = 500;
-  static const int highscore_name_max_length = 16;
+  const int hitDamage = 20;
+  const int collisionDamage = 50;
+  const int droppedGiftDamage = 15;
+  const int maxDamage = 300;
 
-  SDL_Surface *m_highscore_bg;
-  bool m_initialized;
+  const size_t totalTimeSecs = 450;
 
-  Uint8 *m_key_state;
-  bool m_fire_pressed;
-  bool m_up_pressed;
-  bool m_down_pressed;
-  bool m_left_pressed;
-  bool m_right_pressed;
-  bool m_escape_pressed;
+  const int normalBalloonPoints = 20;
+  const int cashBalloonPoints = 50;
 
-  bool m_quit;
+  const size_t bonusDuration = 15000;
 
-  int m_last_fps_update_time;
-  int m_frame_counter;
-  int m_last_time;
+  const size_t numberOfSnowflakes = 1200;
 
-  int m_bell_time;
-  int m_dog_time;
+  const size_t minBellTime = 10000;
+  const size_t maxBellTime = 20000;
+  const double bellVolume = 0.5;
 
-  int m_bonus_time_start;
+  const size_t minDogTime = 10000;
+  const size_t maxDogTime = 20000;
+  const double dogVolume = 0.5;
 
-  int m_last_gift_time;
+  const size_t giftWaitDuration = 250;
 
-  int m_won_lost_time;
+  const size_t wonSplashDuration = 5000;
+  const size_t lostSplashDuration = 5000;
 
-  int m_highscore_score;
-  int m_highscore_place;
-  std::string m_highscore_name;
-  int m_highscore_caret_blink_time;
+  const size_t highscoreCaretBlinkDuration = 500;
+  const size_t maxHighscoreNameLength = 16;
+
+  Asset::Image highscoreBackground;
+  bool initialized;
+
+  Uint8 *keyState;
+  bool firePressed;
+  bool upPressed;
+  bool downPressed;
+  bool leftPressed;
+  bool rightPressed;
+  bool escapePressed;
+
+  bool quitFlag;
+
+  size_t lastFpsUpdateTime;
+  size_t frameCounter;
+  size_t lastTime;
+
+  size_t bellTime;
+  size_t dogTime;
+
+  size_t bonusTimeStart;
+
+  size_t lastGiftTime;
+
+  size_t wonLostTime;
+
+  Options::Highscore highscore;
+  size_t highscorePlace;
+  size_t highscoreCaretBlinkTime;
 };
 
 }  // namespace SantaRacer

@@ -6,49 +6,49 @@
 
 #pragma once
 
-#include "SantaRacer/LevelObject/SnowmanStar.hpp"
+#include <vector>
+
+#include "SantaRacer/SnowmanStar.hpp"
+#include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
 namespace LevelObject {
 
-class Snowman {
+class Snowman : public LevelObject {
  public:
-  explicit Snowman(void *parent);
-  ~Snowman(void);
+  Snowman(Game* game, size_t tileX, size_t tileY);
+  ~Snowman() override;
 
-  void reinit(int tile_x, int tile_y);
-  void draw(void);
-  void move(void);
+  void draw() const override;
+  void move() override;
 
-  int get_level_x(void);
-  int get_y(void);
-  int get_frame(void);
-  bool is_triggered(void);
-  bool query_triggered(void);
+  int getLevelX() const override;
+  int getY() const override;
+  size_t getFrame() const override;
 
- private:
-  static const int frame_count = 8;
-  static const int frame_speed = frame_count;
+  bool isTriggered();
+  bool checkTriggered();
 
-  static const int speed_x = -100;
-  static const int speed_y = -150;
+ protected:
+  const size_t frameSpeed = 8;
 
-  static const int trigger_offset_min = 200;
-  static const int trigger_offset_max = 400;
+  const int speedX = -100;
+  const int speedY = -150;
 
-  static const int star_count = 20;
+  const int minTriggerOffset = 200;
+  const int maxTriggerOffset = 400;
 
-  void *m_parent;
+  const size_t numberOfSnowmanStars = 20;
 
-  int m_level_x;
-  int m_y;
-  int m_frame;
-  int m_time;
-  int m_trigger_offset;
-  bool m_triggered;
-  bool m_triggered_query;
+  int levelX;
+  int y;
+  size_t frame;
+  size_t time;
+  int triggerOffset;
+  bool triggered;
+  bool triggeredCheck;
 
-  SnowmanStar **m_stars;
+  std::vector<SnowmanStar> snowmanStars;
 };
 
 }  // namespace LevelObject

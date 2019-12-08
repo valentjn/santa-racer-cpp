@@ -4,100 +4,90 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include "SantaRacer/Draw.hpp"
-#include "SantaRacer/Globals.hpp"
+#include "SantaRacer/Game.hpp"
+#include "SantaRacer/Printer.hpp"
 #include "SantaRacer/Score.hpp"
 
 namespace SantaRacer {
 
-Score::Score(void) {
-  m_surface_points = Setup::images["score_gift"];
-  m_surface_damage = Setup::images["score_damage"];
-  m_surface_time = Setup::images["score_time"];
-  m_height = m_surface_points->h;
-
-  m_points = 0;
-  m_damage = 0;
-  m_time_start = 0;
-  m_total_time_secs = 0;
+Score::Score(Game *game) : game(game),
+    scoreGiftImage(game->getImageLibrary().getAsset("score_gift")),
+    scoreDamageImage(game->getImageLibrary().getAsset("score_damage")),
+    scoreTimeImage(game->getImageLibrary().getAsset("score_time")),
+    giftPoints(0), damagePoints(0), timeStart(0), totalTime(0) {
 }
 
-void Score::reset(int total_time_secs) {
-  m_points = 0;
-  m_damage = 0;
-  reset_clock(total_time_secs);
+void Score::initialize(int totalTime) {
+  giftPoints = 0;
+  damagePoints = 0;
+  resetClock(totalTime);
 }
 
-void Score::draw(void) {
-  char points[11];
-  char damage[11];
-  char time[11];
-  int mins;
-  int secs;
+void Score::draw() const {
+  const int y = static_cast<int>(scoreGiftImage.getHeight()) / 2;
 
-  Draw::copy(m_surface_points, Setup::screen, 0, 0);
-  snprintf(points, 10, "%i", m_points);
-  Setup::text->draw(points, 40, m_height / 2, Text::CenterLeft, true);
+  scoreGiftImage.copy(&game->getScreenSurface(), {0, 0});
+  game->getText().draw(&game->getScreenSurface(), {40, y},
+      Printer::printToString("%i", giftPoints), Text::Alignment::CenterLeft, true);
 
-  Draw::copy(m_surface_damage, Setup::screen, 150, 0);
-  if (m_damage == 0) {
-    snprintf(damage, 10, "0");
+  scoreDamageImage.copy(&game->getScreenSurface(), {150, 0});
+  game->getText().draw(&game->getScreenSurface(), {190, y},
+      ((damagePoints == 0) ? "0" : Printer::printToString("%i", -damagePoints)),
+      Text::Alignment::CenterLeft, true);
+
+  size_t seconds = getRemainingTime();
+  const size_t minutes = seconds / 60;
+  seconds %= 60;
+
+  scoreTimeImage.copy(&game->getScreenSurface(), {520, 0});
+  game->getText().draw(&game->getScreenSurface(), {560, y},
+      Printer::printToString("%i:%02i", minutes, seconds), Text::Alignment::CenterLeft, true);
+}
+
+int Score::getGiftPoints() const {
+  return giftPoints;
+}
+
+void Score::setGiftPoints(int giftPoints) {
+  this->giftPoints = giftPoints;
+}
+
+void Score::addGiftPoints(int giftPoints) {
+  this->giftPoints += giftPoints;
+}
+
+int Score::getDamagePoints() const {
+  return damagePoints;
+}
+
+void Score::setDamagePoints(int damagePoints) {
+  this->damagePoints = damagePoints;
+}
+
+void Score::addDamagePoints(int damagePoints) {
+  this->damagePoints = std::max(this->damagePoints + damagePoints, 0);
+}
+
+int Score::getRemainingTime() const {
+  if (timeStart == 0) {
+    return totalTime;
   } else {
-    snprintf(damage, 10, "-%i", m_damage);
-  }
-  Setup::text->draw(damage, 190, m_height / 2, Text::CenterLeft, true);
-
-  Draw::copy(m_surface_time, Setup::screen, 520, 0);
-  secs = get_remaining_secs();
-  mins = floor(secs / 60);
-  secs = secs % 60;
-  if (secs < 10) {
-    snprintf(time, 10, "%i:0%i", mins, secs);
-  } else {
-    snprintf(time, 10, "%i:%i", mins, secs);
-  }
-  Setup::text->draw(time, 560, m_height / 2, Text::CenterLeft, true);
-}
-
-int Score::get_points(void) { return m_points; }
-
-void Score::set_points(int points) { m_points = points; }
-
-void Score::add_points(int points) { m_points += points; }
-
-int Score::get_damage(void) { return m_damage; }
-
-void Score::set_damage(int damage) { m_damage = damage; }
-
-void Score::add_damage(int damage) {
-  m_damage += damage;
-
-  if (m_damage < 0) {
-    m_damage = 0;
+    return totalTime - (SDL_GetTicks() - timeStart) / 1000;
   }
 }
 
-int Score::get_remaining_secs(void) {
-  if (m_time_start == 0) {
-    return m_total_time_secs;
-  } else {
-    return m_total_time_secs - floor((SDL_GetTicks() - m_time_start) / 1000);
-  }
+void Score::addToRemainingTime(int time) {
+  timeStart += time * 1000;
 }
 
-void Score::add_to_remaining_secs(int secs) {
-  m_time_start += secs * 1000;
+void Score::resetClock(int totalTime) {
+  timeStart = SDL_GetTicks();
+  this->totalTime = totalTime;
 }
 
-void Score::reset_clock(int total_time_secs) {
-  m_time_start = SDL_GetTicks();
-  m_total_time_secs = total_time_secs;
-}
-
-int Score::get_score(void) {
-  return score_points_per_point * get_points() +
-         score_points_per_damage * get_damage() +
-         score_points_per_remaining_sec * get_remaining_secs();
+int Score::getScore() const {
+  return scorePointsPerGiftPoint * getGiftPoints() + scorePointsPerDamagePoint * getDamagePoints() +
+      scorePointsPerRemainingTime * getRemainingTime();
 }
 
 }  // namespace SantaRacer

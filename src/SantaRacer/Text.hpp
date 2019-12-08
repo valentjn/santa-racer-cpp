@@ -6,13 +6,18 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <SDL/SDL.h>
+
+#include "SantaRacer/Asset/Image.hpp"
 
 namespace SantaRacer {
 
 class Text {
  public:
-  enum TextAlign {
+  enum class Alignment {
     TopLeft = 0,
     TopCenter = 1,
     TopRight = 2,
@@ -24,17 +29,19 @@ class Text {
     BottomRight = 8
   };
 
-  explicit Text(SDL_Surface *surface);
-  void draw(const char *text, int x, int y, TextAlign align = TopLeft,
-            bool monospace = false);
-  int get_line_height(void);
+  Text(const Asset::Image& image, const std::vector<size_t>& actualCharWidths);
 
- private:
-  SDL_Surface *m_surface;
+  void draw(SDL_Surface* targetSurface, Asset::Image::Point point, const std::string& text,
+      Alignment align = Alignment::TopLeft, bool isMonospace = false) const;
 
-  int m_char_width;
-  int m_char_height;
-  int m_max_char_width;
+  size_t getLineHeight() const;
+
+ protected:
+  const Asset::Image& image;
+  const std::vector<size_t> actualCharWidths;
+  const size_t maxActualCharWidth;
+  const size_t charWidth;
+  const size_t charHeight;
 };
 
 }  // namespace SantaRacer

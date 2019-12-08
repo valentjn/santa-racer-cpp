@@ -4,12 +4,23 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#pragma once
+#include "SantaRacer/Printer.hpp"
 
 namespace SantaRacer {
-namespace Args {
 
-void check_args(int argc, char *argv[]);
+bool Printer::verbose =
+#ifdef DEBUG
+    true;
+#else
+    false;
+#endif  // DEBUG
 
+bool Printer::isVerbose() {
+  return verbose;
 }
+
+void Printer::setVerbose(bool verbose) {
+  Printer::verbose = verbose;
+}
+
 }  // namespace SantaRacer
