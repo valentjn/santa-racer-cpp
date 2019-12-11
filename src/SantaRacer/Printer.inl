@@ -32,9 +32,16 @@ void Printer::fatalError(std::string text, ArgumentType... arguments) {
 
 template <typename... ArgumentType>
 std::string Printer::printToString(std::string text, ArgumentType... arguments) {
+  if (text.find("%n") != std::string::npos) {
+    return "insecure string formatting prevented";
+  }
+
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wformat-security"
   const size_t size = std::snprintf(nullptr, 0, text.c_str(), arguments...) + 1;
   char formattedText[size];
   std::snprintf(formattedText, size, text.c_str(), arguments...);
+  #pragma clang diagnostic pop
 
   return std::string(formattedText);
 }
