@@ -108,7 +108,7 @@ double Level::getOffset() const {
 }
 
 void Level::setOffset(double offset) {
-  offset = offset;
+  this->offset = offset;
   time = SDL_GetTicks();
 }
 

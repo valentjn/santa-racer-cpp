@@ -128,7 +128,7 @@ bool Image::checkCollision(Point point, int frame, Image &other, Point otherPoin
       const size_t testI2 = (clipX - otherPoint.x + otherWidth * otherFrame) +
           (clipY - otherPoint.y) * other.surface->w;
 
-      if (mask[testI1] && mask[testI2]) {
+      if (mask[testI1] && otherMask[testI2]) {
         return true;
       }
     }
