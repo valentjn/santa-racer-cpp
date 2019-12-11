@@ -11,7 +11,8 @@
 
 namespace SantaRacer {
 
-Landscape::Landscape(Game* game) : image(game->getImageLibrary().getAsset("landscape")) {
+Landscape::Landscape(Game* game) : game(game),
+    image(game->getImageLibrary().getAsset("landscape")) {
   initialize();
 }
 
