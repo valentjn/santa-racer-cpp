@@ -18,6 +18,8 @@ namespace fs = std::filesystem;
 
 namespace SantaRacer {
 
+const std::filesystem::path Options::highscoresPath = std::filesystem::path(".") / "highscores.txt";
+
 Options::Options() : fullScreen(false), verbose(false) {
   std::ifstream f(highscoresPath);
 

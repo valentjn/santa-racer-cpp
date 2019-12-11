@@ -37,7 +37,7 @@ class Options {
   bool verbose;
   std::vector<Highscore> highscores;
 
-  const std::filesystem::path highscoresPath = std::filesystem::path(".") / "highscores.txt";
+  static const std::filesystem::path highscoresPath;
 };
 
 }  // namespace SantaRacer
