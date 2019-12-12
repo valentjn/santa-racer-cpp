@@ -73,8 +73,8 @@ class Sleigh {
   const int maxMenuY = 200;
 
   const size_t numberOfStars = 50;
-  const size_t acceleration = 25;
-  const size_t maxMoveSpeed = 200;
+  const int acceleration = 25;
+  const int maxMoveSpeed = 200;
 
   const int electrifiedOffsetX = -3;
   const int electrifiedOffsetY = -2;
