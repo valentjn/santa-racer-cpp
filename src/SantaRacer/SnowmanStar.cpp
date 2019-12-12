@@ -17,10 +17,6 @@ SnowmanStar::SnowmanStar(Game* game, LevelObject::Snowman *snowman) :
 }
 
 void SnowmanStar::initialize(bool useRandomFrame) {
-  if (!snowman->isTriggered()) {
-    return;
-  }
-
   levelX = snowman->getLevelX() + snowmanRocketOffsetX -
       game->getRNG().getInteger(minXOffset, maxXOffset);
   y = snowman->getY() + snowmanRocketOffsetY - game->getRNG().getInteger(minYOffset, maxYOffset);
