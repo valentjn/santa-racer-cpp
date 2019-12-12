@@ -27,7 +27,9 @@ namespace SantaRacer {
 
 Game::Game(Options&& options) : options(std::move(options)),
       screenWidth(640), screenHeight(480), targetFps(30) {
+#ifdef NDEBUG
   Printer::setVerbose(options.isVerbose());
+#endif
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     Printer::fatalError("unable to initalize SDL: %s\n", SDL_GetError());
