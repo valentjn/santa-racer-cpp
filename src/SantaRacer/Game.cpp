@@ -289,7 +289,7 @@ void Game::check_keys() {
     if (keyState[SDLK_SPACE] && !firePressed &&
         (lastGiftTime + giftWaitDuration < SDL_GetTicks()) &&
         !sleigh->isImmobile()) {
-      gifts.emplace_back(this);
+      gifts.emplace_back(new Gift(this));
       lastGiftTime = SDL_GetTicks();
     }
 
@@ -426,25 +426,37 @@ void Game::logic() {
     snowflake.move();
   }
 
-  for (Gift& gift : gifts) {
-    gift.move();
-    const int x = gift.getLevelX() - level->getOffset();
+  for (std::unique_ptr<Gift>& gift : gifts) {
+    gift->move();
+    const int x = gift->getLevelX() - level->getOffset();
 
-    if (gift.checkCollisionWithGround()) {
+    if (gift->checkCollisionWithGround()) {
       score->addDamagePoints(droppedGiftDamage);
       playSoundAtPosition(soundLibrary.getAsset("gift_missed"), x);
 
-    } else if (gift.checkCollisionWithChimney()) {
-      int points = gift.getGiftPoints();
+    } else if (gift->checkCollisionWithChimney()) {
+      int points = gift->getGiftPoints();
 
       if ((bonusTimeStart != 0) &&
           (bonusTimeStart + bonusDuration > SDL_GetTicks())) {
         points *= 2;
-        gift.activateDoublePoints();
+        gift->activateDoublePoints();
       }
 
       score->addGiftPoints(points);
       playSoundAtPosition(soundLibrary.getAsset("success"), x);
+    }
+  }
+
+  {
+    auto it = gifts.begin();
+
+    while (it != gifts.end()) {
+      if ((*it)->shouldBeDeleted()) {
+        it = gifts.erase(it);
+      } else {
+        ++it;
+      }
     }
   }
 
@@ -538,8 +550,8 @@ void Game::draw() {
     sleigh->draw();
     level->drawObjects();
 
-    for (const Gift& gift : gifts) {
-      gift.draw();
+    for (const std::unique_ptr<Gift>& gift : gifts) {
+      gift->draw();
     }
 
     SDL_LockSurface(screenSurface);

@@ -105,7 +105,7 @@ class Game {
   std::vector<Snowflake> snowflakes;
   std::unique_ptr<Level> level;
   std::unique_ptr<Sleigh> sleigh;
-  std::vector<Gift> gifts;
+  std::vector<std::unique_ptr<Gift>> gifts;
   std::vector<Chimney> chimneys;
   std::unique_ptr<Score> score;
 
