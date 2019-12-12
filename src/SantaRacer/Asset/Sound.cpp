@@ -85,11 +85,11 @@ void Sound::playPannedWithVolume(double pan, double volume) const {
 }
 
 void Sound::playOnChannel(int channel) const {
-#ifndef DEBUG
+#ifdef NDEBUG
   if ((chunk != nullptr) && (Mix_PlayChannel(channel, chunk, 0) == -1)) {
     Printer::fatalError("couldn't play sound: %s\n", Mix_GetError());
   }
-#endif  // DEBUG
+#endif  // NDEBUG
 }
 
 Mix_Chunk& Sound::getChunk() const {

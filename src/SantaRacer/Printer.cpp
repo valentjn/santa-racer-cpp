@@ -9,11 +9,11 @@
 namespace SantaRacer {
 
 bool Printer::verbose =
-#ifdef DEBUG
-    true;
-#else
+#ifdef NDEBUG
     false;
-#endif  // DEBUG
+#else
+    true;
+#endif  // NDEBUG
 
 bool Printer::isVerbose() {
   return verbose;

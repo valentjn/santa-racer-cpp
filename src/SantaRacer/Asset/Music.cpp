@@ -47,11 +47,11 @@ Music& Music::operator=(Music&& other) {
 }
 
 void Music::play() const {
-#ifndef DEBUG
+#ifdef NDEBUG
   if ((music != nullptr) && (Mix_PlayMusic(music, -1) == -1)) {
     Printer::fatalError("couldn't play music: %s\n", Mix_GetError());
   }
-#endif  // DEBUG
+#endif  // NDEBUG
 }
 
 Mix_Music& Music::getMusic() const {

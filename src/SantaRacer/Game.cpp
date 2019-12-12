@@ -555,7 +555,7 @@ void Game::draw() {
     }
   }
 
-#ifdef DEBUG
+#ifndef NDEBUG
   text->draw(screenSurface, {static_cast<int>(screenWidth), static_cast<int>(screenHeight)},
       Printer::printToString("%u FPS", fps), Text::Alignment::BottomRight);
 #endif
