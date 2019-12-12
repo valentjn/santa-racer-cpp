@@ -16,6 +16,8 @@ namespace Asset {
 
 class Music {
  public:
+  Music();
+  explicit Music(Mix_Music* music);
   explicit Music(std::filesystem::path musicPath);
   Music(const Music& other) = delete;
   Music(Music&& other);

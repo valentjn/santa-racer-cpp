@@ -29,11 +29,13 @@ class Options {
   void checkArguments(int argc, char *argv[]);
 
   bool isFullScreen() const;
+  bool isSoundEnabled() const;
   bool isVerbose() const;
   std::vector<Highscore>& getHighscores();
 
  protected:
   bool fullScreen;
+  bool soundEnabled;
   bool verbose;
   std::vector<Highscore> highscores;
 

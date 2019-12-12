@@ -16,6 +16,8 @@ namespace Asset {
 
 class Sound {
  public:
+  Sound();
+  explicit Sound(Mix_Chunk* chunk);
   explicit Sound(std::filesystem::path soundPath);
   Sound(const Sound& other) = delete;
   Sound(Sound&& other);

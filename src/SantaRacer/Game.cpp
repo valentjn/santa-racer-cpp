@@ -44,15 +44,24 @@ Game::Game(Options&& options) : options(std::move(options)),
 
   screenSurface = SDL_SetVideoMode(screenWidth, screenHeight, 16, flags);
 
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
-    Printer::fatalError("unable to initialize SDL_Mixer: %s\n", Mix_GetError());
+  if (options.isSoundEnabled()) {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+      Printer::fatalError("unable to initialize SDL_Mixer: %s\n", Mix_GetError());
+    }
+    Mix_AllocateChannels(numberOfChannels);
   }
-  Mix_AllocateChannels(numberOfChannels);
 
   dataLibrary.loadAssets();
   imageLibrary.loadAssets();
-  soundLibrary.loadAssets();
-  musicLibrary.loadAssets();
+
+  if (options.isSoundEnabled()) {
+    soundLibrary.loadAssets();
+    musicLibrary.loadAssets();
+  } else {
+    soundLibrary.setEnabled(false);
+    musicLibrary.setEnabled(false);
+  }
+
   loadText();
   loadChimneys();
 
@@ -76,8 +85,10 @@ Game::Game(Options&& options) : options(std::move(options)),
 }
 
 Game::~Game() {
-  Printer::debug("closing audio\n");
-  Mix_CloseAudio();
+  if (options.isSoundEnabled()) {
+    Printer::debug("closing audio\n");
+    Mix_CloseAudio();
+  }
 
   Printer::debug("quitting sdl\n");
   SDL_Quit();

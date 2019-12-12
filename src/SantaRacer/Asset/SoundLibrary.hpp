@@ -17,9 +17,17 @@ namespace Asset {
 
 class SoundLibrary : public AssetLibrary<Sound> {
  public:
+  SoundLibrary();
+
   Sound loadAsset(std::string assetName) const override;
   std::filesystem::path getDirectory() const override;
   std::filesystem::path getExtension() const override;
+
+  bool isEnabled() const;
+  void setEnabled(bool enabled);
+
+ protected:
+  bool enabled;
 };
 
 }  // namespace Asset

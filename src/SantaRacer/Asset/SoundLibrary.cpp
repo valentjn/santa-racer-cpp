@@ -15,8 +15,15 @@ namespace fs = std::filesystem;
 namespace SantaRacer {
 namespace Asset {
 
+SoundLibrary::SoundLibrary() : enabled(true) {
+}
+
 Sound SoundLibrary::loadAsset(std::string assetName) const {
-  return Sound(getDirectory() / (assetName + getExtension().string()));
+  if (enabled) {
+    return Sound(getDirectory() / (assetName + getExtension().string()));
+  } else {
+    return Sound();
+  }
 }
 
 fs::path SoundLibrary::getDirectory() const {
@@ -25,6 +32,14 @@ fs::path SoundLibrary::getDirectory() const {
 
 fs::path SoundLibrary::getExtension() const {
   return fs::path(".wav");
+}
+
+bool SoundLibrary::isEnabled() const {
+  return enabled;
+}
+
+void SoundLibrary::setEnabled(bool enabled) {
+  this->enabled = enabled;
 }
 
 }  // namespace Asset

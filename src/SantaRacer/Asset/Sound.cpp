@@ -15,6 +15,12 @@
 namespace SantaRacer {
 namespace Asset {
 
+Sound::Sound() : chunk(nullptr) {
+}
+
+Sound::Sound(Mix_Chunk* chunk) : chunk(chunk) {
+}
+
 Sound::Sound(std::filesystem::path soundPath) : chunk(Mix_LoadWAV(soundPath.c_str())) {
   if (chunk == nullptr) {
     Printer::fatalError("couldn't load sound: %s\n", Mix_GetError());
@@ -63,22 +69,24 @@ void Sound::playWithVolume(double volume) const {
 }
 
 void Sound::playPannedWithVolume(double pan, double volume) const {
-  int channel = getFreeChannel();
-  Uint8 left = ((pan > 0.5) ? static_cast<Uint8>((1 - pan) * 2 * 255) : 255);
-  Uint8 right = ((pan < 0.5) ? static_cast<Uint8>(pan * 2 * 255) : 255);
+  if (chunk != nullptr) {
+    int channel = getFreeChannel();
+    Uint8 left = ((pan > 0.5) ? static_cast<Uint8>((1 - pan) * 2 * 255) : 255);
+    Uint8 right = ((pan < 0.5) ? static_cast<Uint8>(pan * 2 * 255) : 255);
 
-  // Printer::debug("pan %f, left %i, right %i\n", pan, left, right);
-  if (Mix_SetPanning(channel, left, right) == 0) {
-    Printer::fatalError("couldn't set panning: %s\n", Mix_GetError());
+    // Printer::debug("pan %f, left %i, right %i\n", pan, left, right);
+    if (Mix_SetPanning(channel, left, right) == 0) {
+      Printer::fatalError("couldn't set panning: %s\n", Mix_GetError());
+    }
+
+    Mix_Volume(channel, static_cast<int>(volume * MIX_MAX_VOLUME));
+    playOnChannel(channel);
   }
-
-  Mix_Volume(channel, static_cast<int>(volume * MIX_MAX_VOLUME));
-  playOnChannel(channel);
 }
 
 void Sound::playOnChannel(int channel) const {
 #ifndef DEBUG
-  if (Mix_PlayChannel(channel, chunk, 0) == -1) {
+  if ((chunk != nullptr) && (Mix_PlayChannel(channel, chunk, 0) == -1)) {
     Printer::fatalError("couldn't play sound: %s\n", Mix_GetError());
   }
 #endif  // DEBUG

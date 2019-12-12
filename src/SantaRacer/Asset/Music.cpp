@@ -15,6 +15,12 @@
 namespace SantaRacer {
 namespace Asset {
 
+Music::Music() : music(nullptr) {
+}
+
+Music::Music(Mix_Music* music) : music(music) {
+}
+
 Music::Music(std::filesystem::path musicPath) : music(Mix_LoadMUS(musicPath.c_str())) {
   if (music == nullptr) {
     Printer::fatalError("couldn't load music: %s\n", Mix_GetError());
@@ -42,7 +48,7 @@ Music& Music::operator=(Music&& other) {
 
 void Music::play() const {
 #ifndef DEBUG
-  if (Mix_PlayMusic(music, -1) == -1) {
+  if ((music != nullptr) && (Mix_PlayMusic(music, -1) == -1)) {
     Printer::fatalError("couldn't play music: %s\n", Mix_GetError());
   }
 #endif  // DEBUG

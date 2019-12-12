@@ -20,7 +20,7 @@ namespace SantaRacer {
 
 const std::filesystem::path Options::highscoresPath = std::filesystem::path(".") / "highscores.txt";
 
-Options::Options() : fullScreen(false), verbose(false) {
+Options::Options() : fullScreen(false), soundEnabled(true), verbose(false) {
   std::ifstream f(highscoresPath);
 
   for (size_t i = 0; i < 10; i++) {
@@ -60,6 +60,7 @@ void Options::checkArguments(int argc, char *argv[]) {
           "to be intellectual property of third parties.\n");
       Printer::print("\n");
       Printer::print("-f, --fullscreen  enable fullscreen mode\n");
+      Printer::print("--(no-)sound      enable/disable sound\n");
       Printer::print("-v, --verbose     enable verbose mode\n");
       Printer::print("-h, --help        display help message\n");
       Printer::print("--version         display version information\n");
@@ -67,6 +68,10 @@ void Options::checkArguments(int argc, char *argv[]) {
       exit(0);
     } else if (argument == "-f" || argument == "--fullscreen") {
       fullScreen = true;
+    } else if (argument == "--sound") {
+      soundEnabled = true;
+    } else if (argument == "--no-sound") {
+      soundEnabled = false;
     } else if (argument == "-v" || argument == "--verbose") {
       verbose = true;
     } else if (argument == "--license") {
@@ -93,6 +98,10 @@ void Options::checkArguments(int argc, char *argv[]) {
 
 bool Options::isFullScreen() const {
   return fullScreen;
+}
+
+bool Options::isSoundEnabled() const {
+  return soundEnabled;
 }
 
 bool Options::isVerbose() const {
