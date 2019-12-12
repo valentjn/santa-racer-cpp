@@ -167,6 +167,10 @@ bool Sleigh::isImmobile() const {
 }
 
 bool Sleigh::checkCollisionLevel() {
+  if (inMenuMode || isImmobile()) {
+    return false;
+  }
+
   const int tileWidth = static_cast<int>(game->getLevel().getTileWidth());
   const int tileHeight = static_cast<int>(game->getLevel().getTileHeight());
   const int levelOffset = game->getLevel().getOffset();
