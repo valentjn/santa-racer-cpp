@@ -14,7 +14,7 @@ class Game;
 
 class SleighStar {
  public:
-  SleighStar(Game* game);
+  explicit SleighStar(Game* game);
 
   void initialize(bool useRandomFrame = false);
   void draw() const;

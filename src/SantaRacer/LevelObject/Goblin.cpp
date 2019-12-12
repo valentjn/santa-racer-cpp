@@ -13,10 +13,10 @@ namespace SantaRacer {
 namespace LevelObject {
 
 Goblin::Goblin(Game* game, size_t tileX, size_t tileY) :
-    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("goblin")),
+    LevelObject(game, tileX, tileY, &game->getImageLibrary().getAsset("goblin")),
     levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
-      (image.getWidth() / image.getNumberOfFrames()) / 2),
-    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+      (image->getWidth() / image->getNumberOfFrames()) / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image->getHeight() / 2),
     frame(0), time(SDL_GetTicks()), snowballThrown(false), snowballThrownCheck(false) {
 }
 
@@ -43,7 +43,7 @@ int Goblin::getY() const {
 
 size_t Goblin::getFrame() const {
   return static_cast<int>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame) %
-      image.getNumberOfFrames();
+      image->getNumberOfFrames();
 }
 
 bool Goblin::checkSnowballThrown() {

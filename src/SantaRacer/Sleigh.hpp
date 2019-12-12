@@ -17,7 +17,7 @@ class Game;
 
 class Sleigh {
  public:
-  Sleigh(Game* game);
+  explicit Sleigh(Game* game);
 
   void initialize();
   void initializeSleighStars();

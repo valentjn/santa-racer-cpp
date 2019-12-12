@@ -4,11 +4,11 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <SDL/SDL.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
-
-#include <SDL/SDL.h>
 
 #include "SantaRacer/Text.hpp"
 

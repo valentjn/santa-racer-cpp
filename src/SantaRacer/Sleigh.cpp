@@ -4,6 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -185,11 +186,11 @@ bool Sleigh::checkCollisionLevel() {
         continue;
       }
 
-      if (sleighImage.checkCollision({x, y}, sleighFrame, levelImage,
+      if (sleighImage.checkCollision({x, y}, sleighFrame, &levelImage,
             {tileX * tileWidth - levelOffset, tileY * tileHeight}, tileFrame) ||
           reindeerImage.checkCollision(
             {x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX, y},
-            reindeerFrame, levelImage,
+            reindeerFrame, &levelImage,
             {tileX * tileWidth - levelOffset, tileY * tileHeight}, tileFrame)) {
         return true;
       }
@@ -215,12 +216,12 @@ SantaRacer::LevelObject::LevelObject* Sleigh::checkCollisionLevelObject() {
       continue;
     }
 
-    if (sleighImage.checkCollision({x, y}, sleighFrame, levelObject->getImage(),
+    if (sleighImage.checkCollision({x, y}, sleighFrame, &levelObject->getImage(),
           {levelObject->getLevelX() - level_offset, levelObject->getY()},
           levelObject->getFrame()) ||
         sleighImage.checkCollision(
           {x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX, y}, reindeerFrame,
-          levelObject->getImage(),
+          &levelObject->getImage(),
           {levelObject->getLevelX() - level_offset, levelObject->getY()},
           levelObject->getFrame())) {
       return levelObject.get();

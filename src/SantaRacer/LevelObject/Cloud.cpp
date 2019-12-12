@@ -12,9 +12,9 @@ namespace SantaRacer {
 namespace LevelObject {
 
 Cloud::Cloud(Game* game, size_t tileX, size_t tileY) :
-    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("cloud")),
-    levelX((tileX + 0.5) * game->getLevel().getTileWidth() - image.getWidth() / 2),
-    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2) {
+    LevelObject(game, tileX, tileY, &game->getImageLibrary().getAsset("cloud")),
+    levelX((tileX + 0.5) * game->getLevel().getTileWidth() - image->getWidth() / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image->getHeight() / 2) {
 }
 
 Cloud::~Cloud() {

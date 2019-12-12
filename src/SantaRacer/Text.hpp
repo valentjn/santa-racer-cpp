@@ -6,10 +6,10 @@
 
 #pragma once
 
+#include <SDL/SDL.h>
+
 #include <string>
 #include <vector>
-
-#include <SDL/SDL.h>
 
 #include "SantaRacer/Asset/Image.hpp"
 

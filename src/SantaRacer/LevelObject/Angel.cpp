@@ -12,10 +12,10 @@ namespace SantaRacer {
 namespace LevelObject {
 
 Angel::Angel(Game* game, size_t tileX, size_t tileY) :
-    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("angel")),
+    LevelObject(game, tileX, tileY, &game->getImageLibrary().getAsset("angel")),
     levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
-      (image.getWidth() / image.getNumberOfFrames()) / 2),
-    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+      (image->getWidth() / image->getNumberOfFrames()) / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image->getHeight() / 2),
     frame(0), time(SDL_GetTicks()) {
 }
 
@@ -32,7 +32,7 @@ int Angel::getY() const {
 
 size_t Angel::getFrame() const {
   return static_cast<size_t>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame) %
-      image.getNumberOfFrames();
+      image->getNumberOfFrames();
 }
 
 }  // namespace LevelObject

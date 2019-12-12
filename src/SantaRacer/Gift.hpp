@@ -16,7 +16,7 @@ class Game;
 
 class Gift {
  public:
-  Gift(Game* game);
+  explicit Gift(Game* game);
 
   void draw() const;
   void drawBigStar(int x, int y) const;

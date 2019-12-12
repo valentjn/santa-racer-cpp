@@ -14,7 +14,7 @@ class Game;
 
 class Landscape {
  public:
-  Landscape(Game* game);
+  explicit Landscape(Game* game);
 
   void initialize();
 

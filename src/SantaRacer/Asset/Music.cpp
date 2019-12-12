@@ -4,10 +4,10 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <SDL/SDL_mixer.h>
+
 #include <filesystem>
 #include <string>
-
-#include <SDL/SDL_mixer.h>
 
 #include "SantaRacer/Printer.hpp"
 #include "SantaRacer/Asset/Music.hpp"

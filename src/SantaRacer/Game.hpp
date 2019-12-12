@@ -43,7 +43,7 @@ class Game {
     NewHighscore,
   };
 
-  Game(Options&& options);
+  explicit Game(Options&& options);
   Game(const Game& other) = delete;
   ~Game();
 

@@ -19,7 +19,7 @@
 namespace SantaRacer {
 namespace LevelObject {
 
-LevelObject::LevelObject(Game* game, size_t tileX, size_t tileY, Asset::Image& image) :
+LevelObject::LevelObject(Game* game, size_t tileX, size_t tileY, Asset::Image* image) :
     game(game), image(image), tileX(tileX), tileY(tileY) {
 }
 
@@ -56,7 +56,7 @@ std::unique_ptr<LevelObject> LevelObject::create(Game* game, size_t tileX, size_
 }
 
 void LevelObject::draw() const {
-  image.copy(&game->getScreenSurface(),
+  image->copy(&game->getScreenSurface(),
       {getLevelX() - static_cast<int>(game->getLevel().getOffset()), getY()}, getFrame());
 }
 
@@ -72,7 +72,7 @@ size_t LevelObject::getTileY() const {
 }
 
 Asset::Image& LevelObject::getImage() {
-  return image;
+  return *image;
 }
 
 }  // namespace LevelObject

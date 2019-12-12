@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "SantaRacer/Game.hpp"
@@ -483,7 +484,6 @@ void Game::logic() {
     } else if ((dynamic_cast<LevelObject::Finish*>(levelObject.get()) != nullptr) &&
                dynamic_cast<LevelObject::Finish*>(levelObject.get())->checkReached() &&
                ((mode == Mode::Running) || (mode == Mode::Menu))) {
-
       if (mode == Mode::Running) {
         mode = Mode::Won;
         wonLostTime = SDL_GetTicks();
@@ -556,11 +556,8 @@ void Game::draw() {
   }
 
 #ifdef DEBUG
-  {
-    char string[11];
-    snprintf(string, 10, "%i FPS", fps);
-    text->draw(screenSurface, string, screenWidth, screenHeight, Text::Alignment::BottomRight);
-  }
+  text->draw(screenSurface, {static_cast<int>(screenWidth), static_cast<int>(screenHeight)},
+      Printer::printToString("%u FPS", fps), Text::Alignment::BottomRight);
 #endif
 
   if ((mode == Mode::Menu) || (mode == Mode::Highscores)) {
@@ -590,7 +587,7 @@ void Game::fpsDelay() {
 
   if (lastTime != 0) {
     const int currentFrameTime = currentTime - lastTime;
-    //cur_fps = 1000.0 / cur_delay;
+    // cur_fps = 1000.0 / cur_delay;
     const double targetFrameTime = 1000.0 / targetFps;
 
     if (currentFrameTime < targetFrameTime) {
@@ -692,8 +689,6 @@ void Game::drawHighscores() {
 
   for (size_t i = 0; i < 10; i++) {
     std::string name;
-    char scoreString[11];
-    snprintf(scoreString, 10, "%i", options.getHighscores()[i].score);
 
     if ((mode == Mode::NewHighscore) && (i == highscorePlace)) {
       if ((SDL_GetTicks() - highscoreCaretBlinkTime) % (2 * highscoreCaretBlinkDuration) <
@@ -709,7 +704,7 @@ void Game::drawHighscores() {
     text->draw(screenSurface, {x, y}, name, Text::Alignment::TopLeft);
     text->draw(screenSurface,
         {x + static_cast<int>(highscoreWidth) - static_cast<int>(2 * highscorePaddingX), y},
-        scoreString, Text::Alignment::TopRight);
+        Printer::printToString("%i", options.getHighscores()[i].score), Text::Alignment::TopRight);
 
     y += lineSpacing;
   }

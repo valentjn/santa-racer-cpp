@@ -16,10 +16,10 @@ namespace SantaRacer {
 namespace LevelObject {
 
 Snowman::Snowman(Game* game, size_t tileX, size_t tileY) :
-    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("snowman")),
+    LevelObject(game, tileX, tileY, &game->getImageLibrary().getAsset("snowman")),
     levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
-      (image.getWidth() / image.getNumberOfFrames()) / 2),
-    y((tileY + 0.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+      (image->getWidth() / image->getNumberOfFrames()) / 2),
+    y((tileY + 0.5) * game->getLevel().getTileHeight() - image->getHeight() / 2),
     frame(0), time(SDL_GetTicks()),
     triggerOffset(game->getRNG().getInteger(minTriggerOffset, maxTriggerOffset)),
     triggered(false), triggeredCheck(false) {
@@ -64,7 +64,7 @@ int Snowman::getY() const {
 size_t Snowman::getFrame() const {
   return (triggered ?
       std::min(static_cast<size_t>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame),
-      image.getNumberOfFrames()) : 0);
+      image->getNumberOfFrames()) : 0);
 }
 
 bool Snowman::isTriggered() {

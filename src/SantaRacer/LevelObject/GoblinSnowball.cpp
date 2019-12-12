@@ -12,7 +12,7 @@ namespace SantaRacer {
 namespace LevelObject {
 
 GoblinSnowball::GoblinSnowball(Game* game, size_t tileX, size_t tileY) :
-    LevelObject(game, tileX, tileY, game->getImageLibrary().getAsset("snowball")),
+    LevelObject(game, tileX, tileY, &game->getImageLibrary().getAsset("snowball")),
     levelX(tileX * game->getLevel().getTileWidth() + offsetX),
     y(tileY * game->getLevel().getTileHeight() + offsetY), frame(0), time(SDL_GetTicks()) {
 }

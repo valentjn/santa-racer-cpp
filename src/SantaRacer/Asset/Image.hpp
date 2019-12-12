@@ -33,8 +33,8 @@ class Image {
   };
 
   Image();
-  Image(std::filesystem::path imagePath, size_t numberOfFrames = 1);
-  Image(SDL_Surface* surface, size_t numberOfFrames = 1);
+  explicit Image(std::filesystem::path imagePath, size_t numberOfFrames = 1);
+  explicit Image(SDL_Surface* surface, size_t numberOfFrames = 1);
   Image(const Image& other) = delete;
   Image(Image&& other);
   ~Image();
@@ -48,7 +48,7 @@ class Image {
       size_t frame = 0) const;
   void setAlpha(Uint8 alpha);
 
-  bool checkCollision(Point point, int frame, Image &other, Point otherPoint, size_t otherFrame);
+  bool checkCollision(Point point, int frame, Image *other, Point otherPoint, size_t otherFrame);
 
   SDL_Surface& getSurface() const;
   size_t getWidth() const;

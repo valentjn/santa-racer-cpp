@@ -14,7 +14,7 @@ class Game;
 
 class Score {
  public:
-  Score(Game *game);
+  explicit Score(Game *game);
 
   void initialize(int totalTime);
   void draw() const;

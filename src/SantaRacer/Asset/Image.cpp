@@ -84,12 +84,12 @@ void Image::setAlpha(Uint8 alpha) {
   SDL_UnlockSurface(surface);
 }
 
-bool Image::checkCollision(Point point, int frame, Image &other, Point otherPoint,
+bool Image::checkCollision(Point point, int frame, Image *other, Point otherPoint,
     size_t otherFrame) {
   const int width = static_cast<int>(getWidth());
   const int height = static_cast<int>(getHeight());
-  const int otherWidth = static_cast<int>(other.getWidth());
-  const int otherHeight = static_cast<int>(other.getHeight());
+  const int otherWidth = static_cast<int>(other->getWidth());
+  const int otherHeight = static_cast<int>(other->getHeight());
 
   if (((point.x < otherPoint.x) && (point.x + width < otherPoint.x)) ||
       ((otherPoint.x < point.x) && (otherPoint.x + otherWidth < point.x)) ||
@@ -118,15 +118,15 @@ bool Image::checkCollision(Point point, int frame, Image &other, Point otherPoin
   }
 
   const std::vector<bool>& mask = getMask();
-  const std::vector<bool>& otherMask = other.getMask();
+  const std::vector<bool>& otherMask = other->getMask();
   frame %= numberOfFrames;
-  otherFrame %= other.numberOfFrames;
+  otherFrame %= other->numberOfFrames;
 
   for (int clipY = clipRectangle.y; clipY < clipRectangle.y + clipRectangle.h; clipY++) {
     for (int clipX = clipRectangle.x; clipX < clipRectangle.x + clipRectangle.w; clipX++) {
       const size_t testI1 = (clipX - point.x + width * frame) + (clipY - point.y) * surface->w;
       const size_t testI2 = (clipX - otherPoint.x + otherWidth * otherFrame) +
-          (clipY - otherPoint.y) * other.surface->w;
+          (clipY - otherPoint.y) * other->surface->w;
 
       if (mask[testI1] && otherMask[testI2]) {
         return true;

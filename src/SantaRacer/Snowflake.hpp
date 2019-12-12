@@ -12,7 +12,7 @@ class Game;
 
 class Snowflake {
  public:
-  Snowflake(Game* game);
+  explicit Snowflake(Game* game);
 
   void initialize(bool putOnTop = false);
   void draw() const;

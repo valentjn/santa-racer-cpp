@@ -24,10 +24,10 @@ const std::unordered_map<Balloon::Type, std::string> Balloon::imageNameMap = {
 
 Balloon::Balloon(Game* game, size_t tileX, size_t tileY, Type type) :
     LevelObject(game, tileX, tileY,
-      game->getImageLibrary().getAsset(imageNameMap.find(type)->second)),
+      &game->getImageLibrary().getAsset(imageNameMap.find(type)->second)),
     type(type), levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
-      (image.getWidth() / image.getNumberOfFrames()) / 2),
-    y((tileY + 1.5) * game->getLevel().getTileHeight() - image.getHeight() / 2),
+      (image->getWidth() / image->getNumberOfFrames()) / 2),
+    y((tileY + 1.5) * game->getLevel().getTileHeight() - image->getHeight() / 2),
     frame(0), time(SDL_GetTicks()) {
 }
 
@@ -43,12 +43,12 @@ int Balloon::getY() const {
 }
 
 size_t Balloon::getFrame() const {
-  /*if (frame >= image.getNumberOfFrames()) {
-    frame = 2 * image.getNumberOfFrames() - frame - 2;
+  /*if (frame >= image->getNumberOfFrames()) {
+    frame = 2 * image->getNumberOfFrames() - frame - 2;
   }*/
 
   return static_cast<int>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame) %
-      (image.getNumberOfFrames() * 2 - 2);
+      (image->getNumberOfFrames() * 2 - 2);
 }
 
 Balloon::Type Balloon::getType() const {

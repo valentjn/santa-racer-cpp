@@ -6,10 +6,10 @@
 
 #pragma once
 
+#include <SDL/SDL_mixer.h>
+
 #include <filesystem>
 #include <string>
-
-#include <SDL/SDL_mixer.h>
 
 namespace SantaRacer {
 namespace Asset {
@@ -30,7 +30,7 @@ class Music {
 
   Mix_Music& getMusic() const;
 
-protected:
+ protected:
   Mix_Music* music;
 };
 

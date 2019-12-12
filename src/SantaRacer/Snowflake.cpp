@@ -4,9 +4,9 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <algorithm>
-
 #include <SDL/SDL.h>
+
+#include <algorithm>
 
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/RNG.hpp"
@@ -68,7 +68,8 @@ void Snowflake::move() {
 void Snowflake::changeSpeed() {
   speedX = std::min(std::max(speedX + game->getRNG().getInteger(-10, 10), minSpeedX), maxSpeedX);
   speedY = std::min(std::max(speedY + game->getRNG().getInteger(-10, 10), minSpeedY), maxSpeedY);
-  speedChangeTime = SDL_GetTicks() + game->getRNG().getInteger(minSpeedChangeTime, maxSpeedChangeTime);
+  speedChangeTime = SDL_GetTicks() + game->getRNG().getInteger(minSpeedChangeTime,
+      maxSpeedChangeTime);
 }
 
 double Snowflake::getLevelX() const {

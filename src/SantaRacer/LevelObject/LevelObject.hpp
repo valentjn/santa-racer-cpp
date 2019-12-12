@@ -18,7 +18,7 @@ namespace LevelObject {
 
 class LevelObject {
  public:
-  LevelObject(Game* game, size_t tileX, size_t tileY, Asset::Image& image);
+  LevelObject(Game* game, size_t tileX, size_t tileY, Asset::Image* image);
   virtual ~LevelObject();
 
   static std::unique_ptr<LevelObject> create(Game* game, size_t tileX, size_t tileY,
@@ -37,7 +37,7 @@ class LevelObject {
 
  protected:
   Game *game;
-  Asset::Image& image;
+  Asset::Image* image;
 
   int tileX;
   int tileY;
