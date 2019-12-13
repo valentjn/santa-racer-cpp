@@ -122,7 +122,8 @@ void Gift::move() {
               chimneyY + chimney.getY()) &&
             (levelX <= chimneyX + chimney.getX() + static_cast<int>(chimney.getWidth())) &&
             (y <= chimneyY + chimney.getY() + static_cast<int>(chimney.getHeight()))) {
-          collideWithChimney(*std::find(allGiftPoints.begin(), allGiftPoints.end(), giftPoints));
+          collideWithChimney(*std::find(allGiftPoints.begin(), allGiftPoints.end(),
+              allGiftPoints[tileY - 1]));
           return;
         }
       }
