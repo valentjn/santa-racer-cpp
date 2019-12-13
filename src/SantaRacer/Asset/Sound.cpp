@@ -89,6 +89,8 @@ void Sound::playOnChannel(int channel) const {
   if ((chunk != nullptr) && (Mix_PlayChannel(channel, chunk, 0) == -1)) {
     Printer::fatalError("couldn't play sound: %s\n", Mix_GetError());
   }
+#else
+  (void)channel;
 #endif  // NDEBUG
 }
 
