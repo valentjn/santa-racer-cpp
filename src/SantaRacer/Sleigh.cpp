@@ -109,7 +109,8 @@ void Sleigh::draw() const {
   }
 
   if (isShieldActivated()) {
-    const size_t shieldFrame = static_cast<int>((SDL_GetTicks() - shieldEndTime) / 1000.0 *
+    const size_t shieldFrame = static_cast<int>
+        ((static_cast<double>(SDL_GetTicks()) - static_cast<double>(shieldEndTime)) / 1000.0 *
         shieldFrameSpeed) % shieldImage.getNumberOfFrames();
     shieldImage.copy(&game->getScreenSurface(),
         {x + shieldOffsetY - static_cast<int>(shieldFrame), y + shieldOffsetY}, shieldFrame);
