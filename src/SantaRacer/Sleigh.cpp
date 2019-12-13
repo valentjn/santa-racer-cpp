@@ -216,7 +216,7 @@ SantaRacer::LevelObject::LevelObject* Sleigh::checkCollisionLevelObject() {
 
   for (std::unique_ptr<LevelObject::LevelObject>& levelObject :
       game->getLevel().getLevelObjects()) {
-    if (shieldActivated && (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) != nullptr)) {
+    if (shieldActivated && (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) == nullptr)) {
       continue;
     }
 
