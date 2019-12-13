@@ -38,7 +38,7 @@ void SleighStar::draw() const {
 
 void SleighStar::move() {
   if (getFrame() >= maxFrame) {
-    initialize();
+    initialize(false);
   }
 }
 

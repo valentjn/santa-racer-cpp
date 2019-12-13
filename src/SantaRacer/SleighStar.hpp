@@ -16,7 +16,7 @@ class SleighStar {
  public:
   explicit SleighStar(Game* game);
 
-  void initialize(bool useRandomFrame = false);
+  void initialize(bool useRandomFrame = true);
   void draw() const;
   void move();
   size_t getFrame() const;
