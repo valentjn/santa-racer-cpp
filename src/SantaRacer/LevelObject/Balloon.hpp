@@ -35,7 +35,7 @@ class Balloon : public LevelObject {
  protected:
   static const std::unordered_map<Type, std::string> imageNameMap;
 
-  const int frameSpeed = 8;
+  const size_t frameSpeed = 8;
   const int speed = 50;
 
   Type type;

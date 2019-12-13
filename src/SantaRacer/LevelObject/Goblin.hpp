@@ -25,7 +25,7 @@ class Goblin : public LevelObject {
   bool checkSpawnSnowball();
 
  protected:
-  const int frameSpeed = 12;
+  const size_t frameSpeed = 12;
   const size_t spawnSnowballFrame = 13;
 
   int levelX;
