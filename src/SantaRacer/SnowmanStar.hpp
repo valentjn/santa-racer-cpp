@@ -27,8 +27,8 @@ class SnowmanStar {
   int getFrame() const;
 
  protected:
-  const int maxNumberOfFrames = 30;
-  const int frameSpeed = 34;
+  const size_t maxNumberOfFrames = 30;
+  const size_t frameSpeed = 34;
   const int minXOffset = -5;
   const int maxXOffset = 5;
   const int minYOffset = -5;
@@ -37,8 +37,8 @@ class SnowmanStar {
   const int snowmanRocketOffsetX = 35;
   const int snowmanRocketOffsetY = 35;
 
-  const int minNumberOfFramesToWait = 0;
-  const int maxNumberOfFramesToWait = 17;
+  const size_t minNumberOfFramesToWait = 0;
+  const size_t maxNumberOfFramesToWait = 17;
 
   Game* game;
   LevelObject::Snowman *snowman;
