@@ -220,6 +220,10 @@ SantaRacer::LevelObject::LevelObject* Sleigh::checkCollisionLevelObject() {
       continue;
     }
 
+    if (!levelObject->isVisible()) {
+      continue;
+    }
+
     if (sleighImage.checkCollision({x, y}, sleighFrame, &levelObject->getImage(),
           {levelObject->getLevelX() - level_offset, levelObject->getY()},
           levelObject->getFrame()) ||

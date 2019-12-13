@@ -355,14 +355,7 @@ void Game::logic() {
           playSoundAtPosition(soundLibrary.getAsset("drunk"), x);
         }
 
-        auto& levelObjects = level->getLevelObjects();
-
-        for (size_t i = 0; i < levelObjects.size(); i++) {
-          if (levelObjects[i].get() == levelObject) {
-            levelObjects.erase(levelObjects.begin() + i);
-            break;
-          }
-        }
+        levelObject->setVisible(false);
 
       } else if ((dynamic_cast<LevelObject::Angel*>(levelObject) != nullptr) ||
                  (dynamic_cast<LevelObject::Goblin*>(levelObject) != nullptr) ||

@@ -33,6 +33,9 @@ class LevelObject {
   virtual int getY() const = 0;
   virtual size_t getFrame() const = 0;
 
+  bool isVisible() const;
+  void setVisible(bool visible);
+
   Asset::Image& getImage();
 
  protected:
@@ -41,6 +44,7 @@ class LevelObject {
 
   int tileX;
   int tileY;
+  bool visible;
 };
 
 }  // namespace LevelObject
