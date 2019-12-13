@@ -25,8 +25,8 @@ class GoblinSnowball : public LevelObject {
   const int speedX = -200;
   const int speedYStart = -250;
 
-  const int offsetX = 45;
-  const int offsetY = 40;
+  const int offsetX = 60;
+  const int offsetY = 30;
 
   int levelX;
   int y;
