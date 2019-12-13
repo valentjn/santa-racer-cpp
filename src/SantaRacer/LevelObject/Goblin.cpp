@@ -6,7 +6,6 @@
 
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/LevelObject/Goblin.hpp"
-#include "SantaRacer/LevelObject/GoblinSnowball.hpp"
 #include "SantaRacer/LevelObject/LevelObject.hpp"
 
 namespace SantaRacer {
@@ -17,19 +16,19 @@ Goblin::Goblin(Game* game, size_t tileX, size_t tileY) :
     levelX((tileX + 0.5) * game->getLevel().getTileWidth() -
       (image->getWidth() / image->getNumberOfFrames()) / 2),
     y((tileY + 0.5) * game->getLevel().getTileHeight() - image->getHeight() / 2),
-    frame(0), time(SDL_GetTicks()), snowballThrown(false), snowballThrownCheck(false) {
+    frame(0), time(SDL_GetTicks()), snowballThrown(false), spawnSnowball(false) {
 }
 
 Goblin::~Goblin() {
 }
 
 void Goblin::move() {
-  if (frame != 13) {
+  if (getFrame() < spawnSnowballFrame) {
     snowballThrown = false;
+    spawnSnowball = false;
   } else if (!snowballThrown) {
     snowballThrown = true;
-    snowballThrownCheck = true;
-    game->getLevel().getLevelObjects().emplace_back(new GoblinSnowball(game, tileX, tileY));
+    spawnSnowball = true;
   }
 }
 
@@ -46,9 +45,9 @@ size_t Goblin::getFrame() const {
       image->getNumberOfFrames();
 }
 
-bool Goblin::checkSnowballThrown() {
-  if (snowballThrownCheck) {
-    snowballThrownCheck = false;
+bool Goblin::checkSpawnSnowball() {
+  if (spawnSnowball) {
+    spawnSnowball = false;
     return true;
   } else {
     return false;

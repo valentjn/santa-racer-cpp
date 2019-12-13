@@ -22,17 +22,18 @@ class Goblin : public LevelObject {
   int getY() const override;
   size_t getFrame() const override;
 
-  bool checkSnowballThrown();
+  bool checkSpawnSnowball();
 
  protected:
   const int frameSpeed = 12;
+  const size_t spawnSnowballFrame = 13;
 
   int levelX;
   int y;
   size_t frame;
   size_t time;
   bool snowballThrown;
-  bool snowballThrownCheck;
+  bool spawnSnowball;
 };
 
 }  // namespace LevelObject

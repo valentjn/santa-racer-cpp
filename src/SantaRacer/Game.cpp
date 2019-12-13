@@ -481,7 +481,9 @@ void Game::logic() {
 
   for (std::unique_ptr<LevelObject::LevelObject>& levelObject : level->getLevelObjects()) {
     if ((dynamic_cast<LevelObject::Goblin*>(levelObject.get()) != nullptr) &&
-        dynamic_cast<LevelObject::Goblin*>(levelObject.get())->checkSnowballThrown()) {
+        dynamic_cast<LevelObject::Goblin*>(levelObject.get())->checkSpawnSnowball()) {
+      level->getLevelObjects().emplace_back(new LevelObject::GoblinSnowball(
+          this, levelObject->getTileX(), levelObject->getTileY()));
       playSoundAtPosition(soundLibrary.getAsset("snowball"),
           levelObject->getLevelX() - level->getOffset());
     } else if ((dynamic_cast<LevelObject::Snowman*>(levelObject.get()) != nullptr) &&
