@@ -43,12 +43,11 @@ int Balloon::getY() const {
 }
 
 size_t Balloon::getFrame() const {
-  /*if (frame >= image->getNumberOfFrames()) {
-    frame = 2 * image->getNumberOfFrames() - frame - 2;
-  }*/
+  const size_t actualFrame = static_cast<int>((SDL_GetTicks() - time) / 1000.0 * frameSpeed +
+      frame) % (2 * image->getNumberOfFrames() - 2);
 
-  return static_cast<int>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame) %
-      (image->getNumberOfFrames() * 2 - 2);
+  return ((actualFrame < image->getNumberOfFrames()) ? actualFrame :
+      (2 * image->getNumberOfFrames() - actualFrame - 2));
 }
 
 Balloon::Type Balloon::getType() const {
