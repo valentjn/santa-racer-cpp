@@ -13,7 +13,7 @@ namespace SantaRacer {
 
 SnowmanStar::SnowmanStar(Game* game, LevelObject::Snowman *snowman) :
     game(game), snowman(snowman), image(game->getImageLibrary().getAsset("star")) {
-  initialize(true);
+  initialize();
 }
 
 void SnowmanStar::initialize(bool useRandomFrame) {
@@ -21,8 +21,7 @@ void SnowmanStar::initialize(bool useRandomFrame) {
       game->getRNG().getInteger(minXOffset, maxXOffset);
   y = snowman->getY() + snowmanRocketOffsetY - game->getRNG().getInteger(minYOffset, maxYOffset);
   time = SDL_GetTicks();
-  maxFrame = game->getRNG().getInteger(image.getNumberOfFrames(), maxNumberOfFrames);
-  frame = (useRandomFrame ? (maxFrame - game->getRNG().getInteger(minNumberOfFramesToWait,
+  frame = (useRandomFrame ? (-game->getRNG().getInteger(minNumberOfFramesToWait,
       maxNumberOfFramesToWait)) : 0);
 }
 
@@ -38,10 +37,8 @@ void SnowmanStar::draw() const {
 void SnowmanStar::move() {
   if (!snowman->isTriggered()) {
     time = SDL_GetTicks();
-  }
-
-  if (getFrame() >= maxFrame) {
-    initialize();
+  } else if (getFrame() >= static_cast<int>(image.getNumberOfFrames())) {
+    initialize(false);
   }
 }
 

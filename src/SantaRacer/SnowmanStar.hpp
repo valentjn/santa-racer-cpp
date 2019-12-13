@@ -20,7 +20,7 @@ class SnowmanStar {
  public:
   SnowmanStar(Game* game, LevelObject::Snowman* snowman);
 
-  void initialize(bool useRandomFrame = false);
+  void initialize(bool useRandomFrame = true);
   void draw() const;
   void move();
 
@@ -37,8 +37,8 @@ class SnowmanStar {
   const int snowmanRocketOffsetX = 35;
   const int snowmanRocketOffsetY = 35;
 
-  const int minNumberOfFramesToWait = 50;
-  const int maxNumberOfFramesToWait = 100;
+  const int minNumberOfFramesToWait = 0;
+  const int maxNumberOfFramesToWait = 17;
 
   Game* game;
   LevelObject::Snowman *snowman;
@@ -47,7 +47,6 @@ class SnowmanStar {
   int levelX;
   int y;
   int frame;
-  int maxFrame;
   size_t time;
 };
 

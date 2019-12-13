@@ -64,7 +64,7 @@ int Snowman::getY() const {
 size_t Snowman::getFrame() const {
   return (triggered ?
       std::min(static_cast<size_t>((SDL_GetTicks() - time) / 1000.0 * frameSpeed + frame),
-      image->getNumberOfFrames()) : 0);
+      image->getNumberOfFrames() - 1) : 0);
 }
 
 bool Snowman::isTriggered() {
