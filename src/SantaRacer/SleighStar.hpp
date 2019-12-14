@@ -17,7 +17,7 @@ class SleighStar {
   explicit SleighStar(Game* game);
 
   void initialize(bool useRandomFrame = true);
-  void draw() const;
+  void draw();
   void move();
   size_t getFrame() const;
 
@@ -29,8 +29,8 @@ class SleighStar {
   size_t time;
 
   Game* game;
-  const Asset::Image& imageNormal;
-  const Asset::Image& imageDrunk;
+  Asset::Image* imageNormal;
+  Asset::Image* imageDrunk;
 
   const size_t maxNumberOfFrames = 30;
   const size_t frameSpeed = 34;

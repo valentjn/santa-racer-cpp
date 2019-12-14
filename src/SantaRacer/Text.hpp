@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <string>
 #include <vector>
@@ -29,15 +29,15 @@ class Text {
     BottomRight = 8
   };
 
-  Text(const Asset::Image& image, const std::vector<size_t>& actualCharWidths);
+  Text(Asset::Image* image, const std::vector<size_t>& actualCharWidths);
 
-  void draw(SDL_Surface* targetSurface, Asset::Image::Point point, const std::string& text,
-      Alignment align = Alignment::TopLeft, bool isMonospace = false) const;
+  void draw(Asset::Image::Point point, const std::string& text,
+      Alignment align = Alignment::TopLeft, bool isMonospace = false);
 
   size_t getLineHeight() const;
 
  protected:
-  const Asset::Image& image;
+  Asset::Image* image;
   const std::vector<size_t> actualCharWidths;
   const size_t maxActualCharWidth;
   const size_t charWidth;

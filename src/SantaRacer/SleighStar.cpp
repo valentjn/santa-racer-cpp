@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/RNG.hpp"
@@ -13,8 +13,8 @@
 namespace SantaRacer {
 
 SleighStar::SleighStar(Game* game) : game(game),
-    imageNormal(game->getImageLibrary().getAsset("star")),
-    imageDrunk(game->getImageLibrary().getAsset("star_drunk")) {
+    imageNormal(&game->getImageLibrary().getAsset("star")),
+    imageDrunk(&game->getImageLibrary().getAsset("star_drunk")) {
   initialize();
 }
 
@@ -24,17 +24,16 @@ void SleighStar::initialize(bool useRandomFrame) {
   y = game->getSleigh().getY() + game->getSleigh().getHeight() -
       game->getRNG().getInteger(minYOffset, maxYOffset);
   time = SDL_GetTicks();
-  frame = (useRandomFrame ? game->getRNG().getInteger(0, imageNormal.getNumberOfFrames() - 1) : 0);
-  maxFrame = game->getRNG().getInteger(imageNormal.getNumberOfFrames(), maxNumberOfFrames);
+  frame = (useRandomFrame ? game->getRNG().getInteger(0, imageNormal->getNumberOfFrames() - 1) : 0);
+  maxFrame = game->getRNG().getInteger(imageNormal->getNumberOfFrames(), maxNumberOfFrames);
 }
 
-void SleighStar::draw() const {
-  const Asset::Image& image = (game->getSleigh().isDrunk() ? imageDrunk : imageNormal);
+void SleighStar::draw() {
+  Asset::Image* image = (game->getSleigh().isDrunk() ? imageDrunk : imageNormal);
   const size_t frame = getFrame();
 
-  if (frame < image.getNumberOfFrames()) {
-    image.copy(&game->getScreenSurface(),
-        {levelX - static_cast<int>(game->getLevel().getOffset()), y}, frame);
+  if (frame < image->getNumberOfFrames()) {
+    image->copy({levelX - static_cast<int>(game->getLevel().getOffset()), y}, frame);
   }
 }
 

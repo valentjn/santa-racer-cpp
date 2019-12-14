@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <memory>
 #include <vector>
@@ -17,8 +17,8 @@ namespace SantaRacer {
 
 Level::Level(Game* game, const std::vector<double>& mapData,
     const std::vector<double>& levelObjectsMapData, size_t numberOfTilesY) :
-    game(game), image(game->getImageLibrary().getAsset("level")),
-    tileWidth(image.getWidth()), tileHeight(image.getHeight()),
+    game(game), image(&game->getImageLibrary().getAsset("level")),
+    tileWidth(image->getWidth()), tileHeight(image->getHeight()),
     numberOfTilesX(mapData.size() / numberOfTilesY), numberOfTilesY(numberOfTilesY),
     time(SDL_GetTicks()), numberOfTilesPerScreenWidth(game->getScreenWidth() / tileWidth + 1),
     offset(0.0), inMenuMode(true), paused(false) {
@@ -30,7 +30,7 @@ Level::Level(Game* game, const std::vector<double>& mapData,
   }
 }
 
-void Level::draw() const {
+void Level::draw() {
   const size_t x0 = getOffset() / tileWidth;
 
   for (size_t y = 0; y < numberOfTilesY; y++) {
@@ -38,14 +38,14 @@ void Level::draw() const {
       const size_t frame = map[y][x];
 
       if (frame != 0) {
-        image.copy(&game->getScreenSurface(), {static_cast<int>(x * tileWidth - offset),
-            static_cast<int>(y * tileHeight)}, frame);
+        image->copy({static_cast<int>(x * tileWidth - offset), static_cast<int>(y * tileHeight)},
+            frame);
       }
     }
   }
 }
 
-void Level::drawBallons() const {
+void Level::drawBallons() {
   for (const std::unique_ptr<LevelObject::LevelObject>& levelObject : levelObjects) {
     if (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) != nullptr) {
       levelObject->draw();
@@ -53,7 +53,7 @@ void Level::drawBallons() const {
   }
 }
 
-void Level::drawObjects() const {
+void Level::drawObjects() {
   for (const std::unique_ptr<LevelObject::LevelObject>& levelObject : levelObjects) {
     if (dynamic_cast<LevelObject::Balloon*>(levelObject.get()) == nullptr) {
       levelObject->draw();

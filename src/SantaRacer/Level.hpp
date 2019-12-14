@@ -20,9 +20,9 @@ class Level {
   Level(Game* game, const std::vector<double>& mapData,
       const std::vector<double>& levelObjectsMapData, size_t numberOfTilesY);
 
-  void draw() const;
-  void drawBallons() const;
-  void drawObjects() const;
+  void draw();
+  void drawBallons();
+  void drawObjects();
   void move();
   void moveObjects();
   void moveObject(size_t tileX, size_t tileY);
@@ -52,7 +52,7 @@ class Level {
   const int menuSpeed = 40;
 
   Game* game;
-  const Asset::Image& image;
+  Asset::Image* image;
 
   const size_t tileWidth;
   const size_t tileHeight;

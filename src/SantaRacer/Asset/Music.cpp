@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 #include <filesystem>
 #include <string>

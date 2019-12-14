@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 
@@ -15,9 +15,9 @@
 namespace SantaRacer {
 
 Score::Score(Game *game) : game(game),
-    scoreGiftImage(game->getImageLibrary().getAsset("score_gift")),
-    scoreDamageImage(game->getImageLibrary().getAsset("score_damage")),
-    scoreTimeImage(game->getImageLibrary().getAsset("score_time")),
+    scoreGiftImage(&game->getImageLibrary().getAsset("score_gift")),
+    scoreDamageImage(&game->getImageLibrary().getAsset("score_damage")),
+    scoreTimeImage(&game->getImageLibrary().getAsset("score_time")),
     giftPoints(0), damagePoints(0), timeStart(0), totalTime(0) {
 }
 
@@ -27,15 +27,15 @@ void Score::initialize(int totalTime) {
   resetClock(totalTime);
 }
 
-void Score::draw() const {
-  const int y = static_cast<int>(scoreGiftImage.getHeight()) / 2;
+void Score::draw() {
+  const int y = static_cast<int>(scoreGiftImage->getHeight()) / 2;
 
-  scoreGiftImage.copy(&game->getScreenSurface(), {0, 0});
-  game->getText().draw(&game->getScreenSurface(), {40, y},
-      Printer::printToString("%i", giftPoints), Text::Alignment::CenterLeft, true);
+  scoreGiftImage->copy({0, 0});
+  game->getText().draw({40, y}, Printer::printToString("%i", giftPoints),
+      Text::Alignment::CenterLeft, true);
 
-  scoreDamageImage.copy(&game->getScreenSurface(), {150, 0});
-  game->getText().draw(&game->getScreenSurface(), {190, y},
+  scoreDamageImage->copy({150, 0});
+  game->getText().draw({190, y},
       ((damagePoints == 0) ? "0" : Printer::printToString("%i", -damagePoints)),
       Text::Alignment::CenterLeft, true);
 
@@ -43,9 +43,9 @@ void Score::draw() const {
   const size_t minutes = seconds / 60;
   seconds %= 60;
 
-  scoreTimeImage.copy(&game->getScreenSurface(), {520, 0});
-  game->getText().draw(&game->getScreenSurface(), {560, y},
-      Printer::printToString("%i:%02i", minutes, seconds), Text::Alignment::CenterLeft, true);
+  scoreTimeImage->copy({520, 0});
+  game->getText().draw({560, y}, Printer::printToString("%i:%02i", minutes, seconds),
+      Text::Alignment::CenterLeft, true);
 }
 
 int Score::getGiftPoints() const {

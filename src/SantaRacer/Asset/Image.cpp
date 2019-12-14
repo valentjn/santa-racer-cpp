@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL_image.h>
 
 #include <algorithm>
 #include <filesystem>
@@ -18,27 +18,46 @@
 namespace SantaRacer {
 namespace Asset {
 
-Image::Image() : Image(nullptr) {
+Image::Image() : renderer(nullptr), surface(nullptr), texture(nullptr),
+    numberOfFramesX(1), numberOfFramesY(1) {
 }
 
-Image::Image(std::filesystem::path imagePath, size_t numberOfFrames) :
-    surface(IMG_Load(imagePath.c_str())), numberOfFrames(numberOfFrames) {
+Image::Image(SDL_Renderer* renderer, std::filesystem::path imagePath,
+    size_t numberOfFramesX, size_t numberOfFramesY) :
+    renderer(renderer), surface(IMG_Load(imagePath.c_str())),
+    texture(SDL_CreateTextureFromSurface(renderer, surface)),
+    numberOfFramesX(numberOfFramesX), numberOfFramesY(numberOfFramesY) {
   if (surface == nullptr) {
     Printer::fatalError("couldn't load image: %s\n", IMG_GetError());
   }
+
+  if (texture == nullptr) {
+    Printer::fatalError("couldn't create texture: %s\n", SDL_GetError());
+  }
 }
 
-Image::Image(SDL_Surface* surface, size_t numberOfFrames) :
-    surface(surface), numberOfFrames(numberOfFrames) {
+Image::Image(SDL_Renderer* renderer, SDL_Surface* surface,
+    size_t numberOfFramesX, size_t numberOfFramesY) :
+    renderer(renderer), surface(surface),
+    texture(SDL_CreateTextureFromSurface(renderer, surface)),
+    numberOfFramesX(numberOfFramesX), numberOfFramesY(numberOfFramesY) {
 }
 
-Image::Image(Image&& other) : surface(other.surface), numberOfFrames(other.numberOfFrames) {
+Image::Image(Image&& other) :
+    renderer(other.renderer), surface(other.surface), texture(other.texture),
+    numberOfFramesX(other.numberOfFramesX), numberOfFramesY(other.numberOfFramesY) {
+  other.renderer = nullptr;
   other.surface = nullptr;
+  other.texture = nullptr;
 }
 
 Image::~Image() {
   if (surface != nullptr) {
     SDL_FreeSurface(surface);
+  }
+
+  if (texture != nullptr) {
+    SDL_DestroyTexture(texture);
   }
 }
 
@@ -51,37 +70,24 @@ Image& Image::operator=(Image&& other) {
   return *this;
 }
 
-void Image::blit(Rectangle sourceRectangle, SDL_Surface *targetSurface, Point targetPoint,
-    size_t frame) const {
-  sourceRectangle.x += (frame % numberOfFrames) * getWidth();
-  SDL_BlitSurface(surface, &sourceRectangle, targetSurface, &targetPoint);
+void Image::blit(Rectangle sourceRectangle, Point targetPoint, size_t frame) {
+  sourceRectangle.x += (frame % numberOfFramesX) * getWidth();
+  sourceRectangle.y += ((frame / numberOfFramesX) % numberOfFramesY) * getHeight();
+  const Rectangle targetRectangle(targetPoint.x, targetPoint.y,
+      sourceRectangle.w, sourceRectangle.h);
+  SDL_RenderCopy(renderer, texture, &sourceRectangle, &targetRectangle);
 }
 
-void Image::copy(SDL_Surface *targetSurface,  // NOLINT(build/include_what_you_use)
-    Point targetPoint, size_t frame) const {
-  Rectangle sourceRectangle((frame % numberOfFrames) * getWidth(), 0, getWidth(), getHeight());
-  SDL_BlitSurface(surface, &sourceRectangle, targetSurface, &targetPoint);
+void Image::copy(Point targetPoint, size_t frame) {  // NOLINT(build/include_what_you_use)
+  Rectangle sourceRectangle((frame % numberOfFramesX) * getWidth(),
+      ((frame / numberOfFramesX) % numberOfFramesY) * getHeight(), getWidth(), getHeight());
+  const Rectangle targetRectangle(targetPoint.x, targetPoint.y,
+      sourceRectangle.w, sourceRectangle.h);
+  SDL_RenderCopy(renderer, texture, &sourceRectangle, &targetRectangle);
 }
 
 void Image::setAlpha(Uint8 alpha) {
-  SDL_LockSurface(surface);
-
-  for (int y = 0; y < surface->h; y++) {
-    for (int x = 0; x < surface->w; x++) {
-      Uint8 r;
-      Uint8 g;
-      Uint8 b;
-      Uint8 oldAlpha;
-      Uint32 *pixel = static_cast<Uint32*>(surface->pixels) + y * surface->pitch / 4 + x;
-      SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &oldAlpha);
-
-      if (oldAlpha != 0) {
-        *pixel = SDL_MapRGBA(surface->format, r, g, b, alpha);
-      }
-    }
-  }
-
-  SDL_UnlockSurface(surface);
+  SDL_SetTextureAlphaMod(texture, alpha);
 }
 
 bool Image::checkCollision(Point point, int frame, Image *other, Point otherPoint,
@@ -119,14 +125,19 @@ bool Image::checkCollision(Point point, int frame, Image *other, Point otherPoin
 
   const std::vector<bool>& mask = getMask();
   const std::vector<bool>& otherMask = other->getMask();
-  frame %= numberOfFrames;
-  otherFrame %= other->numberOfFrames;
 
   for (int clipY = clipRectangle.y; clipY < clipRectangle.y + clipRectangle.h; clipY++) {
     for (int clipX = clipRectangle.x; clipX < clipRectangle.x + clipRectangle.w; clipX++) {
-      const size_t testI1 = (clipX - point.x + width * frame) + (clipY - point.y) * surface->w;
-      const size_t testI2 = (clipX - otherPoint.x + otherWidth * otherFrame) +
-          (clipY - otherPoint.y) * other->surface->w;
+      const size_t testI1 = (clipX - point.x +
+          (frame % numberOfFramesX) * width) +
+          (clipY - point.y +
+          ((frame / numberOfFramesX) % numberOfFramesY) * height) *
+          surface->w;
+      const size_t testI2 = (clipX - otherPoint.x +
+          (otherFrame % other->numberOfFramesX) * otherWidth) +
+          (clipY - otherPoint.y +
+          ((otherFrame / other->numberOfFramesX) % other->numberOfFramesY) * otherHeight) *
+          other->surface->w;
 
       if (mask[testI1] && otherMask[testI2]) {
         return true;
@@ -135,22 +146,6 @@ bool Image::checkCollision(Point point, int frame, Image *other, Point otherPoin
   }
 
   return false;
-}
-
-SDL_Surface& Image::getSurface() const {
-  return *surface;
-}
-
-size_t Image::getWidth() const {
-  return static_cast<size_t>(surface->w) / numberOfFrames;
-}
-
-size_t Image::getHeight() const {
-  return static_cast<size_t>(surface->h);
-}
-
-size_t Image::getNumberOfFrames() const {
-  return numberOfFrames;
 }
 
 std::vector<bool> Image::getMask() {
@@ -163,7 +158,6 @@ std::vector<bool> Image::getMask() {
         Uint8 g;
         Uint8 b;
         Uint8 a;
-
         Uint32* pixel = static_cast<Uint32*>(surface->pixels) + y * surface->pitch / 4 + x;
         SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &a);
         mask.push_back(a == 0xff);

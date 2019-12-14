@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 namespace SantaRacer {
 namespace Asset {
 
-const std::unordered_map<std::string, size_t> ImageLibrary::numberOfFramesMap = {
+const std::unordered_map<std::string, size_t> ImageLibrary::numberOfFramesXMap = {
       {"angel", 13},
       {"balloon1", 8},
       {"balloon2", 7},
@@ -28,7 +28,7 @@ const std::unordered_map<std::string, size_t> ImageLibrary::numberOfFramesMap = 
       {"gift2", 15},
       {"gift3", 15},
       {"goblin", 19},
-      {"level", 78},
+      {"level", 13},
       {"reindeer", 14},
       {"shield", 8},
       {"sleigh", 14},
@@ -37,11 +37,23 @@ const std::unordered_map<std::string, size_t> ImageLibrary::numberOfFramesMap = 
       {"star_drunk", 17},
       {"star_small", 17},
     };
+const std::unordered_map<std::string, size_t> ImageLibrary::numberOfFramesYMap = {
+      {"level", 6},
+    };
+
+ImageLibrary::ImageLibrary() : renderer(nullptr) {
+}
+
+ImageLibrary::ImageLibrary(SDL_Renderer* renderer) : renderer(renderer) {
+}
 
 Image ImageLibrary::loadAsset(std::string assetName) const {
-  const auto it = numberOfFramesMap.find(assetName);
-  const size_t numberOfFrames = ((it != numberOfFramesMap.end()) ? it->second : 1);
-  return Image(getDirectory() / (assetName + getExtension().string()), numberOfFrames);
+  const auto itX = numberOfFramesXMap.find(assetName);
+  const size_t numberOfFramesX = ((itX != numberOfFramesXMap.end()) ? itX->second : 1);
+  const auto itY = numberOfFramesYMap.find(assetName);
+  const size_t numberOfFramesY = ((itY != numberOfFramesYMap.end()) ? itY->second : 1);
+  return Image(renderer, getDirectory() / (assetName + getExtension().string()),
+      numberOfFramesX, numberOfFramesY);
 }
 
 fs::path ImageLibrary::getDirectory() const {
@@ -50,6 +62,14 @@ fs::path ImageLibrary::getDirectory() const {
 
 fs::path ImageLibrary::getExtension() const {
   return fs::path(".tga");
+}
+
+SDL_Renderer* ImageLibrary::getRenderer() const {
+  return renderer;
+}
+
+void ImageLibrary::setRenderer(SDL_Renderer* renderer) {
+  this->renderer = renderer;
 }
 
 }  // namespace Asset

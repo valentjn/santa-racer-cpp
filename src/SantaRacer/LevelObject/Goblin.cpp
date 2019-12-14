@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/LevelObject/Goblin.hpp"

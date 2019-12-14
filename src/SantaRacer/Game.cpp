@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <fstream>
@@ -37,17 +37,16 @@ Game::Game(Options&& options) : options(std::move(options)),
     Printer::fatalError("unable to initalize SDL: %s\n", SDL_GetError());
   }
 
-  SDL_WM_SetCaption("Santa Racer", "Santa Racer");
-  SDL_ShowCursor(SDL_DISABLE);
-  SDL_EnableUNICODE(1);
-
-  Uint32 flags = SDL_DOUBLEBUF | SDL_RESIZABLE;
+  Uint32 flags = 0;
 
   if (options.isFullScreen()) {
-    flags |= SDL_FULLSCREEN;
+    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
   }
 
-  screenSurface = SDL_SetVideoMode(screenWidth, screenHeight, 16, flags);
+  window = SDL_CreateWindow("Santa Racer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      screenWidth, screenHeight, flags);
+  renderer = SDL_CreateRenderer(window, -1, 0);
+  imageLibrary.setRenderer(renderer);
 
   if (options.isSoundEnabled()) {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
@@ -70,17 +69,12 @@ Game::Game(Options&& options) : options(std::move(options)),
   loadText();
   loadChimneys();
 
-  SDL_WM_SetIcon(&imageLibrary.getAsset("icon").getSurface(), nullptr);
+  SDL_SetWindowIcon(window, imageLibrary.getAsset("icon").getSurface());
+  SDL_ShowCursor(SDL_DISABLE);
 
-  SDL_Surface* highscoreBackgroundSurface =
-      SDL_CreateRGBSurface(SDL_SWSURFACE, 400, 300, 32, 0, 0, 0, 0);
-
-  if (highscoreBackgroundSurface == nullptr) {
-    Printer::fatalError("could not create RGB surface: %s\n", SDL_GetError());
-  }
-
-  SDL_SetAlpha(highscoreBackgroundSurface, SDL_SRCALPHA, 128);
-  highscoreBackground = Asset::Image(highscoreBackgroundSurface);
+  highscoreBackground = Asset::Image(renderer,
+      SDL_CreateRGBSurface(SDL_SWSURFACE, 400, 300, 32, 0, 0, 0, 0));
+  highscoreBackground.setAlpha(128);
 
   rng.seed();
   Printer::debug("initializing game\n");
@@ -107,7 +101,7 @@ void Game::loadText() {
     Printer::fatalError("invalid format of char_widths.txt, expected 96 values\n");
   }
 
-  text.reset(new Text(imageLibrary.getAsset("font"), textCharWidths));
+  text.reset(new Text(&imageLibrary.getAsset("font"), textCharWidths));
 }
 
 void Game::loadChimneys() {
@@ -161,8 +155,6 @@ void Game::initialize() {
   lastFpsUpdateTime = 0;
   frameCounter = 0;
 
-  keyState = SDL_GetKeyState(nullptr);
-
   countdownMode = false;
   countdownStartTime = 0;
 
@@ -192,34 +184,40 @@ void Game::loop() {
 
 void Game::processEvents() {
   SDL_Event event;
-  char ch;
 
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
       quitFlag = true;
       break;
     } else if (event.key.type == SDL_KEYDOWN) {
+      const SDL_Keycode& key = event.key.keysym.sym;
+
       if (mode == Mode::NewHighscore) {
-        if ((event.key.keysym.sym == SDLK_BACKSPACE) ||
-            (event.key.keysym.sym == SDLK_DELETE)) {
+        if ((key == SDLK_BACKSPACE) || (key == SDLK_DELETE)) {
           if (highscore.name.length() > 0) {
             highscore.name =
                 highscore.name.erase(highscore.name.length() - 1);
             highscoreCaretBlinkTime = SDL_GetTicks();
           }
-        } else if (event.key.keysym.sym == SDLK_RETURN) {
+        } else if (key == SDLK_RETURN) {
           options.getHighscores()[highscorePlace].name = highscore.name;
           returnToMenu();
           mode = Mode::Highscores;
 
-        } else if ((event.key.keysym.unicode & 0xff80) == 0) {
-          ch = event.key.keysym.unicode & 0x7f;
+        } else {
+          std::string keyName = SDL_GetKeyName(key);
+          char ch = keyName[0];
 
-          if (((ch >= 65) && (ch <= 90)) || ((ch >= 97) && (ch <= 120)) ||
-              ((ch >= 48) && (ch <= 57)) || (ch == 64) || (ch == 95) ||
-              (ch == 45) || (ch == 46) || (ch == 47) || (ch == 58)) {
+          if ((keyName.size() == 1) && (((ch >= 'a') && (ch <= 'z')) ||
+              ((ch >= '0') && (ch <= '9')) || (ch == '@') || (ch == '_') ||
+              (ch == '-') || (ch == '.') || (ch == '/') || (ch == ':'))) {
             if (highscore.name.length() < maxHighscoreNameLength) {
-              highscore.name += event.key.keysym.unicode;
+              if (event.key.keysym.mod & KMOD_SHIFT) {
+                ch = std::toupper(ch);
+                keyName = std::string(1, ch);
+              }
+
+              highscore.name += keyName;
               highscoreCaretBlinkTime = SDL_GetTicks();
             }
           }
@@ -230,82 +228,90 @@ void Game::processEvents() {
 }
 
 void Game::check_keys() {
-  const SDLMod modState = SDL_GetModState();
+  const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
+  const SDL_Keymod modState = SDL_GetModState();
 
-  if (keyState[SDLK_c] && (modState & KMOD_CTRL)) {
+  const auto getKeyState = [&keyboardState](SDL_Keycode keycode) {
+        return keyboardState[SDL_GetScancodeFromKey(keycode)];
+      };
+
+  if ((modState & KMOD_CTRL) && getKeyState(SDLK_c)) {
     quitFlag = true;
-  } else if (modState & KMOD_CTRL && modState & KMOD_ALT && keyState[SDLK_RETURN]) {
-    if (!SDL_WM_ToggleFullScreen(screenSurface)) {
+  } else if ((modState & KMOD_ALT) && getKeyState(SDLK_RETURN)) {
+    const Uint32 flags = ((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) ? 0 :
+        SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    if (!SDL_SetWindowFullscreen(window, flags)) {
       Printer::fatalError("could not toggle fullscreen mode: %s\n", SDL_GetError());
     }
   }
 
   if (mode == Mode::Menu) {
-    if (keyState[SDLK_F1]) {
+    if (getKeyState(SDLK_F1)) {
       mode = Mode::HelpPage1;
-    } else if (keyState[SDLK_F2]) {
+    } else if (getKeyState(SDLK_F2)) {
       mode = Mode::HelpPage2;
-    } else if (keyState[SDLK_F3]) {
+    } else if (getKeyState(SDLK_F3)) {
       mode = Mode::Highscores;
-    } else if (keyState[SDLK_F5]) {
+    } else if (getKeyState(SDLK_F5)) {
       startNewGame();
-    } else if (keyState[SDLK_ESCAPE] && !escapePressed) {
+    } else if (getKeyState(SDLK_ESCAPE) && !escapePressed) {
       quitFlag = true;
     }
 
   } else if (mode == Mode::HelpPage1 || mode == Mode::HelpPage2) {
-    if (keyState[SDLK_F1]) {
+    if (getKeyState(SDLK_F1)) {
       mode = Mode::HelpPage1;
-    } else if (keyState[SDLK_F2]) {
+    } else if (getKeyState(SDLK_F2)) {
       mode = Mode::HelpPage2;
-    } else if (keyState[SDLK_SPACE] || (keyState[SDLK_ESCAPE] && !escapePressed)) {
+    } else if (getKeyState(SDLK_SPACE) || (getKeyState(SDLK_ESCAPE) && !escapePressed)) {
       mode = Mode::Menu;
     }
 
   } else if (mode == Mode::Highscores) {
-    if (keyState[SDLK_F1]) {
+    if (getKeyState(SDLK_F1)) {
       mode = Mode::HelpPage1;
-    } else if (keyState[SDLK_F2]) {
+    } else if (getKeyState(SDLK_F2)) {
       mode = Mode::HelpPage2;
-    } else if (keyState[SDLK_SPACE] || (keyState[SDLK_ESCAPE] && !escapePressed)) {
+    } else if (getKeyState(SDLK_SPACE) || (getKeyState(SDLK_ESCAPE) && !escapePressed)) {
       mode = Mode::Menu;
     }
 
   } else if ((mode == Mode::Running) && !countdownMode) {
     const int drunkFactor = (sleigh->isDrunk() ? -1 : 1);
 
-    if (keyState[SDLK_UP]) {
+    if (getKeyState(SDLK_UP)) {
       sleigh->setSpeedY(drunkFactor * -1);
-    } else if (keyState[SDLK_DOWN]) {
+    } else if (getKeyState(SDLK_DOWN)) {
       sleigh->setSpeedY(drunkFactor * 1);
     } else {
       sleigh->setSpeedY(0);
     }
-    if (keyState[SDLK_LEFT]) {
+    if (getKeyState(SDLK_LEFT)) {
       sleigh->setSpeedX(drunkFactor * -1);
-    } else if (keyState[SDLK_RIGHT]) {
+    } else if (getKeyState(SDLK_RIGHT)) {
       sleigh->setSpeedX(drunkFactor * 1);
     } else {
       sleigh->setSpeedX(0);
     }
-    if (keyState[SDLK_SPACE] && !firePressed &&
+    if (getKeyState(SDLK_SPACE) && !firePressed &&
         (lastGiftTime + giftWaitDuration < SDL_GetTicks()) &&
         !sleigh->isImmobile()) {
       gifts.emplace_back(new Gift(this));
       lastGiftTime = SDL_GetTicks();
     }
 
-    if (keyState[SDLK_ESCAPE] && !escapePressed) {
+    if (getKeyState(SDLK_ESCAPE) && !escapePressed) {
       returnToMenu();
     }
   }
 
-  leftPressed = keyState[SDLK_LEFT];
-  rightPressed = keyState[SDLK_RIGHT];
-  upPressed = keyState[SDLK_UP];
-  downPressed = keyState[SDLK_DOWN];
-  firePressed = keyState[SDLK_SPACE];
-  escapePressed = keyState[SDLK_ESCAPE];
+  leftPressed = getKeyState(SDLK_LEFT);
+  rightPressed = getKeyState(SDLK_RIGHT);
+  upPressed = getKeyState(SDLK_UP);
+  downPressed = getKeyState(SDLK_DOWN);
+  firePressed = getKeyState(SDLK_SPACE);
+  escapePressed = getKeyState(SDLK_ESCAPE);
 }
 
 void Game::logic() {
@@ -521,26 +527,26 @@ void Game::logic() {
 
 void Game::draw() {
   if (mode == Mode::HelpPage1) {
-    imageLibrary.getAsset("help1").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("help1").copy({0, 0});
 
   } else if (mode == Mode::HelpPage2) {
-    imageLibrary.getAsset("help2").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("help2").copy({0, 0});
 
   } else if (mode == Mode::Won) {
-    imageLibrary.getAsset("finished").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("finished").copy({0, 0});
 
   } else if (mode == Mode::NewHighscore) {
-    imageLibrary.getAsset("finished").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("finished").copy({0, 0});
     drawHighscores();
 
   } else if (mode == Mode::LostDueToTime) {
-    imageLibrary.getAsset("lost_time").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("lost_time").copy({0, 0});
 
   } else if (mode == Mode::LostDueToDamage) {
-    imageLibrary.getAsset("lost_damage").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("lost_damage").copy({0, 0});
 
   } else {
-    imageLibrary.getAsset("bg").copy(screenSurface, {0, 0});
+    imageLibrary.getAsset("bg").copy({0, 0});
     landscape->draw();
     level->drawBallons();
     level->draw();
@@ -551,13 +557,9 @@ void Game::draw() {
       gift->draw();
     }
 
-    SDL_LockSurface(screenSurface);
-
-    for (const Snowflake& snowflake : snowflakes) {
+    for (Snowflake& snowflake : snowflakes) {
       snowflake.draw();
     }
-
-    SDL_UnlockSurface(screenSurface);
 
     drawText();
 
@@ -567,16 +569,16 @@ void Game::draw() {
   }
 
 #ifndef NDEBUG
-  text->draw(screenSurface, {static_cast<int>(screenWidth), static_cast<int>(screenHeight)},
+  text->draw({static_cast<int>(screenWidth), static_cast<int>(screenHeight)},
       Printer::printToString("%u FPS", fps), Text::Alignment::BottomRight);
 #endif  // NDEBUG
 
   if ((mode == Mode::Menu) || (mode == Mode::Highscores)) {
-    const Asset::Image& logo = imageLibrary.getAsset("logo");
-    logo.copy(screenSurface, {0, static_cast<int>(screenHeight - logo.getHeight())});
+    Asset::Image& logo = imageLibrary.getAsset("logo");
+    logo.copy({0, static_cast<int>(screenHeight - logo.getHeight())});
   }
 
-  SDL_Flip(screenSurface);
+  SDL_RenderPresent(renderer);
 }
 
 void Game::frameTick() {
@@ -669,10 +671,10 @@ void Game::returnToMenu() {
 
 void Game::drawText() {
   if (mode == Mode::Menu || mode == Mode::Highscores) {
-    text->draw(screenSurface, {0, 0}, "F1/F2 - Hilfe", Text::Alignment::TopLeft);
-    text->draw(screenSurface, {static_cast<int>(screenWidth / 2), 0}, "F3 - Highscores",
+    text->draw({0, 0}, "F1/F2 - Hilfe", Text::Alignment::TopLeft);
+    text->draw({static_cast<int>(screenWidth / 2), 0}, "F3 - Highscores",
         Text::Alignment::TopCenter);
-    text->draw(screenSurface, {static_cast<int>(screenWidth), 0}, "F5 - Spielen",
+    text->draw({static_cast<int>(screenWidth), 0}, "F5 - Spielen",
         Text::Alignment::TopRight);
   } else {
     score->draw();
@@ -680,7 +682,7 @@ void Game::drawText() {
     if (countdownMode) {
       const int countdownNumber = std::max(static_cast<size_t>(1),
           countdownStart - (SDL_GetTicks() - countdownStartTime) / 1000);
-      text->draw(screenSurface,
+      text->draw(
           {sleigh->getX() - 10, sleigh->getY() + static_cast<int>(sleigh->getHeight() / 2)},
           Printer::printToString("%i", countdownNumber), Text::Alignment::CenterRight);
     }
@@ -693,7 +695,7 @@ void Game::drawHighscores() {
   const size_t lineSpacing =
       (highscoreHeight - text->getLineHeight() - 2 * highscorePaddingY) / 9;
 
-  highscoreBackground.blit({0, 0, highscoreWidth, highscoreHeight}, screenSurface, {x, y});
+  highscoreBackground.blit({0, 0, highscoreWidth, highscoreHeight}, {x, y});
 
   x += highscorePaddingX;
   y += highscorePaddingY;
@@ -712,8 +714,8 @@ void Game::drawHighscores() {
       name = options.getHighscores()[i].name;
     }
 
-    text->draw(screenSurface, {x, y}, name, Text::Alignment::TopLeft);
-    text->draw(screenSurface,
+    text->draw({x, y}, name, Text::Alignment::TopLeft);
+    text->draw(
         {x + static_cast<int>(highscoreWidth) - static_cast<int>(2 * highscorePaddingX), y},
         Printer::printToString("%i", options.getHighscores()[i].score), Text::Alignment::TopRight);
 
@@ -745,8 +747,8 @@ size_t Game::getScreenHeight() const {
   return screenHeight;
 }
 
-SDL_Surface& Game::getScreenSurface() const {
-  return *screenSurface;
+SDL_Renderer* Game::getRenderer() const {
+  return renderer;
 }
 
 size_t Game::getTargetFps() const {

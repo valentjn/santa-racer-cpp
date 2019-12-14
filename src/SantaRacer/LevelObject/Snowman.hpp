@@ -19,7 +19,7 @@ class Snowman : public LevelObject {
   Snowman(Game* game, size_t tileX, size_t tileY);
   ~Snowman() override;
 
-  void draw() const override;
+  void draw() override;
   void move() override;
 
   int getLevelX() const override;

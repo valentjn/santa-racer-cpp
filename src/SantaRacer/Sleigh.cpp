@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <cmath>
@@ -19,12 +19,12 @@
 namespace SantaRacer {
 
 Sleigh::Sleigh(Game* game) : game(game),
-    sleighImage(game->getImageLibrary().getAsset("sleigh")),
-    electrifiedSleighImage(game->getImageLibrary().getAsset("electrified_sleigh")),
-    reindeerImage(game->getImageLibrary().getAsset("reindeer")),
-    electrifiedReindeerImage(game->getImageLibrary().getAsset("electrified_reindeer")),
-    shieldImage(game->getImageLibrary().getAsset("shield")),
-    levelImage(game->getImageLibrary().getAsset("level")) {
+    sleighImage(&game->getImageLibrary().getAsset("sleigh")),
+    electrifiedSleighImage(&game->getImageLibrary().getAsset("electrified_sleigh")),
+    reindeerImage(&game->getImageLibrary().getAsset("reindeer")),
+    electrifiedReindeerImage(&game->getImageLibrary().getAsset("electrified_reindeer")),
+    shieldImage(&game->getImageLibrary().getAsset("shield")),
+    levelImage(&game->getImageLibrary().getAsset("level")) {
   initialize();
 }
 
@@ -33,8 +33,8 @@ void Sleigh::initialize() {
   y = 0;
   speedX = 0;
   speedY = 0;
-  width = reindeerImage.getWidth() + sleighImage.getWidth() + reindeerOffsetX;
-  height = sleighImage.getHeight();
+  width = reindeerImage->getWidth() + sleighImage->getWidth() + reindeerOffsetX;
+  height = sleighImage->getHeight();
   frame = 0;
   time = SDL_GetTicks();
   timeX = 0;
@@ -61,7 +61,7 @@ void Sleigh::initializeSleighStars() {
   }
 }
 
-void Sleigh::draw() const {
+void Sleigh::draw() {
   if (isInvincible() && ((invincibleEndTime - SDL_GetTicks()) % invincibleInvisiblePeriod >=
       invincibleInvisiblePeriod / 2)) {
     return;
@@ -73,39 +73,39 @@ void Sleigh::draw() const {
   const int y = getY();
 
   if (isElectrified()) {
-    electrifiedSleighImage.copy(&game->getScreenSurface(), {
-          x - static_cast<int>(electrifiedSleighImage.getWidth() - sleighImage.getWidth()) / 2 +
-            electrifiedOffsetX,
-          y - static_cast<int>(electrifiedSleighImage.getHeight() - sleighImage.getHeight()) / 2 +
-            electrifiedOffsetY
+    electrifiedSleighImage->copy({
+          x - static_cast<int>(electrifiedSleighImage->getWidth() - sleighImage->getWidth()) / 2 +
+          electrifiedOffsetX,
+          y - static_cast<int>(electrifiedSleighImage->getHeight() - sleighImage->getHeight()) / 2 +
+          electrifiedOffsetY
         });
-    electrifiedReindeerImage.copy(&game->getScreenSurface(), {
-          x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX -
-            static_cast<int>(electrifiedReindeerImage.getWidth() - reindeerImage.getWidth()) / 2 +
-            electrifiedOffsetX,
+    electrifiedReindeerImage->copy({
+          x + static_cast<int>(sleighImage->getWidth()) + reindeerOffsetX -
+          static_cast<int>(electrifiedReindeerImage->getWidth() - reindeerImage->getWidth()) / 2 +
+          electrifiedOffsetX,
           y + reindeerOffsetY -
-            static_cast<int>(electrifiedReindeerImage.getHeight() - reindeerImage.getHeight()) / 2 +
-            electrifiedOffsetY
+          static_cast<int>(electrifiedReindeerImage->getHeight() - reindeerImage->getHeight()) / 2 +
+          electrifiedOffsetY
         });
-    electrifiedReindeerImage.copy(&game->getScreenSurface(), {
-          x + static_cast<int>(sleighImage.getWidth()) -
-            static_cast<int>(electrifiedReindeerImage.getWidth() - reindeerImage.getWidth()) / 2 +
-            electrifiedOffsetX,
+    electrifiedReindeerImage->copy({
+          x + static_cast<int>(sleighImage->getWidth()) -
+          static_cast<int>(electrifiedReindeerImage->getWidth() - reindeerImage->getWidth()) / 2 +
+          electrifiedOffsetX,
           y + reindeerOffsetY -
-            static_cast<int>(electrifiedReindeerImage.getHeight() - reindeerImage.getHeight()) / 2 +
-            electrifiedOffsetY
+          static_cast<int>(electrifiedReindeerImage->getHeight() - reindeerImage->getHeight()) / 2 +
+          electrifiedOffsetY
         });
   }
 
-  sleighImage.copy(&game->getScreenSurface(), {x, y}, sleighFrame);
-  reindeerImage.copy(&game->getScreenSurface(),
-      {x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX, y + reindeerOffsetY},
+  sleighImage->copy({x, y}, sleighFrame);
+  reindeerImage->copy(
+      {x + static_cast<int>(sleighImage->getWidth()) + reindeerOffsetX, y + reindeerOffsetY},
       reindeerFrame);
-  reindeerImage.copy(&game->getScreenSurface(),
-      {x + static_cast<int>(sleighImage.getWidth()), y + reindeerOffsetY}, reindeerFrame);
+  reindeerImage->copy(
+      {x + static_cast<int>(sleighImage->getWidth()), y + reindeerOffsetY}, reindeerFrame);
 
   if (!paused) {
-    for (const SleighStar& sleighStar : sleighStars) {
+    for (SleighStar& sleighStar : sleighStars) {
       sleighStar.draw();
     }
   }
@@ -113,8 +113,8 @@ void Sleigh::draw() const {
   if (isShieldActivated()) {
     const size_t shieldFrame = static_cast<int>
         ((static_cast<double>(SDL_GetTicks()) - static_cast<double>(shieldEndTime)) / 1000.0 *
-        shieldFrameSpeed) % shieldImage.getNumberOfFrames();
-    shieldImage.copy(&game->getScreenSurface(),
+        shieldFrameSpeed) % shieldImage->getNumberOfFrames();
+    shieldImage->copy(
         {x + shieldOffsetY - static_cast<int>(shieldFrame), y + shieldOffsetY}, shieldFrame);
   }
 }
@@ -180,8 +180,8 @@ bool Sleigh::checkCollisionLevel() {
   const std::vector<std::vector<size_t>>& levelMap = game->getLevel().getMap();
   const size_t offsetTileX = levelOffset / tileWidth;
   const size_t sleighFrame = getFrame();
-  const size_t reindeerFrame = (sleighFrame + sleighImage.getNumberOfFrames() / 2) %
-      sleighImage.getNumberOfFrames();
+  const size_t reindeerFrame = (sleighFrame + sleighImage->getNumberOfFrames() / 2) %
+      sleighImage->getNumberOfFrames();
 
   for (int tileY = 0; tileY < static_cast<int>(game->getLevel().getNumberOfTilesY()); tileY++) {
     for (int tileX = static_cast<int>(offsetTileX);
@@ -193,11 +193,11 @@ bool Sleigh::checkCollisionLevel() {
         continue;
       }
 
-      if (sleighImage.checkCollision({x, y}, sleighFrame, &levelImage,
+      if (sleighImage->checkCollision({x, y}, sleighFrame, levelImage,
             {tileX * tileWidth - levelOffset, tileY * tileHeight}, tileFrame) ||
-          reindeerImage.checkCollision(
-            {x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX, y},
-            reindeerFrame, &levelImage,
+          reindeerImage->checkCollision(
+            {x + static_cast<int>(sleighImage->getWidth()) + reindeerOffsetX, y},
+            reindeerFrame, levelImage,
             {tileX * tileWidth - levelOffset, tileY * tileHeight}, tileFrame)) {
         return true;
       }
@@ -227,12 +227,12 @@ SantaRacer::LevelObject::LevelObject* Sleigh::checkCollisionLevelObject() {
       continue;
     }
 
-    if (sleighImage.checkCollision({x, y}, sleighFrame, &levelObject->getImage(),
+    if (sleighImage->checkCollision({x, y}, sleighFrame, levelObject->getImage(),
           {levelObject->getLevelX() - level_offset, levelObject->getY()},
           levelObject->getFrame()) ||
-        sleighImage.checkCollision(
-          {x + static_cast<int>(sleighImage.getWidth()) + reindeerOffsetX, y}, reindeerFrame,
-          &levelObject->getImage(),
+        sleighImage->checkCollision(
+          {x + static_cast<int>(sleighImage->getWidth()) + reindeerOffsetX, y}, reindeerFrame,
+          levelObject->getImage(),
           {levelObject->getLevelX() - level_offset, levelObject->getY()},
           levelObject->getFrame())) {
       return levelObject.get();
@@ -291,7 +291,7 @@ size_t Sleigh::getFrame() const {
 }
 
 size_t Sleigh::getReindeerFrame() const {
-  return getFrame() + reindeerImage.getNumberOfFrames() / 2;
+  return getFrame() + reindeerImage->getNumberOfFrames() / 2;
 }
 
 void Sleigh::setInMenuMode(bool inMenuMode) {
@@ -350,8 +350,8 @@ void Sleigh::setPaused(bool paused) {
 }
 
 void Sleigh::setAlpha(Uint8 alpha) {
-  sleighImage.setAlpha(alpha);
-  reindeerImage.setAlpha(alpha);
+  sleighImage->setAlpha(alpha);
+  reindeerImage->setAlpha(alpha);
 }
 
 }  // namespace SantaRacer

@@ -1,6 +1,7 @@
 # create project
 cmake_minimum_required(VERSION 3.0.0)
 project(SantaRacer VERSION 0.1.0)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # include CTest
 include(CTest)
@@ -83,9 +84,11 @@ target_compile_options(SantaRacer PRIVATE -Wall -Wextra)
 target_include_directories(SantaRacer PRIVATE src)
 
 # include/link SDL
-find_package(SDL)
-include_directories(${SDL_INCLUDE_DIR})
-target_link_libraries(SantaRacer ${SDL_LIBRARY} SDL_image SDL_mixer)
+find_package(SDL2)
+find_package(SDL2_image)
+find_package(SDL2_mixer)
+include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
+target_link_libraries(SantaRacer ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 # include CPack
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

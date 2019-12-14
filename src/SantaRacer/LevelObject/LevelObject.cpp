@@ -55,10 +55,9 @@ std::unique_ptr<LevelObject> LevelObject::create(Game* game, size_t tileX, size_
   }
 }
 
-void LevelObject::draw() const {
+void LevelObject::draw() {
   if (visible) {
-    image->copy(&game->getScreenSurface(),
-        {getLevelX() - static_cast<int>(game->getLevel().getOffset()), getY()}, getFrame());
+    image->copy({getLevelX() - static_cast<int>(game->getLevel().getOffset()), getY()}, getFrame());
   }
 }
 
@@ -73,8 +72,8 @@ size_t LevelObject::getTileY() const {
   return tileY;
 }
 
-Asset::Image& LevelObject::getImage() {
-  return *image;
+Asset::Image* LevelObject::getImage() {
+  return image;
 }
 
 bool LevelObject::isVisible() const {

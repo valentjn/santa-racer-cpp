@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <memory>
 #include <vector>
@@ -70,7 +70,7 @@ class Game {
 
   size_t getScreenWidth() const;
   size_t getScreenHeight() const;
-  SDL_Surface& getScreenSurface() const;
+  SDL_Renderer* getRenderer() const;
   size_t getTargetFps() const;
 
   Options& getOptions();
@@ -86,7 +86,8 @@ class Game {
 
   Options options;
   RNG rng;
-  SDL_Surface *screenSurface;
+  SDL_Window *window;
+  SDL_Renderer *renderer;
 
   Asset::DataLibrary dataLibrary;
   Asset::ImageLibrary imageLibrary;
@@ -158,7 +159,6 @@ class Game {
   Asset::Image highscoreBackground;
   bool initialized;
 
-  Uint8 *keyState;
   bool firePressed;
   bool upPressed;
   bool downPressed;

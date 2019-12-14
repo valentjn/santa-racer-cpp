@@ -24,7 +24,7 @@ class LevelObject {
   static std::unique_ptr<LevelObject> create(Game* game, size_t tileX, size_t tileY,
       size_t mapValue);
 
-  virtual void draw() const;
+  virtual void draw();
   virtual void move();
 
   size_t getTileX() const;
@@ -36,7 +36,7 @@ class LevelObject {
   bool isVisible() const;
   void setVisible(bool visible);
 
-  Asset::Image& getImage();
+  Asset::Image* getImage();
 
  protected:
   Game *game;

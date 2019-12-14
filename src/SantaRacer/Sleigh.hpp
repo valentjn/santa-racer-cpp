@@ -21,7 +21,7 @@ class Sleigh {
 
   void initialize();
   void initializeSleighStars();
-  void draw() const;
+  void draw();
   void moveSleighStars();
   void electrify();
   void collideLevelObject();
@@ -94,12 +94,12 @@ class Sleigh {
 
   Game *game;
 
-  Asset::Image& sleighImage;
-  Asset::Image& electrifiedSleighImage;
-  Asset::Image& reindeerImage;
-  Asset::Image& electrifiedReindeerImage;
-  Asset::Image& shieldImage;
-  Asset::Image& levelImage;
+  Asset::Image* sleighImage;
+  Asset::Image* electrifiedSleighImage;
+  Asset::Image* reindeerImage;
+  Asset::Image* electrifiedReindeerImage;
+  Asset::Image* shieldImage;
+  Asset::Image* levelImage;
 
   int x;
   int y;

@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "SantaRacer/Game.hpp"
 #include "SantaRacer/RNG.hpp"
@@ -14,7 +14,7 @@
 namespace SantaRacer {
 
 SnowmanStar::SnowmanStar(Game* game, LevelObject::Snowman *snowman) :
-    game(game), snowman(snowman), image(game->getImageLibrary().getAsset("star")) {
+    game(game), snowman(snowman), image(&game->getImageLibrary().getAsset("star")) {
   initialize();
 }
 
@@ -27,19 +27,18 @@ void SnowmanStar::initialize(bool useRandomFrame) {
       maxNumberOfFramesToWait)) : 0);
 }
 
-void SnowmanStar::draw() const {
+void SnowmanStar::draw() {
   const int frame = getFrame();
 
-  if ((frame >= 0) && (frame < static_cast<int>(image.getNumberOfFrames()))) {
-    image.copy(&game->getScreenSurface(),
-        {static_cast<int>(levelX - game->getLevel().getOffset()), y}, frame);
+  if ((frame >= 0) && (frame < static_cast<int>(image->getNumberOfFrames()))) {
+    image->copy({static_cast<int>(levelX - game->getLevel().getOffset()), y}, frame);
   }
 }
 
 void SnowmanStar::move() {
   if (!snowman->isTriggered()) {
     time = SDL_GetTicks();
-  } else if (getFrame() >= static_cast<int>(image.getNumberOfFrames())) {
+  } else if (getFrame() >= static_cast<int>(image->getNumberOfFrames())) {
     initialize(false);
   }
 }

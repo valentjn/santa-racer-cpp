@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <SDL2/SDL.h>
+
 #include <filesystem>
 #include <string>
 #include <unordered_map>
@@ -18,12 +20,21 @@ namespace Asset {
 
 class ImageLibrary : public AssetLibrary<Image> {
  public:
+  ImageLibrary();
+  explicit ImageLibrary(SDL_Renderer* renderer);
+
   Image loadAsset(std::string assetName) const override;
   std::filesystem::path getDirectory() const override;
   std::filesystem::path getExtension() const override;
 
+  SDL_Renderer* getRenderer() const;
+  void setRenderer(SDL_Renderer* renderer);
+
  protected:
-  static const std::unordered_map<std::string, size_t> numberOfFramesMap;
+  static const std::unordered_map<std::string, size_t> numberOfFramesXMap;
+  static const std::unordered_map<std::string, size_t> numberOfFramesYMap;
+
+  SDL_Renderer* renderer;
 };
 
 }  // namespace Asset

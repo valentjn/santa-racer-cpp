@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 
@@ -22,8 +22,7 @@ void Snowflake::initialize(bool putOnTop) {
   levelX = game->getRNG().getInteger(leftMargin, 2 * game->getScreenWidth()) +
       game->getLevel().getOffset();
   y = (putOnTop ? 0.0 : game->getRNG().getInteger(0, game->getScreenHeight()));
-  const int z = game->getRNG().getInteger(0, 255);
-  color = SDL_MapRGB(game->getScreenSurface().format, 255 - z, 255 - z, 255 - z);
+  brightness = game->getRNG().getInteger(0, 255);
   time = SDL_GetTicks();
   speedX = game->getRNG().getInteger(minSpeedX, maxSpeedX);
   speedY = game->getRNG().getInteger(minSpeedY, maxSpeedY);
@@ -31,15 +30,15 @@ void Snowflake::initialize(bool putOnTop) {
       game->getRNG().getInteger(minSpeedChangeTime, maxSpeedChangeTime);
 }
 
-void Snowflake::draw() const {
+void Snowflake::draw() {
   const int x = getLevelX() - game->getLevel().getOffset();
   const int y = getY();
 
   if ((x >= 0) && (x < static_cast<int>(game->getScreenWidth())) && (y >= 0) &&
       (y < static_cast<int>(game->getScreenHeight()))) {
-    Uint32* bufp = reinterpret_cast<Uint32*>(game->getScreenSurface().pixels) +
-        y * game->getScreenSurface().pitch / 4 + x / 2;
-    *bufp = color;
+    SDL_Renderer* renderer = game->getRenderer();
+    SDL_SetRenderDrawColor(renderer, brightness, brightness, brightness, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawPoint(renderer, x, y);
   }
 }
 

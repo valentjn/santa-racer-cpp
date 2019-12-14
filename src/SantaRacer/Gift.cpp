@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <vector>
@@ -22,7 +22,7 @@ const std::vector<int> Gift::allGiftPoints = {10, 15, 20};
 Gift::Gift(Game* game) : game(game),
     imagesGift({&game->getImageLibrary().getAsset("gift1"),
         &game->getImageLibrary().getAsset("gift2"), &game->getImageLibrary().getAsset("gift3")}),
-    imageBigStar(game->getImageLibrary().getAsset("big_star")),
+    imageBigStar(&game->getImageLibrary().getAsset("big_star")),
     imagesGiftPoints({&game->getImageLibrary().getAsset("10"),
         &game->getImageLibrary().getAsset("15"), &game->getImageLibrary().getAsset("20")}),
     levelX(game->getSleigh().getX() + game->getLevel().getOffset()),
@@ -33,10 +33,10 @@ Gift::Gift(Game* game) : game(game),
     deleted(false), giftPoints(0), doublePointsActivated(false), bigStarTime(0) {
 }
 
-void Gift::draw() const {
+void Gift::draw() {
   if (succeeded) {
-    const int x = getLevelX() - game->getLevel().getOffset() - imageBigStar.getWidth() / 2;
-    const int y = getY() - imageBigStar.getHeight() / 2;
+    const int x = getLevelX() - game->getLevel().getOffset() - imageBigStar->getWidth() / 2;
+    const int y = getY() - imageBigStar->getHeight() / 2;
 
     if (doublePointsActivated) {
       drawBigStar(x, y);
@@ -48,36 +48,33 @@ void Gift::draw() const {
       drawPoints(x, y);
     }
   } else {
-    imagesGift[type]->copy(&game->getScreenSurface(),
+    imagesGift[type]->copy(
         {getLevelX() - static_cast<int>(game->getLevel().getOffset()), getY()}, getFrame());
   }
 }
 
-void Gift::drawBigStar(int x, int y) const {
+void Gift::drawBigStar(int x, int y) {
   const size_t bigStarVirtualFrame = std::min(getBigStarFrame(), bigStarVirtualFrameCount - 1);
 
   if (bigStarVirtualFrame < 10) {
-    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar1XOffset, y + bigStar1YOffset},
-        bigStarVirtualFrame);
+    imageBigStar->copy({x + bigStar1XOffset, y + bigStar1YOffset}, bigStarVirtualFrame);
   }
 
   if ((bigStarVirtualFrame >= 2) && (bigStarVirtualFrame < 12)) {
-    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar2XOffset, y + bigStar2YOffset},
-        bigStarVirtualFrame - 2);
+    imageBigStar->copy({x + bigStar2XOffset, y + bigStar2YOffset}, bigStarVirtualFrame - 2);
   }
 
   if (bigStarVirtualFrame >= 4) {
-    imageBigStar.copy(&game->getScreenSurface(), {x + bigStar3XOffset, y + bigStar3YOffset},
-        bigStarVirtualFrame - 4);
+    imageBigStar->copy({x + bigStar3XOffset, y + bigStar3YOffset}, bigStarVirtualFrame - 4);
   }
 }
 
-void Gift::drawPoints(int x, int y) const {
+void Gift::drawPoints(int x, int y) {
   const size_t frame = std::find(allGiftPoints.begin(), allGiftPoints.end(), giftPoints) -
       allGiftPoints.begin();
-  imagesGiftPoints[frame]->copy(&game->getScreenSurface(),
-      {x + pointsXOffset + static_cast<int>(imageBigStar.getWidth() / 2),
-      y + pointsYOffset + static_cast<int>(imageBigStar.getHeight() / 2)});
+  imagesGiftPoints[frame]->copy(
+      {x + pointsXOffset + static_cast<int>(imageBigStar->getWidth() / 2),
+      y + pointsYOffset + static_cast<int>(imageBigStar->getHeight() / 2)});
 }
 
 void Gift::move() {

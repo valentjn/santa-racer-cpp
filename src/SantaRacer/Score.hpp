@@ -15,7 +15,7 @@ class Score {
   explicit Score(Game *game);
 
   void initialize(int totalTime);
-  void draw() const;
+  void draw();
 
   int getGiftPoints() const;
   void setGiftPoints(int giftPoints);
@@ -38,9 +38,9 @@ class Score {
 
   Game *game;
 
-  const Asset::Image& scoreGiftImage;
-  const Asset::Image& scoreDamageImage;
-  const Asset::Image& scoreTimeImage;
+  Asset::Image* scoreGiftImage;
+  Asset::Image* scoreDamageImage;
+  Asset::Image* scoreTimeImage;
 
   int giftPoints;
   int damagePoints;

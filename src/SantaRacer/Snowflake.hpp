@@ -15,7 +15,7 @@ class Snowflake {
   explicit Snowflake(Game* game);
 
   void initialize(bool putOnTop = false);
-  void draw() const;
+  void draw();
   void move();
   void changeSpeed();
   double getLevelX() const;
@@ -26,7 +26,7 @@ class Snowflake {
   double levelX;
   double y;
   size_t z;
-  Uint32 color;
+  Uint8 brightness;
   int speedX;
   int speedY;
   size_t speedChangeTime;

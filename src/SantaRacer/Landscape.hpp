@@ -18,7 +18,7 @@ class Landscape {
 
   void initialize();
 
-  void draw() const;
+  void draw();
   void move();
 
   double getOffset() const;
@@ -29,7 +29,7 @@ class Landscape {
 
  protected:
   Game* game;
-  const Asset::Image& image;
+  Asset::Image* image;
 
   size_t time;
   double offset;

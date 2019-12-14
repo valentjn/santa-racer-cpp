@@ -14,9 +14,9 @@ Requirements
 
 * CMake 3.13+
 * GCC 9.0+ or Clang 5+
-* SDL 1.2
-* SDL_image 1.2
-* SDL_mixer 1.2
+* SDL 2.0+
+* SDL_image 2.0+
+* SDL_mixer 2.0+
 
 How to Compile and Run
 ----------------------

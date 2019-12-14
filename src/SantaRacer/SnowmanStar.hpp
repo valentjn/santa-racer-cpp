@@ -21,7 +21,7 @@ class SnowmanStar {
   SnowmanStar(Game* game, LevelObject::Snowman* snowman);
 
   void initialize(bool useRandomFrame = true);
-  void draw() const;
+  void draw();
   void move();
 
   int getFrame() const;
@@ -42,7 +42,7 @@ class SnowmanStar {
 
   Game* game;
   LevelObject::Snowman *snowman;
-  const Asset::Image& image;
+  Asset::Image* image;
 
   int levelX;
   int y;

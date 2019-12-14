@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <vector>
@@ -33,8 +33,8 @@ Snowman::Snowman(Game* game, size_t tileX, size_t tileY) :
 Snowman::~Snowman() {
 }
 
-void Snowman::draw() const {
-  for (const SnowmanStar& snowmanStar : snowmanStars) {
+void Snowman::draw() {
+  for (SnowmanStar& snowmanStar : snowmanStars) {
     snowmanStar.draw();
   }
 

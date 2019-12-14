@@ -18,9 +18,9 @@ class Gift {
  public:
   explicit Gift(Game* game);
 
-  void draw() const;
-  void drawBigStar(int x, int y) const;
-  void drawPoints(int x, int y) const;
+  void draw();
+  void drawBigStar(int x, int y);
+  void drawPoints(int x, int y);
   void move();
   void collideWithGround();
   void collideWithChimney(int points);
@@ -59,9 +59,9 @@ class Gift {
   static const std::vector<int> allGiftPoints;
 
   Game* game;
-  const std::vector<const Asset::Image*> imagesGift;
-  const Asset::Image& imageBigStar;
-  const std::vector<const Asset::Image*> imagesGiftPoints;
+  const std::vector<Asset::Image*> imagesGift;
+  Asset::Image* imageBigStar;
+  const std::vector<Asset::Image*> imagesGiftPoints;
 
   int levelX;
   int y;

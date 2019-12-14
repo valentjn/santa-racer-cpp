@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <string>
@@ -14,15 +14,15 @@
 
 namespace SantaRacer {
 
-Text::Text(const Asset::Image& image, const std::vector<size_t>& actualCharWidths) :
+Text::Text(Asset::Image* image, const std::vector<size_t>& actualCharWidths) :
     image(image), actualCharWidths(actualCharWidths),
     maxActualCharWidth(*std::max_element(actualCharWidths.begin(), actualCharWidths.end())),
-    charWidth(image.getWidth() / 16),
-    charHeight(image.getHeight() / 6) {
+    charWidth(image->getWidth() / 16),
+    charHeight(image->getHeight() / 6) {
 }
 
-void Text::draw(SDL_Surface* targetSurface, Asset::Image::Point targetPoint,
-    const std::string& text, Alignment alignment, bool isMonospace) const {
+void Text::draw(Asset::Image::Point targetPoint, const std::string& text, Alignment alignment,
+    bool isMonospace) {
   size_t width;
 
   if (isMonospace) {
@@ -51,7 +51,7 @@ void Text::draw(SDL_Surface* targetSurface, Asset::Image::Point targetPoint,
       targetPoint.x += maxActualCharWidth / 2 - actualCharWidth / 2;
     }
 
-    image.blit(sourceRectangle, targetSurface, targetPoint);
+    image->blit(sourceRectangle, targetPoint);
 
     if (isMonospace) {
       targetPoint.x += maxActualCharWidth;

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <filesystem>
 #include <memory>
@@ -33,8 +33,10 @@ class Image {
   };
 
   Image();
-  explicit Image(std::filesystem::path imagePath, size_t numberOfFrames = 1);
-  explicit Image(SDL_Surface* surface, size_t numberOfFrames = 1);
+  explicit Image(SDL_Renderer* renderer, std::filesystem::path imagePath,
+      size_t numberOfFramesX = 1, size_t numberOfFramesY = 1);
+  explicit Image(SDL_Renderer* renderer, SDL_Surface* surface,
+      size_t numberOfFramesX = 1, size_t numberOfFramesY = 1);
   Image(const Image& other) = delete;
   Image(Image&& other);
   ~Image();
@@ -42,23 +44,43 @@ class Image {
   Image& operator=(const Image& other) = delete;
   Image& operator=(Image&& other);
 
-  void blit(Rectangle sourceRectangle, SDL_Surface *targetSurface, Point targetPoint,
-      size_t frame = 0) const;
-  void copy(SDL_Surface *targetSurface, Point targetPoint,  // NOLINT(build/include_what_you_use)
-      size_t frame = 0) const;
+  void blit(Rectangle sourceRectangle, Point targetPoint, size_t frame = 0);
+  void copy(Point targetPoint, size_t frame = 0);  // NOLINT(build/include_what_you_use)
   void setAlpha(Uint8 alpha);
 
+  std::vector<bool> getMask();
   bool checkCollision(Point point, int frame, Image *other, Point otherPoint, size_t otherFrame);
 
-  SDL_Surface& getSurface() const;
-  size_t getWidth() const;
-  size_t getHeight() const;
-  size_t getNumberOfFrames() const;
-  std::vector<bool> getMask();
+  inline SDL_Surface* getSurface() const {
+    return surface;
+  }
+
+  inline SDL_Texture* getTexture() const {
+    return texture;
+  }
+
+  inline SDL_Renderer* getRenderer() const {
+    return renderer;
+  }
+
+  inline size_t getWidth() const {
+    return static_cast<size_t>(surface->w) / numberOfFramesX;
+  }
+
+  inline size_t getHeight() const {
+    return static_cast<size_t>(surface->h) / numberOfFramesY;
+  }
+
+  inline size_t getNumberOfFrames() const {
+    return numberOfFramesX * numberOfFramesY;
+  }
 
  protected:
+  SDL_Renderer* renderer;
   SDL_Surface* surface;
-  size_t numberOfFrames;
+  SDL_Texture* texture;
+  size_t numberOfFramesX;
+  size_t numberOfFramesY;
   std::vector<bool> mask;
 };
 

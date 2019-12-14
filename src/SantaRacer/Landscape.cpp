@@ -4,7 +4,7 @@
  * See LICENSE.md in the project's root directory.
  */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <cmath>
 
@@ -14,7 +14,7 @@
 namespace SantaRacer {
 
 Landscape::Landscape(Game* game) : game(game),
-    image(game->getImageLibrary().getAsset("landscape")) {
+    image(&game->getImageLibrary().getAsset("landscape")) {
   initialize();
 }
 
@@ -25,13 +25,13 @@ void Landscape::initialize() {
   paused = false;
 }
 
-void Landscape::draw() const {
+void Landscape::draw() {
   const size_t offset = getOffset();
 
-  image.blit({static_cast<int>(offset), 0, image.getWidth() - offset, image.getHeight()},
-      &game->getScreenSurface(), {0, 0});
-  image.blit({0, 0, offset, image.getHeight()},
-      &game->getScreenSurface(), {static_cast<int>(image.getWidth() - offset), 0});
+  image->blit({static_cast<int>(offset), 0, image->getWidth() - offset, image->getHeight()},
+      {0, 0});
+  image->blit({0, 0, offset, image->getHeight()},
+      {static_cast<int>(image->getWidth() - offset), 0});
 }
 
 void Landscape::move() {
@@ -41,7 +41,7 @@ void Landscape::move() {
 
 double Landscape::getOffset() const {
   return (paused ? offset : std::fmod(offset + (SDL_GetTicks() - time) / 1000.0 * getSpeed(),
-      image.getWidth()));
+      image->getWidth()));
 }
 
 double Landscape::getSpeed() const {
