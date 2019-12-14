@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <SDL/SDL.h>
-
 namespace SantaRacer {
 
 class Game;
