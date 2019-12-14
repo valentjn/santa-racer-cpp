@@ -4,6 +4,8 @@
  * See LICENSE.md in the project's root directory.
  */
 
+#include <SDL/SDL.h>
+
 #include <cmath>
 
 #include "SantaRacer/Game.hpp"
