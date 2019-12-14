@@ -29,7 +29,7 @@ Game::Game(Options&& options) : options(std::move(options)),
       screenWidth(640), screenHeight(480), targetFps(30) {
 #ifdef NDEBUG
   Printer::setVerbose(options.isVerbose());
-#endif
+#endif  // NDEBUG
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     Printer::fatalError("unable to initalize SDL: %s\n", SDL_GetError());
@@ -567,7 +567,7 @@ void Game::draw() {
 #ifndef NDEBUG
   text->draw(screenSurface, {static_cast<int>(screenWidth), static_cast<int>(screenHeight)},
       Printer::printToString("%u FPS", fps), Text::Alignment::BottomRight);
-#endif
+#endif  // NDEBUG
 
   if ((mode == Mode::Menu) || (mode == Mode::Highscores)) {
     const Asset::Image& logo = imageLibrary.getAsset("logo");
