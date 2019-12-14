@@ -32,22 +32,15 @@ void Snowflake::initialize(bool putOnTop) {
 }
 
 void Snowflake::draw() const {
-  int x;
-  int y;
-  Uint32 *bufp;
+  const int x = getLevelX() - game->getLevel().getOffset();
+  const int y = getY();
 
-  x = getLevelX() - game->getLevel().getOffset();
-  y = getY();
-
-  if ((x < 0) || (x >= static_cast<int>(game->getScreenWidth())) || (y < 0) ||
-      (y >= static_cast<int>(game->getScreenHeight()))) {
-    return;
+  if ((x >= 0) && (x < static_cast<int>(game->getScreenWidth())) && (y >= 0) &&
+      (y < static_cast<int>(game->getScreenHeight()))) {
+    Uint32* bufp = reinterpret_cast<Uint32*>(game->getScreenSurface().pixels) +
+        y * game->getScreenSurface().pitch / 4 + x / 2;
+    *bufp = color;
   }
-
-  bufp = reinterpret_cast<Uint32*>(game->getScreenSurface().pixels) +
-      y * game->getScreenSurface().pitch / 4 + x / 2;
-  // FIXME ??
-  *bufp = color;
 }
 
 void Snowflake::move() {
